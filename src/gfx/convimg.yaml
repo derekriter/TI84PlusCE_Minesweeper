@@ -1,0 +1,25 @@
+palettes:
+  - name: global_palette
+    fixed-entries:
+      - color: {index: 0, hex: "#FF00FF"}
+      - color: {index: 1, hex: "#FFFFFF"}
+      - color: {index: 2, hex: "#000000"}
+    images: automatic
+
+converts:
+  - name: sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - sprites.png
+
+outputs:
+  - type: c
+    include-file: gfx.h
+    palettes:
+      - global_palette
+    converts:
+      - sprites

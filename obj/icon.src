@@ -1,0 +1,27 @@
+	section .icon
+
+	jp	___prgm_init
+	db	$01
+	public ___icon
+___icon:
+	db	$10, $10
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $E0, $E0, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $E0, $E0, $E0, $E0, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $E0, $E0, $E0, $E0, $E0, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $E0, $E0, $E0, $E0, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $E0, $E0, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	public ___description
+___description:
+	db	"It's minesweeper", 0
+___prgm_init:

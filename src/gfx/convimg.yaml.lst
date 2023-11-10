@@ -1,0 +1,5 @@
+global_palette.h
+global_palette.c
+sprites.h
+sprites.c
+gfx.h
