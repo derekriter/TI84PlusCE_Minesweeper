@@ -1,0 +1,12 @@
+{
+	"files.associations": {
+		"stdlib.h": "c",
+		"math.h": "c",
+		"graphx.h": "c",
+		"debug.h": "c",
+		"stdio.h": "c",
+		"keypadc.h": "c",
+		"gfx.h": "c",
+		"mathutils.h": "c"
+	}
+}
