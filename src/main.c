@@ -1,3 +1,9 @@
+#define BOARD_MINE -1
+#define BOARD_CLEAR 0
+#define MASK_COVERED 0
+#define MASK_FLAGGED 1
+#define MASK_UNCOVERED 2
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -24,43 +30,67 @@ int* generateBoard() {
         do {
             int p = randInt(0, 99);
             if(!newBoard[p]) {
-                newBoard[p] = -1;
+                newBoard[p] = BOARD_MINE;
                 break;
             }
         }
         while(true);
     }
     for(int i = 0; i < 100; i++) {
-        if(newBoard[i] == -1) continue;
+        if(newBoard[i] == BOARD_MINE) continue;
         
-        newBoard[i] = (i > 9 && newBoard[i - 10] == -1) + (i > 9 && i % 10 < 9 && newBoard[i - 9] == -1) + (i % 10 < 9 && newBoard[i + 1] == -1) + (i < 90 && i % 10 < 9 && newBoard[i + 11] == -1) + (i < 90 && newBoard[i + 10] == -1) + (i < 90 && i % 10 > 0 && newBoard[i + 9] == -1) + (i % 10 > 0 && newBoard[i - 1] == -1) + (i > 9 && i % 10 > 0 && newBoard[i - 11] == -1);
+        newBoard[i] = (i > 9 && newBoard[i - 10] == BOARD_MINE) + (i > 9 && i % 10 < 9 && newBoard[i - 9] == BOARD_MINE) + (i % 10 < 9 && newBoard[i + 1] == BOARD_MINE) + (i < 90 && i % 10 < 9 && newBoard[i + 11] == BOARD_MINE) + (i < 90 && newBoard[i + 10] == BOARD_MINE) + (i < 90 && i % 10 > 0 && newBoard[i + 9] == BOARD_MINE) + (i % 10 > 0 && newBoard[i - 1] == BOARD_MINE) + (i > 9 && i % 10 > 0 && newBoard[i - 11] == BOARD_MINE);
     }
     
     return (int*) newBoard;
 }
-void floodFill(int startIndex) {
-    struct Queue fillQueue = {0, NULL};
-    pushQueue(&fillQueue, startIndex);
+void reveal(int index) {
+    if(mask[index] != MASK_COVERED) return;
     
-    int computed[100];
+    mask[index] = MASK_UNCOVERED;
+    pushQueue(&updateQueue, index);
+    if(board[index] > BOARD_CLEAR) return;
     
-    while(fillQueue.length > 0) {
-        int i = grabQueue(&fillQueue);
+    for(int i = 0; i < 8; i++) {
+        int neighborX = index % 10, neighborY = index / 10;
         
-        mask[i] = 2;
-        computed[i] = 1;
-        pushQueue(&updateQueue, i);
+        switch(i) {
+            case 0:
+                neighborY -= 1;
+                break;
+            case 1:
+                neighborX += 1;
+                neighborY -= 1;
+                break;
+            case 2:
+                neighborX += 1;
+                break;
+            case 3:
+                neighborX += 1;
+                neighborY += 1;
+                break;
+            case 4:
+                neighborY += 1;
+                break;
+            case 5:
+                neighborX -= 1;
+                neighborY += 1;
+                break;
+            case 6:
+                neighborX -= 1;
+                break;
+            case 7:
+                neighborX -= 1;
+                neighborY -= 1;
+                break;
+            default:
+                exit(1);
+                break;
+        }
         
-        if(board[i]) continue;
+        if(neighborX < 0 || neighborX > 9 || neighborY < 0 || neighborY > 9) continue;
         
-        if(i > 9 && !mask[i - 10] && !computed[i - 10]) pushQueue(&fillQueue, i - 10);
-        if(i > 9 && i % 10 < 9 && !mask[i - 9] && !computed[i - 9]) pushQueue(&fillQueue, i - 9);
-        if(i % 10 < 9 && !mask[i + 1] && !computed[i + 1]) pushQueue(&fillQueue, i + 1);
-        if(i < 90 && i % 10 < 9 && !mask[i + 11] && !computed [i + 11]) pushQueue(&fillQueue, i + 11);
-        if(i < 90 && !mask[i + 10] && !computed[i + 10]) pushQueue(&fillQueue, i + 10);
-        if(i < 90 && i % 10 > 0 && !mask[i + 9] && !computed[i + 9]) pushQueue(&fillQueue, i + 9);
-        if(i % 10 > 0 && !mask[i - 1] && !computed[i - 1]) pushQueue(&fillQueue, i - 1);
-        if(i > 9 && i % 10 > 0 && !mask[i - 11] && !computed[i - 11]) pushQueue(&fillQueue, i - 11);
+        reveal(neighborX + neighborY * 10);
     }
 }
 
@@ -98,28 +128,15 @@ void update() {
     else if(right && !rightLast) selX = mod(selX + 1, 10);
     else if(down && !downLast) selY = mod(selY + 1, 10);
     
-    if(uncover && !uncoverLast && !mask[10 * selY + selX]) {
-        mask[10 * selY + selX] = 2;
-        
-        if(board[10 * selY + selX] == 0)
-            floodFill(10 * selY + selX);
-        else {
-            if(board[10 * selY + selX] == -1) {
-                restartTime = clock();
-                restart = 1;
-            }
-            
-            pushQueue(&updateQueue, 10 * selY + selX);
-        }
-    }
-    else if(flag && !flagLast && mask[10 * selY + selX] == 0 && minesDiscovered < 10) {
-        mask[10 * selY + selX] = 1;
+    if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) reveal(10 * selY + selX);
+    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesDiscovered < 10) {
+        mask[10 * selY + selX] = MASK_FLAGGED;
         pushQueue(&updateQueue, 10 * selY + selX);
         minesDiscovered++;
         drawMineCount(minesDiscovered);
     }
-    else if(flag && !flagLast && mask[10 * selY + selX] == 1) {
-        mask[10 * selY + selX] = 0;
+    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_FLAGGED) {
+        mask[10 * selY + selX] = MASK_COVERED;
         pushQueue(&updateQueue, 10 * selY + selX);
         minesDiscovered--;
         drawMineCount(minesDiscovered);
@@ -156,7 +173,7 @@ int main() {
     setupGraphics();
     
     board = generateBoard();
-    mask = malloc(100 * sizeof(int));
+    mask = calloc(100, sizeof(int));
     drawBoard(board, mask, selX, selY, minesDiscovered);
     
     do {
