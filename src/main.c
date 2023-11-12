@@ -27,6 +27,45 @@ int* updateTargets = NULL;
 int needToRedrawBoard = 0;
 int needToRedrawMineCount = 0;
 
+int getNeighborTile(int loc, int neighborIndex) {
+    int neighborX = loc % 10, neighborY = loc / 10;
+    
+    switch(neighborIndex) {
+        case 0:
+            neighborX -= 1;
+            neighborY -= 1;
+            break;
+        case 1:
+            neighborY -= 1;
+            break;
+        case 2:
+            neighborX += 1;
+            neighborY -= 1;
+            break;
+        case 3:
+            neighborX += 1;
+            break;
+        case 4:
+            neighborX += 1;
+            neighborY += 1;
+            break;
+        case 5:
+            neighborY += 1;
+            break;
+        case 6:
+            neighborX -= 1;
+            neighborY += 1;
+            break;
+        case 7:
+            neighborX -= 1;
+            break;
+        default:
+            return -1;
+    }
+    
+    if(neighborX < 0 || neighborX > 9 || neighborY < 0 || neighborY > 9) return -1;
+    return neighborX + 10 * neighborY;
+}
 int* generateBoard() {
     int* newBoard = (int*) calloc(100, sizeof(int));
     
@@ -36,46 +75,12 @@ int* generateBoard() {
             if(newBoard[loc] != BOARD_MINE && loc != selX + 10 * selY) {
                 newBoard[loc] = BOARD_MINE;
                 
-                //increase count of surrounding non-mine tiles (instead of having to have a second pass to calculate count)
                 for(int i = 0; i < 8; i++) {
-                    int neighborX = loc % 10, neighborY = loc / 10;
+                    int neighborLoc = getNeighborTile(loc, i);
+                    if(neighborLoc == -1) continue;
                     
-                    switch(i) {
-                        case 0:
-                            neighborY -= 1;
-                            break;
-                        case 1:
-                            neighborX += 1;
-                            neighborY -= 1;
-                            break;
-                        case 2:
-                            neighborX += 1;
-                            break;
-                        case 3:
-                            neighborX += 1;
-                            neighborY += 1;
-                            break;
-                        case 4:
-                            neighborY += 1;
-                            break;
-                        case 5:
-                            neighborX -= 1;
-                            neighborY += 1;
-                            break;
-                        case 6:
-                            neighborX -= 1;
-                            break;
-                        case 7:
-                            neighborX -= 1;
-                            neighborY -= 1;
-                            break;
-                        default:
-                            exit(1);
-                            break;
-                    }
-                    
-                    if(neighborX < 0 || neighborX > 9 || neighborY < 0 || neighborY > 9 || newBoard[neighborX + 10 * neighborY] == BOARD_MINE) continue;
-                    newBoard[neighborX + 10 * neighborY]++;
+                    if(newBoard[neighborLoc] == BOARD_MINE) continue;
+                    newBoard[neighborLoc]++;
                 }
                 
                 break;
@@ -94,46 +99,27 @@ void reveal(int index) {
     if(board[index] != BOARD_CLEAR) return;
     
     for(int i = 0; i < 8; i++) {
-        int neighborX = index % 10, neighborY = index / 10;
+        int neighborLoc = getNeighborTile(index, i);
+        if(neighborLoc == -1) continue;
         
-        switch(i) {
-            case 0:
-                neighborY -= 1;
-                break;
-            case 1:
-                neighborX += 1;
-                neighborY -= 1;
-                break;
-            case 2:
-                neighborX += 1;
-                break;
-            case 3:
-                neighborX += 1;
-                neighborY += 1;
-                break;
-            case 4:
-                neighborY += 1;
-                break;
-            case 5:
-                neighborX -= 1;
-                neighborY += 1;
-                break;
-            case 6:
-                neighborX -= 1;
-                break;
-            case 7:
-                neighborX -= 1;
-                neighborY -= 1;
-                break;
-            default:
-                exit(1);
-                break;
-        }
-        
-        if(neighborX < 0 || neighborX > 9 || neighborY < 0 || neighborY > 9) continue;
-        
-        reveal(neighborX + neighborY * 10);
+        reveal(neighborLoc);
     }
+}
+int gameIsCompleted() {
+    for(int i = 0; i < 100; i++) {
+        if(board[i] == BOARD_MINE) {
+            if(mask[i] != MASK_UNCOVERED) continue;
+        }
+        else if(mask[i] == MASK_UNCOVERED) continue;
+        
+        return 0;
+    }
+    
+    return 1;
+}
+void fillIntArray(int* array, int length, int value) {
+    for(int i = 0; i < length; i++)
+        array[i] = value;
 }
 
 int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, uncoverLast = 0, flagLast = 0;
@@ -142,13 +128,12 @@ void update() {
     if(restart) {
         if((clock() - restartTime) / CLOCKS_PER_SEC < 3) return;
         
-        restart = 0;
         srand(time(NULL));
         memset(mask, MASK_COVERED, 100 * sizeof(int));
         free(board);
         board = NULL;
         
-        leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
+        restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
         
         needToRedrawBoard = 1;
         return;
@@ -173,6 +158,12 @@ void update() {
         if(board[selX + 10 * selY] == BOARD_MINE) {
             restart = 1;
             restartTime = clock();
+        }
+        else if(gameIsCompleted()) {
+            restart = 1;
+            restartTime = clock();
+            fillIntArray(mask, 100, MASK_UNCOVERED);
+            needToRedrawBoard = 1;
         }
     }
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesDiscovered < 10) {
