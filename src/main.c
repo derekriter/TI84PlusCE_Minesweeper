@@ -147,15 +147,6 @@ void update() {
         pushQueue(&updateQueue, 10 * selY + selX);
     }
     
-    if(updateQueue.length > 0) {
-        for(int i = 0; i < updateQueue.length; i++) {
-            int index = updateQueue.values[i];
-            drawTile(index % 10, index / 10, board, mask, selX, selY);
-        }
-        updateQueue.length = 0;
-        free(updateQueue.values);
-    }
-    
     leftLast = left;
     upLast = up;
     rightLast = right;
@@ -165,6 +156,18 @@ void update() {
     
     lastSelX = selX;
     lastSelY = selY;
+}
+void render() {
+    if(updateQueue.length > 0) {
+        for(int i = 0; i < updateQueue.length; i++) {
+            int index = updateQueue.values[i];
+            drawTile(index % 10, index / 10, board, mask, selX, selY);
+        }
+        updateQueue.length = 0;
+        free(updateQueue.values);
+    }
+    
+    gfx_BlitBuffer();
 }
 
 int main() {
@@ -180,6 +183,7 @@ int main() {
         kb_Scan();
         
         update();
+        render();
     }
     while(!kb_IsDown(kb_KeyDel));
     

@@ -11,6 +11,7 @@
 void setupGraphics() {
 	gfx_Begin();
     
+    gfx_SetDrawBuffer(); //using blit buffer (see https://ce-programming.github.io/toolchain/libraries/graphx.html#buffering-graphics)
     gfx_SetPalette(global_palette, sizeof_global_palette, 0);
     gfx_SetTransparentColor(0);
     gfx_SetTextFGColor(2);
