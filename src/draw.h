@@ -39,12 +39,10 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
         case MASK_COVERED:
             gfx_Sprite_NoClip(sprites_tile_0, tileX, tileY);
             break;
-        
         case MASK_FLAGGED:
             gfx_Sprite_NoClip(sprites_tile_0, tileX, tileY);
             gfx_TransparentSprite_NoClip(sprites_tile_2, tileX, tileY);
             break;
-        
         case MASK_UNCOVERED:
             gfx_Sprite_NoClip(sprites_tile_1, tileX, tileY);
             
@@ -53,6 +51,9 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
             else if(board[10 * y + x] > BOARD_CLEAR)
                 gfx_TransparentSprite_NoClip(sprites_tiles[4 + board[10 * y + x]], tileX, tileY);
             
+            break;
+        default:
+            exit(1);
             break;
     }
     
@@ -71,8 +72,8 @@ void drawBoard(int* board, int* mask, int selX, int selY, int discoveredMines) {
     
     gfx_PrintStringXY("[ARROWS] - Select", 1, 1);
     gfx_PrintStringXY("[2nd] - Uncover", 1, 11);
-    gfx_PrintStringXY("[Alpha] - Flag", 1, 21);
-    gfx_PrintStringXY("[Del] - Quit", 1, GFX_LCD_HEIGHT - 9);
+    gfx_PrintStringXY("[alpha] - Flag", 1, 21);
+    gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
     
     drawMineCount(discoveredMines);
 }
