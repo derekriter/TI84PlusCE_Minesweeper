@@ -7,9 +7,9 @@ Section          Base   Top    High   Length
 .init.reruncheck D1AA66 D1AA66             0h
 .init            D1AA66 D1AA92            2Ch
 .fini            D1AA92 D1AACA            38h
-.text            D1AACA D1DB27          305Dh
-.data            D1DB27 D1E895           D6Eh
-.rodata          D1E895 D1EA18           183h
+.text            D1AACA D1DB4F          3085h
+.data            D1DB4F D1E8BD           D6Eh
+.rodata          D1E8BD D1EA40           183h
 .init_array      000000 000000             0h
 .ctors           000000 000000             0h
 .dtors           000000 000000             0h
@@ -85,7 +85,7 @@ _os_DisableHomeTextBuffer      = D1AFAF
 _os_EnableHomeTextBuffer       = D1AFC1
 _random                        = D1AFD3
 __setstate                     = D1B031
-__state                        = D1DB27
+__state                        = D1DB4F
 _boot_GetDate                  = 0005A8
 _boot_GetTime                  = 0005B0
 _free                          = D1B041
@@ -93,14 +93,14 @@ ___isleap                      = D1B0FE
 _malloc                        = D1B138
 __alloc_base                   = D052C6
 _mktime                        = D1B1D7
-_mktime.dpmt                   = D1E895
+_mktime.dpmt                   = D1E8BD
 _npf_vpprintf                  = D1B348
-JTI0_0                         = D1E8B9
-JTI0_1                         = D1E8D7
-JTI0_2                         = D1E91C
-JTI0_3                         = D1E93D
-JTI0_4                         = D1E955
-JTI0_5                         = D1E96D
+JTI0_0                         = D1E8E1
+JTI0_1                         = D1E8FF
+JTI0_2                         = D1E944
+JTI0_3                         = D1E965
+JTI0_4                         = D1E97D
+JTI0_5                         = D1E995
 _npf_utoa_rev                  = D1CAB2
 __printf_c                     = D1CB7A
 __vsnprintf_c                  = D1CB99
@@ -111,9 +111,9 @@ __vsprintf_c                   = D1CC50
 __vprintf_c                    = D1CC6E
 _npf_putc_std                  = D1CC8E
 __sprintf_c                    = D1CC9E
-_.str                          = D1E985
-_.str.1                        = D1E989
-_.str.2                        = D1E98D
+_.str                          = D1E9AD
+_.str.1                        = D1E9B1
+_.str.2                        = D1E9B5
 _time                          = D1CCC7
 _calloc                        = D1CD44
 _ceilf                         = 022114
@@ -128,12 +128,12 @@ _vprintf                       = D1CC6E
 _vsnprintf                     = D1CB99
 _rand                          = D1CD9A
 _sbrk                          = D1CDA7
-__sbrkbase                     = D1DB37
+__sbrkbase                     = D1DB5F
 _srand                         = D1CDC5
-.missingappvar                 = D1E991
-.libloadname                   = D1E996
+.missingappvar                 = D1E9B9
+.libloadname                   = D1E9BE
 .libloadnamelen                = 000007
-.webaddress                    = D1E99E
+.webaddress                    = D1E9C6
 ___init_clock                  = D1AA4B
 __start                        = D1AA66
 ___exithl                      = D1AA92
@@ -150,31 +150,31 @@ _drawBoard                     = D1D03F
 _mod                           = D1D12F
 _generateBoard                 = D1D1A0
 _reveal                        = D1D428
-JTI10_0                        = D1E9B3
+JTI10_0                        = D1E9DB
 _update                        = D1D562
-_render                        = D1D986
-_main                          = D1DA80
-_sprites_tile_5_data           = D1DB3A
-_sprites_tile_6_data           = D1DC3C
-_sprites_tile_7_data           = D1DD3E
-_sprites_tile_8_data           = D1DE40
-_sprites_tile_9_data           = D1DF42
-_sprites_tile_10_data          = D1E044
-_sprites_tile_11_data          = D1E146
-_sprites_tile_12_data          = D1E248
-_global_palette                = D1E34A
-_.str.1                        = D1E9CE
-_.str.2                        = D1E9D4
-_sprites_tile_0_data           = D1E364
-_sprites_tile_2_data           = D1E466
-_sprites_tile_1_data           = D1E568
-_sprites_tile_3_data           = D1E66A
-_sprites_tiles_data            = D1E76C
-_sprites_tile_4_data           = D1E793
-_.str.3                        = D1E9DA
-_.str.4                        = D1E9EC
-_.str.5                        = D1E9FC
-_.str.6                        = D1EA0B
+_render                        = D1D9AE
+_main                          = D1DAA8
+_sprites_tile_5_data           = D1DB62
+_sprites_tile_6_data           = D1DC64
+_sprites_tile_7_data           = D1DD66
+_sprites_tile_8_data           = D1DE68
+_sprites_tile_9_data           = D1DF6A
+_sprites_tile_10_data          = D1E06C
+_sprites_tile_11_data          = D1E16E
+_sprites_tile_12_data          = D1E270
+_global_palette                = D1E372
+_.str.1                        = D1E9F6
+_.str.2                        = D1E9FC
+_sprites_tile_0_data           = D1E38C
+_sprites_tile_2_data           = D1E48E
+_sprites_tile_1_data           = D1E590
+_sprites_tile_3_data           = D1E692
+_sprites_tiles_data            = D1E794
+_sprites_tile_4_data           = D1E7BB
+_.str.3                        = D1EA02
+_.str.4                        = D1EA14
+_.str.5                        = D1EA24
+_.str.6                        = D1EA33
 _selX                          = D052CC
 _selY                          = D052CF
 _minesDiscovered               = D052D2
