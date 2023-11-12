@@ -1042,7 +1042,7 @@ _reveal:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB10_2
+	jp	nz, BB10_20
 	ld	hl, 2
 	ld	de, 1
 	ld	(iy), hl
@@ -1057,16 +1057,10 @@ _reveal:
 	ld	hl, (_board)
 	add	hl, bc
 	ld	hl, (hl)
-	ld	bc, 1
+	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	call	pe, __setflag
-	jp	m, BB10_3
-BB10_2:
-	ld	sp, ix
-	pop	ix
-	ret
-BB10_3:
+	jp	nz, BB10_20
 	ld	bc, 10
 	ld	iy, -10
 	ld	hl, (ix + 6)
@@ -1093,7 +1087,7 @@ BB10_3:
 	ld	(ix - 18), hl
 	ld	bc, 9
 	ld	de, 0
-BB10_4:
+BB10_3:
 	push	de
 	pop	hl
 	or	a, a
@@ -1108,52 +1102,52 @@ BB10_4:
 	ld	hl, (ix - 6)
 	ld	de, (ix - 3)
 	jp	(iy)
+BB10_5:
+	ld	hl, (ix - 18)
+	jr	BB10_14
 BB10_6:
 	ld	hl, (ix - 18)
-	jr	BB10_15
+	jr	BB10_12
 BB10_7:
 	ld	hl, (ix - 18)
-	jr	BB10_13
+	jr	BB10_10
 BB10_8:
-	ld	hl, (ix - 18)
-	jr	BB10_11
-BB10_9:
 	ld	hl, (ix - 6)
-	jr	BB10_11
+	jr	BB10_10
+BB10_9:
+	ld	hl, (ix - 12)
 BB10_10:
-	ld	hl, (ix - 12)
-BB10_11:
 	ld	de, (ix - 15)
-	jr	BB10_16
+	jr	BB10_15
+BB10_11:
+	ld	hl, (ix - 12)
 BB10_12:
-	ld	hl, (ix - 12)
-BB10_13:
 	ld	de, (ix - 21)
-	jr	BB10_16
-BB10_14:
+	jr	BB10_15
+BB10_13:
 	ld	hl, (ix - 12)
-BB10_15:
+BB10_14:
 	ld	de, (ix - 3)
-BB10_16:
+BB10_15:
 	ld	(ix - 24), hl
 	ld	bc, 10
 	or	a, a
 	sbc	hl, bc
-	jr	nc, BB10_20
+	jr	nc, BB10_19
 	push	de
 	pop	hl
 	ld	bc, 0
 	or	a, a
 	sbc	hl, bc
 	call	pe, __setflag
-	jp	m, BB10_20
+	jp	m, BB10_19
 	push	de
 	pop	hl
 	ld	bc, 10
 	or	a, a
 	sbc	hl, bc
 	call	pe, __setflag
-	jp	p, BB10_20
+	jp	p, BB10_19
 	ex	de, hl
 	ld	bc, 10
 	call	__imulu
@@ -1162,11 +1156,15 @@ BB10_16:
 	push	hl
 	call	_reveal
 	pop	hl
-BB10_20:
+BB10_19:
 	ld	de, (ix - 9)
 	inc	de
 	ld	bc, 9
-	jp	BB10_4
+	jp	BB10_3
+BB10_20:
+	ld	sp, ix
+	pop	ix
+	ret
 BB10_21:
 	ld	hl, 1
 	push	hl
@@ -1176,15 +1174,15 @@ BB10_21:
 	section	.rodata,"a",@progbits
 	private	JTI10_0
 JTI10_0:
-	dl	BB10_16
+	dl	BB10_15
+	dl	BB10_5
 	dl	BB10_6
 	dl	BB10_7
 	dl	BB10_8
 	dl	BB10_9
-	dl	BB10_10
-	dl	BB10_12
-	dl	BB10_14
-	dl	BB10_2
+	dl	BB10_11
+	dl	BB10_13
+	dl	BB10_20
 
 	section	.text,"ax",@progbits
 	public	_update

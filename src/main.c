@@ -53,7 +53,7 @@ void reveal(int index) {
     
     mask[index] = MASK_UNCOVERED;
     updateTargets[index] = 1;
-    if(board[index] > BOARD_CLEAR) return;
+    if(board[index] != BOARD_CLEAR) return;
     
     for(int i = 0; i < 8; i++) {
         int neighborX = index % 10, neighborY = index / 10;
