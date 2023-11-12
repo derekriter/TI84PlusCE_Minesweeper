@@ -1189,86 +1189,11 @@ JTI10_0:
 _update:
 	ld	hl, -30
 	call	__frameset
-	xor	a, a
 	ld	hl, (_restart)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_3
-	ld	hl, (_leftLast)
-	add	hl, bc
-	or	a, a
-	sbc	hl, bc
-	jr	nz, BB11_7
-	ld	a, 0
-	jr	BB11_8
-BB11_3:
-	ld	(ix - 9), a
-	call	_clock
-	ld	bc, (_restartTime)
-	ld	a, (_restartTime+3)
-	call	__lsub
-	ld	bc, 163840
-	xor	a, a
-	call	__lcmpu
-	jp	c, BB11_39
-	ld	hl, 0
-	ld	de, 0
-	ld	(_restart), de
-	push	hl
-	call	_time
-	pop	de
-	push	hl
-	call	_srand
-	pop	hl
-	ld	hl, (_board)
-	ld	(ix - 3), hl
-	ld	hl, (_mask)
-	ld	(ix - 6), hl
-	ld	de, 300
-	ld	iy, 0
-BB11_5:
-	lea	hl, iy
-	or	a, a
-	sbc	hl, de
-	jr	z, BB11_9
-	lea	bc, iy
-	ld	hl, (ix - 3)
-	add	hl, bc
-	ld	de, 0
-	ld	(hl), de
-	ld	hl, (ix - 6)
-	add	hl, bc
-	ld	(hl), de
-	ld	de, 3
-	add	iy, de
-	ld	de, 300
-	jr	BB11_5
-BB11_7:
-	ld	a, -1
-BB11_8:
-	ld	(ix - 9), a
-	jr	BB11_10
-BB11_9:
-	call	_generateBoard
-	ld	hl, _generateBoard.newBoard
-	ld	(_board), hl
-	or	a, a
-	sbc	hl, hl
-	ld	(_minesDiscovered), hl
-	ld	(_selY), hl
-	ld	(_selX), hl
-	ld	(_lastSelY), hl
-	ld	(_lastSelX), hl
-	ld	(_flagLast), hl
-	ld	(_uncoverLast), hl
-	ld	(_downLast), hl
-	ld	(_rightLast), hl
-	ld	(_upLast), hl
-	ld	(_leftLast), hl
-	inc	hl
-	ld	(_needToRedrawBoard), hl
-BB11_10:
+	jp	nz, BB11_9
 	ld	hl, _selX
 	ld	(ix - 21), hl
 	ld	iy, -720866
@@ -1283,6 +1208,9 @@ BB11_10:
 	ld.sis	bc, 8
 	call	__sand
 	ld	(ix - 18), hl
+	or	a, a
+	sbc	hl, hl
+	ld	(ix - 3), hl
 	ld	l, (iy)
 	ld	h, (iy + 1)
 	ld.sis	bc, 4
@@ -1290,7 +1218,7 @@ BB11_10:
 	ld	(ix - 24), hl
 	or	a, a
 	sbc	hl, hl
-	ld	(ix - 3), hl
+	ld	(ix - 6), hl
 	ld	l, (iy)
 	ld	h, (iy + 1)
 	ld.sis	bc, 1
@@ -1322,64 +1250,108 @@ BB11_10:
 	ld	(ix - 30), de
 	ld	a, e
 	or	a, a
-	ld	(ix - 6), iy
-	jr	z, BB11_12
-	bit	0, (ix - 9)
-	jr	z, BB11_18
-BB11_12:
+	ld	(ix - 9), iy
+	jr	z, BB11_3
+	ld	hl, (_leftLast)
+	add	hl, bc
 	or	a, a
-	sbc	hl, hl
-	ld	(ix - 9), hl
-	ld	de, _selY
+	sbc	hl, bc
+	jp	z, BB11_12
+BB11_3:
+	ld	bc, _selY
 	ld	hl, (ix - 18)
 	ld	a, l
 	or	a, a
-	jr	z, BB11_14
+	jr	z, BB11_5
 	ld	hl, (_upLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB11_19
-BB11_14:
+	jp	z, BB11_11
+BB11_5:
 	ld	hl, (ix - 24)
 	ld	a, l
 	or	a, a
-	jr	z, BB11_16
+	jr	z, BB11_7
 	ld	hl, (_rightLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	ld	hl, 1
-	push	hl
-	pop	bc
-	jr	z, BB11_21
-BB11_16:
+	ld	de, 1
+	jp	z, BB11_13
+BB11_7:
 	ld	hl, (ix - 27)
 	bit	0, l
-	jr	z, BB11_22
+	jp	z, BB11_14
 	ld	hl, (_downLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	ld	(ix - 21), de
-	ld	hl, 1
+	ld	(ix - 21), bc
+	ld	de, 1
+	jp	z, BB11_13
+	jp	BB11_14
+BB11_9:
+	call	_clock
+	ld	bc, (_restartTime)
+	ld	a, (_restartTime+3)
+	call	__lsub
+	ld	bc, 98304
+	xor	a, a
+	call	__lcmpu
+	jp	c, BB11_32
+	ld	hl, 0
+	ld	de, 0
+	ld	(_restart), de
 	push	hl
-	pop	bc
-	jr	z, BB11_21
-	jr	BB11_22
-BB11_18:
+	call	_time
+	pop	de
+	push	hl
+	call	_srand
+	pop	hl
+	ld	iy, (_board)
+	ld	(iy), 0
+	lea	hl, iy
+	inc	hl
+	ex	de, hl
+	lea	hl, iy
+	ld	bc, 299
+	ldir
+	ld	hl, (_mask)
+	ld	(hl), 0
+	push	hl
+	pop	iy
+	inc	iy
+	lea	de, iy
+	ld	bc, 299
+	ldir
+	call	_generateBoard
+	ld	hl, _generateBoard.newBoard
+	ld	(_board), hl
 	or	a, a
 	sbc	hl, hl
-	ld	(ix - 9), hl
-	jr	BB11_20
-BB11_19:
-	ld	(ix - 21), de
-BB11_20:
-	ld	bc, -1
-BB11_21:
+	ld	(_minesDiscovered), hl
+	ld	(_selY), hl
+	ld	(_selX), hl
+	ld	(_lastSelY), hl
+	ld	(_lastSelX), hl
+	ld	(_flagLast), hl
+	ld	(_uncoverLast), hl
+	ld	(_downLast), hl
+	ld	(_rightLast), hl
+	ld	(_upLast), hl
+	ld	(_leftLast), hl
+	inc	hl
+	ld	(_needToRedrawBoard), hl
+	jp	BB11_32
+BB11_11:
+	ld	(ix - 21), bc
+BB11_12:
+	ld	de, -1
+BB11_13:
 	ld	hl, (ix - 21)
 	ld	hl, (hl)
-	add	hl, bc
+	add	hl, de
 	ld	de, 10
 	push	de
 	push	hl
@@ -1388,16 +1360,16 @@ BB11_21:
 	pop	de
 	ld	iy, (ix - 21)
 	ld	(iy), hl
-BB11_22:
+BB11_14:
 	ld	hl, (ix - 12)
 	ld	a, l
 	or	a, a
-	jr	z, BB11_26
+	jp	z, BB11_19
 	ld	hl, (_uncoverLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_26
+	jp	nz, BB11_19
 	ld	hl, (_mask)
 	ld	(ix - 21), hl
 	ld	hl, (_selY)
@@ -1418,21 +1390,43 @@ BB11_22:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_26
+	jr	nz, BB11_19
 	push	iy
 	call	_reveal
 	pop	hl
-	jp	BB11_34
-BB11_26:
+	ld	iy, (_board)
+	ld	de, (_selX)
+	ld	hl, (_selY)
+	ld	bc, 10
+	call	__imulu
+	add	hl, de
+	ld	bc, 3
+	call	__imulu
+	push	hl
+	pop	de
+	add	iy, de
+	ld	hl, (iy)
+	ld	de, -1
+	or	a, a
+	sbc	hl, de
+	jp	nz, BB11_27
+	ld	hl, 1
+	ld	(_restart), hl
+	call	_clock
+	ld	a, e
+	ld	(_restartTime), hl
+	ld	(_restartTime+3), a
+	jp	BB11_27
+BB11_19:
 	ld	hl, (ix - 15)
 	ld	a, l
 	or	a, a
-	jp	z, BB11_34
+	jp	z, BB11_27
 	ld	hl, (_flagLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	nz, BB11_34
+	jp	nz, BB11_27
 	ld	iy, (_mask)
 	ld	hl, (_selY)
 	ld	bc, 10
@@ -1450,13 +1444,13 @@ BB11_26:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_31
+	jr	nz, BB11_24
 	ld	hl, (_minesDiscovered)
 	ld	bc, 10
 	or	a, a
 	sbc	hl, bc
 	call	pe, __setflag
-	jp	p, BB11_31
+	jp	p, BB11_24
 	ld	hl, 1
 	ld	(iy), hl
 	ld	iy, (_updateTargets)
@@ -1474,13 +1468,13 @@ BB11_26:
 	ld	(iy), de
 	ld	hl, (_minesDiscovered)
 	inc	hl
-	jr	BB11_33
-BB11_31:
+	jr	BB11_26
+BB11_24:
 	ld	bc, 1
 	ex	de, hl
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_34
+	jr	nz, BB11_27
 	or	a, a
 	sbc	hl, hl
 	ld	(iy), hl
@@ -1500,31 +1494,31 @@ BB11_31:
 	ld	(iy), de
 	ld	hl, (_minesDiscovered)
 	dec	hl
-BB11_33:
+BB11_26:
 	ld	(_minesDiscovered), hl
 	ld	(_needToRedrawMineCount), de
-BB11_34:
+BB11_27:
 	ld	iy, 0
 	ld	hl, (ix - 30)
 	ex	de, hl
 	ld	iyl, e
 	ld	iyh, d
 	ex	de, hl
-	ld	hl, (ix - 9)
-	ld	de, (ix - 18)
-	ld	l, e
-	ld	h, d
-	ld	(ix - 9), hl
 	ld	hl, (ix - 3)
-	ld	de, (ix - 24)
+	ld	de, (ix - 18)
 	ld	l, e
 	ld	h, d
 	ld	(ix - 3), hl
 	ld	hl, (ix - 6)
-	ld	de, (ix - 27)
+	ld	de, (ix - 24)
 	ld	l, e
 	ld	h, d
 	ld	(ix - 6), hl
+	ld	hl, (ix - 9)
+	ld	de, (ix - 27)
+	ld	l, e
+	ld	h, d
+	ld	(ix - 9), hl
 	or	a, a
 	sbc	hl, hl
 	push	hl
@@ -1543,7 +1537,7 @@ BB11_34:
 	pop	hl
 	ld	(ix - 21), bc
 	sbc	hl, bc
-	jr	nz, BB11_36
+	jr	nz, BB11_29
 	ld	bc, (_selY)
 	ld	(ix - 24), bc
 	ld	hl, (_lastSelY)
@@ -1554,12 +1548,12 @@ BB11_34:
 	or	a, a
 	sbc	hl, bc
 	ld	bc, (ix - 24)
-	jr	nz, BB11_37
-	jr	BB11_38
-BB11_36:
+	jr	nz, BB11_30
+	jr	BB11_31
+BB11_29:
 	ld	hl, (_lastSelY)
 	ld	(ix - 12), hl
-BB11_37:
+BB11_30:
 	ld	(ix - 24), iy
 	ld	iy, (_updateTargets)
 	ld	hl, (ix - 12)
@@ -1593,13 +1587,13 @@ BB11_37:
 	ld	iy, (ix - 24)
 	ld	de, (_selX)
 	ld	bc, (_selY)
-BB11_38:
+BB11_31:
 	ld	(_leftLast), iy
-	ld	hl, (ix - 9)
-	ld	(_upLast), hl
 	ld	hl, (ix - 3)
-	ld	(_rightLast), hl
+	ld	(_upLast), hl
 	ld	hl, (ix - 6)
+	ld	(_rightLast), hl
+	ld	hl, (ix - 9)
 	ld	(_downLast), hl
 	ld	hl, (ix - 18)
 	ld	(_uncoverLast), hl
@@ -1607,7 +1601,7 @@ BB11_38:
 	ld	(_flagLast), hl
 	ld	(_lastSelX), de
 	ld	(_lastSelY), bc
-BB11_39:
+BB11_32:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -1781,7 +1775,7 @@ BB13_1:
 	pop	iy
 	inc	iy
 	lea	de, iy
-	ld	bc, 99
+	ld	bc, 299
 	ldir
 	ld	hl, -720878
 	push	de

@@ -102,17 +102,18 @@ int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, uncoverLast = 0, flag
 int lastSelX = 0, lastSelY = 0;
 void update() {
     if(restart) {
-        if((clock() - restartTime) / CLOCKS_PER_SEC < 5) return;
+        if((clock() - restartTime) / CLOCKS_PER_SEC < 3) return;
         
         restart = 0;
         srand(time(NULL));
-        for(int i = 0; i < 100; i++)
-            mask[i] = board[i] = 0;
+        memset(board, BOARD_CLEAR, 100 * sizeof(int));
+        memset(mask, MASK_COVERED, 100 * sizeof(int));
         board = generateBoard();
         
         leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
         
         needToRedrawBoard = 1;
+        return;
     }
     
     int left = kb_IsDown(kb_KeyLeft);
@@ -127,7 +128,13 @@ void update() {
     else if(right && !rightLast) selX = mod(selX + 1, 10);
     else if(down && !downLast) selY = mod(selY + 1, 10);
     
-    if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) reveal(10 * selY + selX);
+    if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) {
+        reveal(10 * selY + selX);
+        if(board[selX + 10 * selY] == BOARD_MINE) {
+            restart = 1;
+            restartTime = clock();
+        }
+    }
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesDiscovered < 10) {
         mask[10 * selY + selX] = MASK_FLAGGED;
         updateTargets[10 * selY + selX] = 1;
@@ -190,7 +197,7 @@ int main() {
         
         needToRedrawBoard = 0;
         needToRedrawMineCount = 0;
-        memset(updateTargets, 0, 100); //clear update targets (reset to all 0)
+        memset(updateTargets, 0, 100 * sizeof(int)); //clear update targets (reset to all 0)
     }
     while(!kb_IsDown(kb_KeyDel));
     
