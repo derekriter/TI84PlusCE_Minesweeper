@@ -33,7 +33,7 @@ int* generateBoard() {
     for(int i = 0; i < 10; i++) {
         do {
             int loc = randInt(0, 99);
-            if(newBoard[loc] != BOARD_MINE) {
+            if(newBoard[loc] != BOARD_MINE && loc != selX + 10 * selY) {
                 newBoard[loc] = BOARD_MINE;
                 
                 //increase count of surrounding non-mine tiles (instead of having to have a second pass to calculate count)
@@ -144,9 +144,9 @@ void update() {
         
         restart = 0;
         srand(time(NULL));
-        free(board);
         memset(mask, MASK_COVERED, 100 * sizeof(int));
-        board = generateBoard();
+        free(board);
+        board = NULL;
         
         leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
         
@@ -167,6 +167,8 @@ void update() {
     else if(down && !downLast) selY = mod(selY + 1, 10);
     
     if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) {
+        if(board == NULL) board = generateBoard();
+        
         reveal(10 * selY + selX);
         if(board[selX + 10 * selY] == BOARD_MINE) {
             restart = 1;
@@ -222,7 +224,6 @@ int main() {
     
     setupGraphics();
     
-    board = generateBoard();
     mask = (int*) calloc(100, sizeof(int));
     needToRedrawBoard = 1;
     updateTargets = (int*) calloc(100, sizeof(int));
