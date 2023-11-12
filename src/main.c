@@ -25,6 +25,7 @@ clock_t restartTime;
 int restart = 0;
 int* updateTargets = NULL;
 int needToRedrawBoard = 0;
+int needToRedrawMineCount = 0;
 
 int* generateBoard() {
     static int newBoard[100];
@@ -131,13 +132,13 @@ void update() {
         mask[10 * selY + selX] = MASK_FLAGGED;
         updateTargets[10 * selY + selX] = 1;
         minesDiscovered++;
-        drawMineCount(minesDiscovered);
+        needToRedrawMineCount = 1;
     }
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_FLAGGED) {
         mask[10 * selY + selX] = MASK_COVERED;
         updateTargets[10 * selY + selX] = 1;
         minesDiscovered--;
-        drawMineCount(minesDiscovered);
+        needToRedrawMineCount = 1;
     }
     
     if(selX != lastSelX || selY != lastSelY) {
@@ -164,6 +165,8 @@ void render() {
             if(!updateTargets[i]) continue;
             drawTile(i % 10, i / 10, board, mask, selX, selY);
         }
+        
+        if(needToRedrawMineCount) drawMineCount(minesDiscovered);
     }
     
     gfx_BlitBuffer();
@@ -186,6 +189,7 @@ int main() {
         render();
         
         needToRedrawBoard = 0;
+        needToRedrawMineCount = 0;
         memset(updateTargets, 0, 100); //clear update targets (reset to all 0)
     }
     while(!kb_IsDown(kb_KeyDel));

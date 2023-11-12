@@ -1213,7 +1213,7 @@ BB11_3:
 	ld	bc, 163840
 	xor	a, a
 	call	__lcmpu
-	jp	c, BB11_40
+	jp	c, BB11_39
 	ld	hl, 0
 	ld	de, 0
 	ld	(_restart), de
@@ -1423,17 +1423,18 @@ BB11_22:
 	jr	nz, BB11_26
 	push	iy
 	call	_reveal
+	pop	hl
 	jp	BB11_34
 BB11_26:
 	ld	hl, (ix - 15)
 	ld	a, l
 	or	a, a
-	jp	z, BB11_35
+	jp	z, BB11_34
 	ld	hl, (_flagLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	nz, BB11_35
+	jp	nz, BB11_34
 	ld	iy, (_mask)
 	ld	hl, (_selY)
 	ld	bc, 10
@@ -1471,8 +1472,8 @@ BB11_26:
 	push	hl
 	pop	de
 	add	iy, de
-	ld	hl, 1
-	ld	(iy), hl
+	ld	de, 1
+	ld	(iy), de
 	ld	hl, (_minesDiscovered)
 	inc	hl
 	jr	BB11_33
@@ -1481,7 +1482,7 @@ BB11_31:
 	ex	de, hl
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_35
+	jr	nz, BB11_34
 	or	a, a
 	sbc	hl, hl
 	ld	(iy), hl
@@ -1497,16 +1498,14 @@ BB11_31:
 	pop	de
 	add	iy, de
 	ld	hl, 1
-	ld	(iy), hl
+	ex	de, hl
+	ld	(iy), de
 	ld	hl, (_minesDiscovered)
 	dec	hl
 BB11_33:
 	ld	(_minesDiscovered), hl
-	push	hl
-	call	_drawMineCount
+	ld	(_needToRedrawMineCount), de
 BB11_34:
-	pop	hl
-BB11_35:
 	ld	iy, 0
 	ld	hl, (ix - 30)
 	ex	de, hl
@@ -1546,7 +1545,7 @@ BB11_35:
 	pop	hl
 	ld	(ix - 21), bc
 	sbc	hl, bc
-	jr	nz, BB11_37
+	jr	nz, BB11_36
 	ld	bc, (_selY)
 	ld	(ix - 24), bc
 	ld	hl, (_lastSelY)
@@ -1557,12 +1556,12 @@ BB11_35:
 	or	a, a
 	sbc	hl, bc
 	ld	bc, (ix - 24)
-	jr	nz, BB11_38
-	jr	BB11_39
-BB11_37:
+	jr	nz, BB11_37
+	jr	BB11_38
+BB11_36:
 	ld	hl, (_lastSelY)
 	ld	(ix - 12), hl
-BB11_38:
+BB11_37:
 	ld	(ix - 24), iy
 	ld	iy, (_updateTargets)
 	ld	hl, (ix - 12)
@@ -1596,7 +1595,7 @@ BB11_38:
 	ld	iy, (ix - 24)
 	ld	de, (_selX)
 	ld	bc, (_selY)
-BB11_39:
+BB11_38:
 	ld	(_leftLast), iy
 	ld	hl, (ix - 9)
 	ld	(_upLast), hl
@@ -1610,7 +1609,7 @@ BB11_39:
 	ld	(_flagLast), hl
 	ld	(_lastSelX), de
 	ld	(_lastSelY), bc
-BB11_40:
+BB11_39:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -1717,8 +1716,19 @@ BB12_6:
 	pop	hl
 	pop	hl
 	pop	hl
-	pop	hl
+	jr	BB12_9
 BB12_7:
+	ld	hl, (_needToRedrawMineCount)
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	jr	z, BB12_10
+	ld	hl, (_minesDiscovered)
+	push	hl
+	call	_drawMineCount
+BB12_9:
+	pop	hl
+BB12_10:
 	ld	hl, 1
 	push	hl
 	call	_gfx_Blit
@@ -1766,6 +1776,7 @@ BB13_1:
 	or	a, a
 	sbc	hl, hl
 	ld	(_needToRedrawBoard), hl
+	ld	(_needToRedrawMineCount), hl
 	ld	hl, (_updateTargets)
 	ld	(hl), 0
 	push	hl
@@ -1969,6 +1980,11 @@ _updateTargets:
 	section	.bss,"aw",@nobits
 	public	_needToRedrawBoard
 _needToRedrawBoard:
+	rb	3
+
+	section	.bss,"aw",@nobits
+	public	_needToRedrawMineCount
+_needToRedrawMineCount:
 	rb	3
 
 	section	.bss,"aw",@nobits

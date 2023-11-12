@@ -7,22 +7,22 @@ Section          Base   Top    High   Length
 .init.reruncheck D1AA66 D1AA66             0h
 .init            D1AA66 D1AA92            2Ch
 .fini            D1AA92 D1AACA            38h
-.text            D1AACA D1DB12          3048h
-.data            D1DB12 D1E880           D6Eh
-.rodata          D1E880 D1EA03           183h
+.text            D1AACA D1DB2C          3062h
+.data            D1DB2C D1E89A           D6Eh
+.rodata          D1E89A D1EA1D           183h
 .init_array      000000 000000             0h
 .ctors           000000 000000             0h
 .dtors           000000 000000             0h
 .fini_array      000000 000000             0h
-.bss             D052C6 D0542C D13FD8    166h
+.bss             D052C6 D0542F D13FD8    169h
 .header          D1A87F D1A882             3h
 
 Label                            Value
 ------------------------------   ------
 ___low_bss                     = D052C6
-___len_bss                     = 000166
+___len_bss                     = 000169
 ___heaptop                     = D13FD8
-___heapbot                     = D0542C
+___heapbot                     = D0542F
 ___libs                        = D1A9F2
 ___init_array_count            = 000000
 ___ctors_count                 = 000000
@@ -85,7 +85,7 @@ _os_DisableHomeTextBuffer      = D1AFAF
 _os_EnableHomeTextBuffer       = D1AFC1
 _random                        = D1AFD3
 __setstate                     = D1B031
-__state                        = D1DB12
+__state                        = D1DB2C
 _boot_GetDate                  = 0005A8
 _boot_GetTime                  = 0005B0
 _free                          = D1B041
@@ -93,14 +93,14 @@ ___isleap                      = D1B0FE
 _malloc                        = D1B138
 __alloc_base                   = D052C6
 _mktime                        = D1B1D7
-_mktime.dpmt                   = D1E880
+_mktime.dpmt                   = D1E89A
 _npf_vpprintf                  = D1B348
-JTI0_0                         = D1E8A4
-JTI0_1                         = D1E8C2
-JTI0_2                         = D1E907
-JTI0_3                         = D1E928
-JTI0_4                         = D1E940
-JTI0_5                         = D1E958
+JTI0_0                         = D1E8BE
+JTI0_1                         = D1E8DC
+JTI0_2                         = D1E921
+JTI0_3                         = D1E942
+JTI0_4                         = D1E95A
+JTI0_5                         = D1E972
 _npf_utoa_rev                  = D1CAB2
 __printf_c                     = D1CB7A
 __vsnprintf_c                  = D1CB99
@@ -111,9 +111,9 @@ __vsprintf_c                   = D1CC50
 __vprintf_c                    = D1CC6E
 _npf_putc_std                  = D1CC8E
 __sprintf_c                    = D1CC9E
-_.str                          = D1E970
-_.str.1                        = D1E974
-_.str.2                        = D1E978
+_.str                          = D1E98A
+_.str.1                        = D1E98E
+_.str.2                        = D1E992
 _time                          = D1CCC7
 _calloc                        = D1CD44
 _ceilf                         = 022114
@@ -128,12 +128,12 @@ _vprintf                       = D1CC6E
 _vsnprintf                     = D1CB99
 _rand                          = D1CD9A
 _sbrk                          = D1CDA7
-__sbrkbase                     = D1DB22
+__sbrkbase                     = D1DB3C
 _srand                         = D1CDC5
-.missingappvar                 = D1E97C
-.libloadname                   = D1E981
+.missingappvar                 = D1E996
+.libloadname                   = D1E99B
 .libloadnamelen                = 000007
-.webaddress                    = D1E989
+.webaddress                    = D1E9A3
 ___init_clock                  = D1AA4B
 __start                        = D1AA66
 ___exithl                      = D1AA92
@@ -150,31 +150,31 @@ _drawBoard                     = D1D03F
 _mod                           = D1D12F
 _generateBoard                 = D1D1A0
 _reveal                        = D1D428
-JTI10_0                        = D1E99E
+JTI10_0                        = D1E9B8
 _update                        = D1D567
-_render                        = D1D98A
-_main                          = D1DA6F
-_sprites_tile_5_data           = D1DB25
-_sprites_tile_6_data           = D1DC27
-_sprites_tile_7_data           = D1DD29
-_sprites_tile_8_data           = D1DE2B
-_sprites_tile_9_data           = D1DF2D
-_sprites_tile_10_data          = D1E02F
-_sprites_tile_11_data          = D1E131
-_sprites_tile_12_data          = D1E233
-_global_palette                = D1E335
-_.str.1                        = D1E9B9
-_.str.2                        = D1E9BF
-_sprites_tile_0_data           = D1E34F
-_sprites_tile_2_data           = D1E451
-_sprites_tile_1_data           = D1E553
-_sprites_tile_3_data           = D1E655
-_sprites_tiles_data            = D1E757
-_sprites_tile_4_data           = D1E77E
-_.str.3                        = D1E9C5
-_.str.4                        = D1E9D7
-_.str.5                        = D1E9E7
-_.str.6                        = D1E9F6
+_render                        = D1D98B
+_main                          = D1DA85
+_sprites_tile_5_data           = D1DB3F
+_sprites_tile_6_data           = D1DC41
+_sprites_tile_7_data           = D1DD43
+_sprites_tile_8_data           = D1DE45
+_sprites_tile_9_data           = D1DF47
+_sprites_tile_10_data          = D1E049
+_sprites_tile_11_data          = D1E14B
+_sprites_tile_12_data          = D1E24D
+_global_palette                = D1E34F
+_.str.1                        = D1E9D3
+_.str.2                        = D1E9D9
+_sprites_tile_0_data           = D1E369
+_sprites_tile_2_data           = D1E46B
+_sprites_tile_1_data           = D1E56D
+_sprites_tile_3_data           = D1E66F
+_sprites_tiles_data            = D1E771
+_sprites_tile_4_data           = D1E798
+_.str.3                        = D1E9DF
+_.str.4                        = D1E9F1
+_.str.5                        = D1EA01
+_.str.6                        = D1EA10
 _selX                          = D052CC
 _selY                          = D052CF
 _minesDiscovered               = D052D2
@@ -183,16 +183,17 @@ _mask                          = D052D8
 _restart                       = D052DB
 _updateTargets                 = D052DE
 _needToRedrawBoard             = D052E1
-_generateBoard.newBoard        = D052E4
-_leftLast                      = D05410
-_upLast                        = D05413
-_rightLast                     = D05416
-_downLast                      = D05419
-_uncoverLast                   = D0541C
-_flagLast                      = D0541F
-_lastSelX                      = D05422
-_lastSelY                      = D05425
-_restartTime                   = D05428
+_needToRedrawMineCount         = D052E4
+_generateBoard.newBoard        = D052E7
+_leftLast                      = D05413
+_upLast                        = D05416
+_rightLast                     = D05419
+_downLast                      = D0541C
+_uncoverLast                   = D0541F
+_flagLast                      = D05422
+_lastSelX                      = D05425
+_lastSelY                      = D05428
+_restartTime                   = D0542B
 lib.LibLoad                    = D1A9F2
 _#gfx_Begin                    = D1AA05
 _#gfx_End                      = D1AA09
