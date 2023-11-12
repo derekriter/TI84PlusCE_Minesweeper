@@ -21,7 +21,11 @@ int selX = 0, selY = 0;
 int minesDiscovered = 0;
 int* board = NULL;
 int* mask = NULL;
-struct Queue updateQueue = {0, NULL};
+clock_t restartTime;
+int restart = 0;
+int* updateTargets = NULL;
+int needToRedrawBoard = 0;
+int needToRedrawMineCount = 0;
 
 int* generateBoard() {
     static int newBoard[100];
@@ -48,7 +52,7 @@ void reveal(int index) {
     if(mask[index] != MASK_COVERED) return;
     
     mask[index] = MASK_UNCOVERED;
-    pushQueue(&updateQueue, index);
+    updateTargets[index] = 1;
     if(board[index] > BOARD_CLEAR) return;
     
     for(int i = 0; i < 8; i++) {
@@ -96,8 +100,6 @@ void reveal(int index) {
 
 int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, uncoverLast = 0, flagLast = 0;
 int lastSelX = 0, lastSelY = 0;
-clock_t restartTime;
-int restart = 0;
 void update() {
     if(restart) {
         if((clock() - restartTime) / CLOCKS_PER_SEC < 5) return;
@@ -109,11 +111,8 @@ void update() {
         board = generateBoard();
         
         leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
-        updateQueue.length = 0;
-        updateQueue.values = NULL;
         
-        gfx_FillScreen(1);
-        drawBoard(board, mask, selX, selY, minesDiscovered);
+        needToRedrawBoard = 1;
     }
     
     int left = kb_IsDown(kb_KeyLeft);
@@ -131,29 +130,20 @@ void update() {
     if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) reveal(10 * selY + selX);
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesDiscovered < 10) {
         mask[10 * selY + selX] = MASK_FLAGGED;
-        pushQueue(&updateQueue, 10 * selY + selX);
+        updateTargets[10 * selY + selX] = 1;
         minesDiscovered++;
-        drawMineCount(minesDiscovered);
+        needToRedrawMineCount = 1;
     }
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_FLAGGED) {
         mask[10 * selY + selX] = MASK_COVERED;
-        pushQueue(&updateQueue, 10 * selY + selX);
+        updateTargets[10 * selY + selX] = 1;
         minesDiscovered--;
-        drawMineCount(minesDiscovered);
+        needToRedrawMineCount = 1;
     }
     
     if(selX != lastSelX || selY != lastSelY) {
-        pushQueue(&updateQueue, 10 * lastSelY + lastSelX);
-        pushQueue(&updateQueue, 10 * selY + selX);
-    }
-    
-    if(updateQueue.length > 0) {
-        for(int i = 0; i < updateQueue.length; i++) {
-            int index = updateQueue.values[i];
-            drawTile(index % 10, index / 10, board, mask, selX, selY);
-        }
-        updateQueue.length = 0;
-        free(updateQueue.values);
+        updateTargets[10 * lastSelY + lastSelX] = 1;
+        updateTargets[10 * selY + selX] = 1;
     }
     
     leftLast = left;
@@ -166,6 +156,21 @@ void update() {
     lastSelX = selX;
     lastSelY = selY;
 }
+void render() {
+    if(needToRedrawBoard) {
+        drawBoard(board, mask, selX, selY, minesDiscovered);
+    }
+    else {
+        for(int i = 0; i < 100; i++) {
+            if(!updateTargets[i]) continue;
+            drawTile(i % 10, i / 10, board, mask, selX, selY);
+        }
+        
+        if(needToRedrawMineCount) drawMineCount(minesDiscovered);
+    }
+    
+    gfx_BlitBuffer();
+}
 
 int main() {
     srand(time(NULL)); //set seed for rand
@@ -173,17 +178,24 @@ int main() {
     setupGraphics();
     
     board = generateBoard();
-    mask = calloc(100, sizeof(int));
-    drawBoard(board, mask, selX, selY, minesDiscovered);
+    mask = (int*) calloc(100, sizeof(int));
+    needToRedrawBoard = 1;
+    updateTargets = (int*) calloc(100, sizeof(int));
     
     do {
         kb_Scan();
         
         update();
+        render();
+        
+        needToRedrawBoard = 0;
+        needToRedrawMineCount = 0;
+        memset(updateTargets, 0, 100); //clear update targets (reset to all 0)
     }
     while(!kb_IsDown(kb_KeyDel));
     
     free(mask);
+    free(updateTargets);
     
     gfx_End();
     return 0;
