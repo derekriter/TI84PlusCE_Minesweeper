@@ -28,25 +28,63 @@ int needToRedrawBoard = 0;
 int needToRedrawMineCount = 0;
 
 int* generateBoard() {
-    static int newBoard[100];
+    int* newBoard = (int*) calloc(100, sizeof(int));
     
     for(int i = 0; i < 10; i++) {
         do {
-            int p = randInt(0, 99);
-            if(!newBoard[p]) {
-                newBoard[p] = BOARD_MINE;
+            int loc = randInt(0, 99);
+            if(newBoard[loc] != BOARD_MINE && loc != selX + 10 * selY) {
+                newBoard[loc] = BOARD_MINE;
+                
+                //increase count of surrounding non-mine tiles (instead of having to have a second pass to calculate count)
+                for(int i = 0; i < 8; i++) {
+                    int neighborX = loc % 10, neighborY = loc / 10;
+                    
+                    switch(i) {
+                        case 0:
+                            neighborY -= 1;
+                            break;
+                        case 1:
+                            neighborX += 1;
+                            neighborY -= 1;
+                            break;
+                        case 2:
+                            neighborX += 1;
+                            break;
+                        case 3:
+                            neighborX += 1;
+                            neighborY += 1;
+                            break;
+                        case 4:
+                            neighborY += 1;
+                            break;
+                        case 5:
+                            neighborX -= 1;
+                            neighborY += 1;
+                            break;
+                        case 6:
+                            neighborX -= 1;
+                            break;
+                        case 7:
+                            neighborX -= 1;
+                            neighborY -= 1;
+                            break;
+                        default:
+                            exit(1);
+                            break;
+                    }
+                    
+                    if(neighborX < 0 || neighborX > 9 || neighborY < 0 || neighborY > 9 || newBoard[neighborX + 10 * neighborY] == BOARD_MINE) continue;
+                    newBoard[neighborX + 10 * neighborY]++;
+                }
+                
                 break;
             }
         }
         while(true);
     }
-    for(int i = 0; i < 100; i++) {
-        if(newBoard[i] == BOARD_MINE) continue;
-        
-        newBoard[i] = (i > 9 && newBoard[i - 10] == BOARD_MINE) + (i > 9 && i % 10 < 9 && newBoard[i - 9] == BOARD_MINE) + (i % 10 < 9 && newBoard[i + 1] == BOARD_MINE) + (i < 90 && i % 10 < 9 && newBoard[i + 11] == BOARD_MINE) + (i < 90 && newBoard[i + 10] == BOARD_MINE) + (i < 90 && i % 10 > 0 && newBoard[i + 9] == BOARD_MINE) + (i % 10 > 0 && newBoard[i - 1] == BOARD_MINE) + (i > 9 && i % 10 > 0 && newBoard[i - 11] == BOARD_MINE);
-    }
     
-    return (int*) newBoard;
+    return newBoard;
 }
 void reveal(int index) {
     if(mask[index] != MASK_COVERED) return;
@@ -106,9 +144,9 @@ void update() {
         
         restart = 0;
         srand(time(NULL));
-        memset(board, BOARD_CLEAR, 100 * sizeof(int));
         memset(mask, MASK_COVERED, 100 * sizeof(int));
-        board = generateBoard();
+        free(board);
+        board = NULL;
         
         leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
         
@@ -129,6 +167,8 @@ void update() {
     else if(down && !downLast) selY = mod(selY + 1, 10);
     
     if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) {
+        if(board == NULL) board = generateBoard();
+        
         reveal(10 * selY + selX);
         if(board[selX + 10 * selY] == BOARD_MINE) {
             restart = 1;
@@ -184,7 +224,6 @@ int main() {
     
     setupGraphics();
     
-    board = generateBoard();
     mask = (int*) calloc(100, sizeof(int));
     needToRedrawBoard = 1;
     updateTargets = (int*) calloc(100, sizeof(int));
@@ -201,6 +240,7 @@ int main() {
     }
     while(!kb_IsDown(kb_KeyDel));
     
+    free(board);
     free(mask);
     free(updateTargets);
     

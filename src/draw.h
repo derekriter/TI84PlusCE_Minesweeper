@@ -30,8 +30,6 @@ void drawMineCount(int discoveredMines) {
     free(minesString);
 }
 void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
-    if(!board || !mask) exit(1);
-    
     int tileX = 80 + x * 16;
     int tileY = 40 + y * 16;
     
@@ -62,8 +60,6 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
     }
 }
 void drawBoard(int* board, int* mask, int selX, int selY, int discoveredMines) {
-    if(!board || !mask) exit(1);
-    
     for(int y = 0; y < 10; y++) {
         for(int x = 0; x < 10; x++) {
             drawTile(x, y, board, mask, selX, selY);
