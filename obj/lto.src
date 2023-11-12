@@ -707,324 +707,208 @@ _mod:
 	section	.text,"ax",@progbits
 	public	_generateBoard
 _generateBoard:
-	ld	hl, -14
+	ld	hl, -30
 	call	__frameset
+	ld	hl, 100
+	ld	de, 3
+	ld	c, 10
+	ld	(ix - 6), bc
+	push	de
+	push	hl
+	call	_calloc
+	ld	(ix - 3), hl
+	pop	hl
+	pop	hl
+	ld	de, 10
 	or	a, a
 	sbc	hl, hl
 BB9_1:
-	ld	de, 10
-	ld	(ix - 3), hl
+	ld	(ix - 9), hl
 	or	a, a
 	sbc	hl, de
-	jr	z, BB9_4
+	jp	z, BB9_23
 BB9_2:
 	call	_rand
 	ld	bc, 100
 	call	__irems
+	push	hl
+	pop	de
 	ld	bc, 3
 	call	__imulu
 	push	hl
-	pop	de
-	ld	iy, _generateBoard.newBoard
-	add	iy, de
+	pop	bc
+	ld	iy, (ix - 3)
+	add	iy, bc
 	ld	hl, (iy)
-	add	hl, bc
+	ld	bc, -1
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB9_2
+	jr	z, BB9_2
 	scf
 	sbc	hl, hl
 	ld	(iy), hl
-	ld	hl, (ix - 3)
-	inc	hl
-	jr	BB9_1
-BB9_4:
-	ld	hl, _generateBoard.newBoard
-	ld	(ix - 3), hl
-	ld	iy, 0
-	ld	e, 10
-	ld	b, iyh
-BB9_5:
-	ld	c, e
-	call	__bdivu
-	ld	d, a
-	ld	a, b
-	ld	l, e
-	ld	h, d
+	ld	b, e
+	ld	iy, (ix - 6)
+	ld	c, iyl
+	call	__bdivs
+	ld	iyh, a
+	ex	de, hl
+	ld	e, iyl
+	ld	d, iyh
+	ex	de, hl
 	mlt	hl
-	ld	(ix - 7), a
+	ld	a, e
 	sub	a, l
-	lea	hl, iy
-	ld	bc, 100
-	or	a, a
-	sbc	hl, bc
-	jp	z, BB9_44
-	ld	(ix - 6), iy
-	ld	(ix - 8), a
-	ld	iy, (ix - 3)
-	ld	hl, (iy)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	jp	z, BB9_43
-	ld	iy, (ix - 6)
-	lea	hl, iy
-	ld	bc, 10
-	or	a, a
-	sbc	hl, bc
-	ld	a, b
 	ld	l, a
-	jp	c, BB9_11
-	ld	iy, (ix - 3)
-	ld	hl, (iy - 30)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	l, b
-	jp	z, BB9_10
-	ld	l, 0
-BB9_10:
-	ld	iy, (ix - 6)
-BB9_11:
-	ld	bc, 1
-	call	__iand
-	ld	(ix - 14), hl
-	lea	hl, iy
-	ld	bc, 10
-	or	a, a
-	sbc	hl, bc
-	ld	l, a
-	ld	iyh, a
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-	jr	c, BB9_16
-	ld	a, iyl
-	cp	a, 9
-	ex	de, hl
-	ld	e, iyh
-	ex	de, hl
-	jr	nc, BB9_16
-	ld	iy, (ix - 3)
-	ld	hl, (iy - 27)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	a, b
-	ld	l, a
-	jr	z, BB9_15
-	ld	a, 0
-	ld	l, a
-BB9_15:
-	xor	a, a
-	ld	iyh, a
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-BB9_16:
-	ld	(ix - 11), de
-	ld	bc, 1
-	call	__iand
-	ld	de, (ix - 14)
-	add	hl, de
-	ex	de, hl
-	ld	a, iyl
-	cp	a, 9
-	ex	de, hl
-	ld	e, iyh
-	ex	de, hl
+	rlc	l
+	sbc	hl, hl
+	push	hl
+	pop	de
+	ld	e, a
 	ld	a, iyh
-	jp	nc, BB9_20
-	ld	iy, (ix - 3)
-	ld	hl, (iy + 3)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	l, b
-	jp	z, BB9_19
-	ld	l, 0
-BB9_19:
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-BB9_20:
-	ld	bc, 1
-	call	__iand
-	push	hl
+	rlc	a
+	sbc	hl, hl
+	ld	(ix - 6), iy
+	ex	de, hl
+	ld	e, iyh
+	ex	de, hl
+	push	de
 	pop	bc
-	ex	de, hl
-	add	hl, bc
-	ex	de, hl
-	ld	hl, (ix - 6)
-	ld	bc, 90
-	or	a, a
-	sbc	hl, bc
-	ld	l, a
-	jp	nc, BB9_25
-	ld	a, iyl
-	cp	a, 9
-	ld	a, 0
-	ld	l, a
-	jp	nc, BB9_25
-	ld	iy, (ix - 3)
-	ld	hl, (iy + 33)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	l, b
-	jp	z, BB9_24
-	ld	l, 0
-BB9_24:
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-BB9_25:
-	ld	bc, 1
-	call	__iand
-	push	hl
-	pop	bc
-	ex	de, hl
-	add	hl, bc
-	ex	de, hl
-	ld	hl, (ix - 6)
-	ld	bc, 90
-	or	a, a
-	sbc	hl, bc
-	ld	l, a
-	jr	nc, BB9_29
-	ld	iy, (ix - 3)
-	ld	hl, (iy + 30)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	a, b
-	ld	l, a
-	jr	z, BB9_28
-	ld	a, 0
-	ld	l, a
-BB9_28:
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-BB9_29:
-	ld	bc, 1
-	call	__iand
-	push	hl
-	pop	bc
-	ex	de, hl
-	add	hl, bc
-	ex	de, hl
-	ld	a, iyl
-	or	a, a
-	ld	a, 0
-	ld	l, a
-	jp	z, BB9_34
-	ld	hl, (ix - 6)
-	ld	bc, 90
-	or	a, a
-	sbc	hl, bc
-	ld	l, a
-	jp	nc, BB9_34
-	ld	iy, (ix - 3)
-	ld	hl, (iy + 27)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	l, b
-	jp	z, BB9_33
-	ld	l, 0
-BB9_33:
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-BB9_34:
-	ld	bc, 1
-	call	__iand
-	push	hl
-	pop	bc
-	ex	de, hl
-	add	hl, bc
-	ex	de, hl
-	ld	l, a
-	ld	a, iyl
-	or	a, a
-	jr	z, BB9_38
-	ld	iy, (ix - 3)
-	ld	hl, (iy - 3)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	a, b
-	ld	l, a
-	jr	z, BB9_37
-	ld	a, 0
-	ld	l, a
-BB9_37:
-	push	af
-	ld	a, (ix - 8)
-	ld	iyl, a
-	pop	af
-BB9_38:
-	ld	bc, 1
-	call	__iand
-	push	hl
-	pop	bc
-	ex	de, hl
-	add	hl, bc
-	ex	de, hl
-	ld	a, iyl
-	or	a, a
-	ld	a, 0
-	ld	l, a
-	jr	z, BB9_42
-	ld	hl, (ix - 6)
-	ld	bc, 10
-	or	a, a
-	sbc	hl, bc
-	ld	l, a
-	jr	c, BB9_42
-	ld	iy, (ix - 3)
-	ld	hl, (iy - 33)
-	ld	bc, -1
-	or	a, a
-	sbc	hl, bc
-	ld	a, b
-	ld	l, a
-	jr	z, BB9_42
-	ld	a, 0
-	ld	l, a
-BB9_42:
-	ld	bc, 1
-	call	__iand
-	push	hl
-	pop	bc
-	ex	de, hl
-	add	hl, bc
-	ld	iy, (ix - 3)
-	ld	(iy), hl
-	ld	de, (ix - 11)
-BB9_43:
-	ld	hl, (ix - 6)
-	inc	hl
-	ld	b, (ix - 7)
-	inc	b
-	lea	iy, iy + 3
-	ld	(ix - 3), iy
+	dec	de
+	ld	(ix - 27), de
 	push	hl
 	pop	iy
-	jp	BB9_5
-BB9_44:
-	ld	hl, _generateBoard.newBoard
+	dec	iy
+	ld	(ix - 30), hl
+	inc	hl
+	ld	(ix - 21), hl
+	ld	(ix - 12), bc
+	inc	bc
+	ld	(ix - 24), bc
+	ld	de, 0
+	push	de
+	pop	bc
+	ld	de, 9
+BB9_4:
+	push	bc
+	pop	hl
+	or	a, a
+	sbc	hl, de
+	jp	nc, BB9_24
+	ld	hl, JTI9_0
+	add	hl, bc
+	add	hl, bc
+	ld	(ix - 18), bc
+	add	hl, bc
+	ld	de, (hl)
+	ld	hl, (ix - 12)
+	ld	(ix - 15), iy
+	lea	bc, iy
+	push	de
+	pop	iy
+	jp	(iy)
+BB9_6:
+	ld	hl, (ix - 24)
+	jr	BB9_15
+BB9_7:
+	ld	hl, (ix - 24)
+	jr	BB9_13
+BB9_8:
+	ld	hl, (ix - 24)
+	jr	BB9_11
+BB9_9:
+	ld	hl, (ix - 12)
+	jr	BB9_11
+BB9_10:
+	ld	hl, (ix - 27)
+BB9_11:
+	ld	bc, (ix - 21)
+	jr	BB9_16
+BB9_12:
+	ld	hl, (ix - 27)
+BB9_13:
+	ld	bc, (ix - 30)
+	jr	BB9_16
+BB9_14:
+	ld	hl, (ix - 27)
+BB9_15:
+	ld	bc, (ix - 15)
+BB9_16:
+	push	hl
+	pop	iy
+	ld	de, 10
+	or	a, a
+	sbc	hl, de
+	jr	nc, BB9_21
+	push	bc
+	pop	hl
+	ld	de, 0
+	or	a, a
+	sbc	hl, de
+	call	pe, __setflag
+	jp	m, BB9_21
+	push	bc
+	pop	hl
+	ld	de, 10
+	or	a, a
+	sbc	hl, de
+	call	pe, __setflag
+	jp	p, BB9_21
+	push	bc
+	pop	hl
+	ld	bc, 10
+	call	__imulu
+	lea	de, iy
+	add	hl, de
+	ld	bc, 3
+	call	__imulu
+	push	hl
+	pop	bc
+	ld	iy, (ix - 3)
+	add	iy, bc
+	ld	bc, (iy)
+	push	bc
+	pop	hl
+	ld	de, -1
+	or	a, a
+	sbc	hl, de
+	jr	z, BB9_21
+	inc	bc
+	ld	(iy), bc
+BB9_21:
+	ld	bc, (ix - 18)
+	inc	bc
+	ld	de, 9
+	ld	iy, (ix - 15)
+	jp	BB9_4
+BB9_22:
+	ld	hl, (ix - 9)
+	inc	hl
+	ld	de, 10
+	jp	BB9_1
+BB9_23:
+	ld	hl, (ix - 3)
 	ld	sp, ix
 	pop	ix
 	ret
+BB9_24:
+	ld	hl, 1
+	push	hl
+	call	_exit
+	pop	hl
 	section	.text,"ax",@progbits
+	section	.rodata,"a",@progbits
+	private	JTI9_0
+JTI9_0:
+	dl	BB9_16
+	dl	BB9_6
+	dl	BB9_7
+	dl	BB9_8
+	dl	BB9_9
+	dl	BB9_10
+	dl	BB9_12
+	dl	BB9_14
+	dl	BB9_22
 
 	section	.text,"ax",@progbits
 	public	_reveal
@@ -1309,24 +1193,19 @@ BB11_9:
 	push	hl
 	call	_srand
 	pop	hl
-	ld	iy, (_board)
-	ld	(iy), 0
-	lea	hl, iy
-	inc	hl
-	ex	de, hl
-	lea	hl, iy
-	ld	bc, 299
-	ldir
+	ld	hl, (_board)
+	push	hl
+	call	_free
+	pop	hl
 	ld	hl, (_mask)
 	ld	(hl), 0
 	push	hl
 	pop	iy
 	inc	iy
-	lea	de, iy
 	ld	bc, 299
+	lea	de, iy
 	ldir
 	call	_generateBoard
-	ld	hl, _generateBoard.newBoard
 	ld	(_board), hl
 	or	a, a
 	sbc	hl, hl
@@ -1741,7 +1620,6 @@ _main:
 	pop	hl
 	call	_setupGraphics
 	call	_generateBoard
-	ld	hl, _generateBoard.newBoard
 	ld	(_board), hl
 	ld	hl, 3
 	push	hl
@@ -1788,6 +1666,10 @@ BB13_1:
 	ld	a, l
 	bit	7, a
 	jr	z, BB13_1
+	ld	hl, (_board)
+	push	hl
+	call	_free
+	pop	hl
 	ld	hl, (_mask)
 	push	hl
 	call	_free
@@ -1980,11 +1862,6 @@ _needToRedrawMineCount:
 	rb	3
 
 	section	.bss,"aw",@nobits
-	private	_generateBoard.newBoard
-_generateBoard.newBoard:
-	rb	300
-
-	section	.bss,"aw",@nobits
 	public	_leftLast
 _leftLast:
 	rb	3
@@ -2047,7 +1924,6 @@ _restartTime:
 	extern	__setflag
 	extern	_gfx_Blit
 	extern	_exit
-	extern	__iand
 	extern	__ltof
 	extern	_gfx_Sprite_NoClip
 	extern	_free
@@ -2055,14 +1931,15 @@ _restartTime:
 	extern	_ceilf
 	extern	_realloc
 	extern	_time
+	extern	__bdivs
 	extern	__bdivu
 	extern	__frameset
 	extern	_gfx_SetTransparentColor
 	extern	_gfx_FillRectangle_NoClip
 	extern	_sprintf
-	extern	__lsub
-	extern	_gfx_GetStringWidth
 	extern	_kb_Scan
+	extern	_gfx_GetStringWidth
+	extern	__lsub
 	extern	__fmul
 	extern	_gfx_SetDraw
 	extern	_gfx_FillScreen
