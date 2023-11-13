@@ -9,6 +9,5 @@ obj/src/main.c.bc: src\main.c \
   D:\Programs\TI84PlusCE\CEdev\include\keypadc.h \
   D:\Programs\TI84PlusCE\CEdev\include\stdint.h \
   D:\Programs\TI84PlusCE\CEdev\include\stdbool.h src\debug.h \
-  D:\Programs\TI84PlusCE\CEdev\include\graphx.h src\queue.h src\draw.h \
-  src\gfx\gfx.h src\gfx\global_palette.h src\gfx\sprites.h \
-  src\mathutils.h
+  D:\Programs\TI84PlusCE\CEdev\include\graphx.h src\draw.h src\gfx\gfx.h \
+  src\gfx\global_palette.h src\gfx\sprites.h src\mathutils.h

@@ -15,7 +15,6 @@
 #include <keypadc.h>
 
 #include "debug.h"
-#include "queue.h"
 #include "draw.h"
 #include "mathutils.h"
 
