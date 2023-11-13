@@ -6,8 +6,6 @@
 #include <graphx.h>
 #include "gfx/gfx.h"
 
-#include "debug.h"
-
 void setupGraphics() {
 	gfx_Begin();
     

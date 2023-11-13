@@ -2,10 +2,11 @@
 # Makefile Options
 # ----------------------------
 
-NAME = MSWPR_B
+NAME = MSWPR
 ICON = icon.png
 DESCRIPTION = "It's minesweeper"
-COMPRESSED = NO
+COMPRESSED = YES
+COMPRESSED_MODE = zx0
 OUTPUT_MAP = NO
 
 CFLAGS = -Wall -Wextra -Oz
