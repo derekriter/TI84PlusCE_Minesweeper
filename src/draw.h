@@ -29,6 +29,11 @@ void drawMineCount(int discoveredMines) {
     gfx_PrintStringXY(minesString, GFX_LCD_WIDTH - gfx_GetStringWidth(minesString) - 1, 1);
     free(minesString);
 }
+void drawVersion() {
+    int width = gfx_GetStringWidth(VERSION);
+    
+    gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
+}
 void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
     int tileX = 80 + x * 16;
     int tileY = 40 + y * 16;
@@ -72,4 +77,5 @@ void drawBoard(int* board, int* mask, int selX, int selY, int discoveredMines) {
     gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
     
     drawMineCount(discoveredMines);
+    drawVersion();
 }
