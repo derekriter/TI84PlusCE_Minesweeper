@@ -9,3 +9,6 @@ int randInt(int min, int max) {
 int mod(int a, int b) {
     return a - b * floor((double) a / b);
 }
+int maxint(int a, int b) {
+    return a > b ? a : b;
+}
