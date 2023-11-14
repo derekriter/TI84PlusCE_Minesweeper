@@ -23,6 +23,7 @@ int minesFlagged = 0;
 int* board = NULL;
 int* mask = NULL;
 clock_t restartTime;
+int lost = 0;
 int restart = 0;
 int* updateTargets = NULL;
 int needToRedrawBoard = 0;
@@ -134,7 +135,7 @@ void update() {
         free(board);
         board = NULL;
         
-        restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
+        lost = restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
         
         needToRedrawBoard = 1;
         return;
@@ -157,6 +158,7 @@ void update() {
         
         reveal(10 * selY + selX);
         if(board[selX + 10 * selY] == BOARD_MINE) {
+            lost = 1;
             restart = 1;
             restartTime = clock();
         }
@@ -197,12 +199,12 @@ void update() {
 }
 void render() {
     if(needToRedrawBoard) {
-        drawBoard(board, mask, selX, selY, minesFlagged);
+        drawBoard(board, mask, selX, selY, minesFlagged, lost);
     }
     else {
         for(int i = 0; i < 100; i++) {
             if(!updateTargets[i]) continue;
-            drawTile(i % 10, i / 10, board, mask, selX, selY);
+            drawTile(i % 10, i / 10, board, mask, selX, selY, lost);
         }
         
         if(needToRedrawMineCount) drawRemainingFlags(minesFlagged);

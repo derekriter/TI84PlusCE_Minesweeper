@@ -31,9 +31,11 @@ extern unsigned char sprites_tile_10_data[258];
 extern unsigned char sprites_tile_11_data[258];
 #define sprites_tile_12 ((gfx_sprite_t*)sprites_tile_12_data)
 extern unsigned char sprites_tile_12_data[258];
-#define sprites_num_tiles 13
+#define sprites_tile_13 ((gfx_sprite_t*)sprites_tile_13_data)
+extern unsigned char sprites_tile_13_data[258];
+#define sprites_num_tiles 14
 #define sprites_tiles ((gfx_sprite_t**)sprites_tiles_data)
-extern unsigned char *sprites_tiles_data[13];
+extern unsigned char *sprites_tiles_data[14];
 
 #ifdef __cplusplus
 }

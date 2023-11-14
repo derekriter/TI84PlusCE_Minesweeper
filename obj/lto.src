@@ -190,7 +190,7 @@ _setupGraphics:
 	or	a, a
 	sbc	hl, hl
 	push	hl
-	ld	hl, 26
+	ld	hl, 34
 	push	hl
 	ld	hl, _global_palette
 	push	hl
@@ -398,7 +398,7 @@ _drawTile:
 	ld	hl, _sprites_tile_0_data
 	push	hl
 	call	_gfx_Sprite_NoClip
-	jp	BB7_12
+	jp	BB7_15
 BB7_2:
 	ld	(ix - 9), iy
 	ld	bc, _sprites_tile_0_data
@@ -424,13 +424,13 @@ BB7_2:
 	ld	hl, (ix - 3)
 	push	hl
 	ld	hl, _sprites_tile_2_data
-	jp	BB7_11
+	jp	BB7_14
 BB7_4:
 	ld	bc, 2
 	ex	de, hl
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB7_7
+	jr	nz, BB7_8
 	ld	hl, _sprites_tile_1_data
 	ld	de, (ix - 6)
 	push	de
@@ -453,21 +453,28 @@ BB7_4:
 	lea	hl, iy
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB7_8
-	ld	hl, _sprites_tile_3_data
-	jr	BB7_10
-BB7_7:
+	jr	nz, BB7_9
+	ld	hl, (ix + 24)
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	ld	de, (ix - 3)
+	ld	bc, (ix - 6)
+	jr	z, BB7_11
+	ld	hl, _sprites_tile_13_data
+	jr	BB7_12
+BB7_8:
 	ld	hl, 1
 	push	hl
 	call	_exit
 	pop	hl
-BB7_8:
+BB7_9:
 	lea	hl, iy
 	ld	de, 1
 	or	a, a
 	sbc	hl, de
 	call	pe, __setflag
-	jp	m, BB7_13
+	jp	m, BB7_16
 	ld	de, 4
 	add	iy, de
 	ld	bc, 3
@@ -478,29 +485,34 @@ BB7_8:
 	ld	hl, _sprites_tiles_data
 	add	hl, de
 	ld	hl, (hl)
-BB7_10:
 	ld	de, (ix - 6)
 	push	de
 	ld	de, (ix - 3)
-	push	de
+	jr	BB7_13
 BB7_11:
+	ld	hl, _sprites_tile_3_data
+BB7_12:
+	push	bc
+BB7_13:
+	push	de
+BB7_14:
 	push	hl
 	call	_gfx_TransparentSprite_NoClip
-BB7_12:
+BB7_15:
 	pop	hl
 	pop	hl
 	pop	hl
-BB7_13:
+BB7_16:
 	ld	de, (ix + 18)
 	ld	hl, (ix + 6)
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB7_16
+	jr	nz, BB7_19
 	ld	de, (ix + 21)
 	ld	hl, (ix + 9)
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB7_16
+	jr	nz, BB7_19
 	ld	hl, _sprites_tile_4_data
 	ld	de, (ix - 6)
 	push	de
@@ -511,7 +523,7 @@ BB7_13:
 	pop	hl
 	pop	hl
 	pop	hl
-BB7_16:
+BB7_19:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -520,7 +532,7 @@ BB7_16:
 	section	.text,"ax",@progbits
 	public	_drawBoard
 _drawBoard:
-	ld	hl, -21
+	ld	hl, -24
 	call	__frameset
 	ld	hl, (ix + 6)
 	ld	(ix - 6), hl
@@ -532,6 +544,8 @@ _drawBoard:
 	ld	(ix - 15), hl
 	ld	hl, (ix + 18)
 	ld	(ix - 3), hl
+	ld	hl, (ix + 21)
+	ld	(ix - 18), hl
 	ld	iy, 0
 	ld	bc, 10
 BB8_1:
@@ -546,6 +560,8 @@ BB8_2:
 	or	a, a
 	sbc	hl, bc
 	jr	z, BB8_4
+	ld	hl, (ix - 18)
+	push	hl
 	ld	hl, (ix - 15)
 	push	hl
 	ld	hl, (ix - 12)
@@ -555,19 +571,16 @@ BB8_2:
 	ld	hl, (ix - 6)
 	push	hl
 	push	iy
-	ld	(ix - 21), de
+	ld	(ix - 24), de
 	push	de
-	ld	(ix - 18), iy
+	ld	(ix - 21), iy
 	call	_drawTile
-	ld	iy, (ix - 18)
+	ld	iy, (ix - 21)
 	ld	bc, 10
-	pop	hl
-	pop	hl
-	pop	hl
-	pop	hl
-	pop	hl
-	pop	hl
-	ld	hl, (ix - 21)
+	ld	hl, 21
+	add	hl, sp
+	ld	sp, hl
+	ld	hl, (ix - 24)
 	inc	hl
 	jr	BB8_2
 BB8_4:
@@ -730,42 +743,102 @@ JTI9_0:
 	section	.text,"ax",@progbits
 	public	_generateBoard
 _generateBoard:
-	ld	hl, -3
+	ld	hl, -12
 	call	__frameset
 	ld	hl, 100
 	ld	de, 3
 	push	de
 	push	hl
 	call	_calloc
-	ld	bc, 0
-	push	hl
-	pop	iy
+	ld	(ix - 6), hl
 	pop	hl
 	pop	hl
-	ld	de, 100
-	ld	(ix - 3), iy
+	ld	de, 10
+	or	a, a
+	sbc	hl, hl
 BB10_1:
-	push	bc
-	pop	hl
+	ld	(ix - 9), hl
 	or	a, a
 	sbc	hl, de
-	jr	z, BB10_3
-	push	bc
-	pop	hl
-	push	bc
+	jp	z, BB10_11
+BB10_2:
+	call	_rand
+	ld	bc, 100
+	call	__irems
+	ld	(ix - 3), hl
+	ld	bc, 3
+	call	__imulu
+	push	hl
 	pop	de
-	ld	bc, 7
-	call	__iand
-	push	de
-	pop	bc
-	ld	de, 100
-	inc	hl
-	ld	(iy), hl
-	inc	bc
-	lea	iy, iy + 3
-	jr	BB10_1
-BB10_3:
+	ld	iy, (ix - 6)
+	add	iy, de
+	ld	hl, (iy)
+	ld	de, -1
+	or	a, a
+	sbc	hl, de
+	jr	z, BB10_2
+	ld	de, (_selX)
+	ld	hl, (_selY)
+	ld	bc, 10
+	call	__imulu
+	add	hl, de
+	ex	de, hl
 	ld	hl, (ix - 3)
+	or	a, a
+	sbc	hl, de
+	jr	z, BB10_2
+	scf
+	sbc	hl, hl
+	ld	(iy), hl
+	ld	iy, 0
+BB10_5:
+	ld	de, 10
+	lea	hl, iy
+	ld	bc, 8
+	or	a, a
+	sbc	hl, bc
+	jr	z, BB10_10
+	ld	(ix - 12), iy
+	push	iy
+	ld	hl, (ix - 3)
+	push	hl
+	call	_getNeighborTile
+	push	hl
+	pop	de
+	pop	hl
+	pop	hl
+	push	de
+	pop	hl
+	ld	bc, -1
+	or	a, a
+	sbc	hl, bc
+	jr	z, BB10_9
+	ex	de, hl
+	ld	bc, 3
+	call	__imulu
+	push	hl
+	pop	de
+	ld	iy, (ix - 6)
+	add	iy, de
+	ld	de, (iy)
+	push	de
+	pop	hl
+	ld	bc, -1
+	or	a, a
+	sbc	hl, bc
+	jr	z, BB10_9
+	inc	de
+	ld	(iy), de
+BB10_9:
+	ld	iy, (ix - 12)
+	inc	iy
+	jr	BB10_5
+BB10_10:
+	ld	hl, (ix - 9)
+	inc	hl
+	jp	BB10_1
+BB10_11:
+	ld	hl, (ix - 6)
 	ld	sp, ix
 	pop	ix
 	ret
@@ -1079,6 +1152,7 @@ BB14_9:
 	ld	(_upLast), hl
 	ld	(_leftLast), hl
 	ld	(_restart), hl
+	ld	(_lost), hl
 	inc	hl
 	ld	(_needToRedrawBoard), hl
 	jp	BB14_36
@@ -1164,6 +1238,7 @@ BB14_19:
 	sbc	hl, de
 	jp	nz, BB14_29
 	ld	hl, 1
+	ld	(_lost), hl
 	ld	(_restart), hl
 	call	_clock
 	ld	a, e
@@ -1387,7 +1462,7 @@ BB14_36:
 	section	.text,"ax",@progbits
 	public	_render
 _render:
-	ld	hl, -12
+	ld	hl, -15
 	call	__frameset
 	ld	de, 0
 	ld	hl, (_needToRedrawBoard)
@@ -1443,10 +1518,14 @@ BB15_2:
 	ld	(ix - 9), bc
 	ld	bc, (_mask)
 	ld	(ix - 12), bc
-	ld	iy, (_selX)
-	ld	bc, (_selY)
+	ld	bc, (_selX)
+	ld	(ix - 15), bc
+	ld	iy, (_selY)
+	ld	bc, (_lost)
 	push	bc
 	push	iy
+	ld	bc, (ix - 15)
+	push	bc
 	ld	bc, (ix - 12)
 	push	bc
 	ld	bc, (ix - 9)
@@ -1456,12 +1535,9 @@ BB15_2:
 	call	_drawTile
 	ld	bc, (ix - 6)
 	ld	a, 10
-	pop	hl
-	pop	hl
-	pop	hl
-	pop	hl
-	pop	hl
-	pop	hl
+	ld	hl, 21
+	add	hl, sp
+	ld	sp, hl
 BB15_5:
 	inc	bc
 	push	bc
@@ -1470,17 +1546,22 @@ BB15_5:
 BB15_6:
 	ld	hl, (_board)
 	ld	(ix - 3), hl
-	ld	iy, (_mask)
-	ld	bc, (_selX)
-	ld	de, (_selY)
-	ld	hl, (_minesFlagged)
+	ld	hl, (_mask)
+	ld	(ix - 6), hl
+	ld	iy, (_selX)
+	ld	bc, (_selY)
+	ld	de, (_minesFlagged)
+	ld	hl, (_lost)
 	push	hl
 	push	de
 	push	bc
 	push	iy
+	ld	hl, (ix - 6)
+	push	hl
 	ld	hl, (ix - 3)
 	push	hl
 	call	_drawBoard
+	pop	hl
 	pop	hl
 	pop	hl
 	pop	hl
@@ -1595,7 +1676,7 @@ _sprites_tile_6_data:
 	section	.data,"aw",@progbits
 	public	_sprites_tile_7_data
 _sprites_tile_7_data:
-	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
+	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
 	db	38 dup 0
 
 	section	.data,"aw",@progbits
@@ -1619,7 +1700,7 @@ _sprites_tile_10_data:
 	section	.data,"aw",@progbits
 	public	_sprites_tile_11_data
 _sprites_tile_11_data:
-	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
+	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
 	db	40 dup 0
 
 	section	.data,"aw",@progbits
@@ -1636,7 +1717,7 @@ _.str:
 	section	.data,"aw",@progbits
 	public	_global_palette
 _global_palette:
-	db	"|ÿÿ", 0, 0, 0, 0, "", 0, "", 0, "àƒ¹!ï½", 0, "L÷Þ", 0, "|"
+	db	"|ÿÿ", 0, 0, 0, 0, "", 0, "", 0, "àƒ¹!ï½", 0, "L÷ÞèpÄù", 0, "|¦þŒÿ"
 
 	section	.rodata,"a",@progbits
 	private	_.str.1
@@ -1651,7 +1732,7 @@ _.str.2:
 	section	.data,"aw",@progbits
 	public	_sprites_tile_2_data
 _sprites_tile_2_data:
-	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, ""
+	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, ""
 	db	52 dup 0
 
 	section	.rodata,"a",@progbits
@@ -1670,9 +1751,15 @@ _sprites_tile_1_data:
 	db	"																																																												"
 
 	section	.data,"aw",@progbits
+	public	_sprites_tile_13_data
+_sprites_tile_13_data:
+	db	"", 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 13, "", 0, 0, 0, 0, 0, "", 0, 0, "", 0, 0, 0, 0, "", 13, "", 0, 0, 0, "", 0, 0, 0, 0, "", 0, "", 13, "", 13, "", 13, "", 0, 0, 0, 0, "", 13, "", 13, "", 13, "", 13, 13, "", 0, 0, 0, 0, 0, 0, "", 13, 13, 13, "", 13, 13, "", 13, "", 0, 0, 0, 0, 0, 0, "", 13, "", 13, "", 0, 0, 0, 0, "", 13, 13, "", 13, 13, 13, "", 0, "", 13, 13, "", 13, 13, "", 0, "", 13, 13, "", 13, 13, 13, "", 0, 0, 0, 0, "", 13, "", 13, "", 0, 0, 0, 0, 0, "", 13, "", 13, 13, "", 13, 13, "", 0, 0, 0, 0, 0, 0, "", 13, 13, "", 13, "", 13, "", 13, "", 0, 0, 0, 0, "", 13, "", 0, "", 13, "", 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, "", 13, "", 0, 0, 0, 0, "", 0, 0, "", 0, 0, 0, 0, 0, 0, ""
+	db	8 dup 0
+
+	section	.data,"aw",@progbits
 	public	_sprites_tile_3_data
 _sprites_tile_3_data:
-	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, "", 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, "", 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
+	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, "", 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, "", 0, "", 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
 	db	23 dup 0
 
 	section	.data,"aw",@progbits
@@ -1691,11 +1778,12 @@ _sprites_tiles_data:
 	dl	_sprites_tile_10_data
 	dl	_sprites_tile_11_data
 	dl	_sprites_tile_12_data
+	dl	_sprites_tile_13_data
 
 	section	.data,"aw",@progbits
 	public	_sprites_tile_4_data
 _sprites_tile_4_data:
-	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
+	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
 
 	section	.rodata,"a",@progbits
 	private	_.str.4
@@ -1740,6 +1828,11 @@ _board:
 	section	.bss,"aw",@nobits
 	public	_mask
 _mask:
+	rb	3
+
+	section	.bss,"aw",@nobits
+	public	_lost
+_lost:
 	rb	3
 
 	section	.bss,"aw",@nobits
@@ -1825,7 +1918,6 @@ _restartTime:
 	extern	__setflag
 	extern	_gfx_Blit
 	extern	_exit
-	extern	__iand
 	extern	__ltof
 	extern	_gfx_Sprite_NoClip
 	extern	_free
