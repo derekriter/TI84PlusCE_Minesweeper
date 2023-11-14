@@ -40,7 +40,7 @@ void drawVersion() {
     
     gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
 }
-void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
+void drawTile(int x, int y, int* board, int* mask, int selX, int selY, int lost) {
     int tileX = 80 + x * 16;
     int tileY = 40 + y * 16;
     
@@ -55,8 +55,10 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
         case MASK_UNCOVERED:
             gfx_Sprite_NoClip(sprites_tile_1, tileX, tileY);
             
-            if(board[10 * y + x] == BOARD_MINE)
-                gfx_TransparentSprite_NoClip(sprites_tile_3, tileX, tileY);
+            if(board[10 * y + x] == BOARD_MINE) {
+                gfx_sprite_t* displayMode = lost ? sprites_tile_13 : sprites_tile_3;
+                gfx_TransparentSprite_NoClip(displayMode, tileX, tileY);
+            }
             else if(board[10 * y + x] > BOARD_CLEAR)
                 gfx_TransparentSprite_NoClip(sprites_tiles[4 + board[10 * y + x]], tileX, tileY);
             
@@ -70,10 +72,10 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
         gfx_TransparentSprite_NoClip(sprites_tile_4, tileX, tileY);
     }
 }
-void drawBoard(int* board, int* mask, int selX, int selY, int flagsUsed) {
+void drawBoard(int* board, int* mask, int selX, int selY, int flagsUsed, int lost) {
     for(int y = 0; y < 10; y++) {
         for(int x = 0; x < 10; x++) {
-            drawTile(x, y, board, mask, selX, selY);
+            drawTile(x, y, board, mask, selX, selY, lost);
         }
     }
     
