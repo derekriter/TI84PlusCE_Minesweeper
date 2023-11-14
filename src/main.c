@@ -19,7 +19,7 @@
 #include "mathutils.h"
 
 int selX = 0, selY = 0;
-int minesDiscovered = 0;
+int minesFlagged = 0;
 int* board = NULL;
 int* mask = NULL;
 clock_t restartTime;
@@ -134,7 +134,7 @@ void update() {
         free(board);
         board = NULL;
         
-        restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
+        restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
         
         needToRedrawBoard = 1;
         return;
@@ -167,16 +167,16 @@ void update() {
             needToRedrawBoard = 1;
         }
     }
-    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesDiscovered < 10) {
+    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesFlagged < 10) {
         mask[10 * selY + selX] = MASK_FLAGGED;
         updateTargets[10 * selY + selX] = 1;
-        minesDiscovered++;
+        minesFlagged++;
         needToRedrawMineCount = 1;
     }
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_FLAGGED) {
         mask[10 * selY + selX] = MASK_COVERED;
         updateTargets[10 * selY + selX] = 1;
-        minesDiscovered--;
+        minesFlagged--;
         needToRedrawMineCount = 1;
     }
     
@@ -197,7 +197,7 @@ void update() {
 }
 void render() {
     if(needToRedrawBoard) {
-        drawBoard(board, mask, selX, selY, minesDiscovered);
+        drawBoard(board, mask, selX, selY, minesFlagged);
     }
     else {
         for(int i = 0; i < 100; i++) {
@@ -205,7 +205,7 @@ void render() {
             drawTile(i % 10, i / 10, board, mask, selX, selY);
         }
         
-        if(needToRedrawMineCount) drawMineCount(minesDiscovered);
+        if(needToRedrawMineCount) drawRemainingFlags(minesFlagged);
     }
     
     gfx_BlitBuffer();
