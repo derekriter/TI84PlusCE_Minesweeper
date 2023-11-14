@@ -127,26 +127,33 @@ void fillIntArray(int* array, int length, int value) {
 int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, uncoverLast = 0, flagLast = 0;
 int lastSelX = 0, lastSelY = 0;
 void update() {
-    if(restart) {
-        if((clock() - restartTime) / CLOCKS_PER_SEC < 3) return;
-        
-        srand(time(NULL));
-        memset(mask, MASK_COVERED, 100 * sizeof(int));
-        free(board);
-        board = NULL;
-        
-        lost = restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
-        
-        needToRedrawBoard = 1;
-        return;
-    }
-    
     int left = kb_IsDown(kb_KeyLeft);
     int up = kb_IsDown(kb_KeyUp);
     int right = kb_IsDown(kb_KeyRight);
     int down = kb_IsDown(kb_KeyDown);
     int uncover = kb_IsDown(kb_Key2nd);
     int flag = kb_IsDown(kb_KeyAlpha);
+    
+    if(restart) {
+        if(kb_AnyKey() && !uncoverLast) {
+            srand(time(NULL));
+            memset(mask, MASK_COVERED, 100 * sizeof(int));
+            free(board);
+            board = NULL;
+            
+            lost = restart = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
+            
+            needToRedrawBoard = 1;
+        }
+        
+        leftLast = left;
+        upLast = up;
+        rightLast = right;
+        downLast = down;
+        uncoverLast = uncover;
+        flagLast = flag;
+        return;
+    }
     
     if(left && !leftLast) selX = mod(selX - 1, 10);
     else if(up && !upLast) selY = mod(selY - 1, 10);
@@ -209,6 +216,8 @@ void render() {
         
         if(needToRedrawMineCount) drawRemainingFlags(minesFlagged);
     }
+    
+    if(restart) drawRestartText();
     
     gfx_BlitBuffer();
 }

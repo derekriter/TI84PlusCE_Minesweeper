@@ -180,45 +180,6 @@ BB3_2:
 	section	.text,"ax",@progbits
 
 	section	.text,"ax",@progbits
-	public	_setupGraphics
-_setupGraphics:
-	call	_gfx_Begin
-	ld	hl, 1
-	push	hl
-	call	_gfx_SetDraw
-	pop	hl
-	or	a, a
-	sbc	hl, hl
-	push	hl
-	ld	hl, 34
-	push	hl
-	ld	hl, _global_palette
-	push	hl
-	call	_gfx_SetPalette
-	pop	hl
-	pop	hl
-	pop	hl
-	or	a, a
-	sbc	hl, hl
-	push	hl
-	call	_gfx_SetTransparentColor
-	pop	hl
-	ld	hl, 2
-	push	hl
-	call	_gfx_SetTextFGColor
-	pop	hl
-	ld	hl, 1
-	push	hl
-	call	_gfx_SetColor
-	pop	hl
-	ld	hl, 1
-	push	hl
-	call	_gfx_FillScreen
-	pop	hl
-	ret
-	section	.text,"ax",@progbits
-
-	section	.text,"ax",@progbits
 	public	_drawRemainingFlags
 _drawRemainingFlags:
 	ld	hl, -6
@@ -312,10 +273,10 @@ _drawRemainingFlags:
 	sbc	hl, bc
 	dec	bc
 	call	pe, __setflag
-	jp	p, BB5_2
+	jp	p, BB4_2
 	push	bc
 	pop	de
-BB5_2:
+BB4_2:
 	ld	hl, 304
 	or	a, a
 	sbc	hl, de
@@ -349,6 +310,71 @@ _drawVersion:
 	call	_gfx_PrintStringXY
 	pop	hl
 	pop	hl
+	pop	hl
+	ret
+	section	.text,"ax",@progbits
+
+	section	.text,"ax",@progbits
+	public	_drawRestartText
+_drawRestartText:
+	ld	hl, _.str.4
+	push	hl
+	call	_gfx_GetStringWidth
+	pop	de
+	ld	c, 1
+	call	__ishru
+	push	hl
+	pop	de
+	ld	hl, 160
+	or	a, a
+	sbc	hl, de
+	ld	de, 210
+	push	de
+	push	hl
+	ld	hl, _.str.4
+	push	hl
+	call	_gfx_PrintStringXY
+	pop	hl
+	pop	hl
+	pop	hl
+	ret
+	section	.text,"ax",@progbits
+
+	section	.text,"ax",@progbits
+	public	_setupGraphics
+_setupGraphics:
+	call	_gfx_Begin
+	ld	hl, 1
+	push	hl
+	call	_gfx_SetDraw
+	pop	hl
+	or	a, a
+	sbc	hl, hl
+	push	hl
+	ld	hl, 34
+	push	hl
+	ld	hl, _global_palette
+	push	hl
+	call	_gfx_SetPalette
+	pop	hl
+	pop	hl
+	pop	hl
+	or	a, a
+	sbc	hl, hl
+	push	hl
+	call	_gfx_SetTransparentColor
+	pop	hl
+	ld	hl, 2
+	push	hl
+	call	_gfx_SetTextFGColor
+	pop	hl
+	ld	hl, 1
+	push	hl
+	call	_gfx_SetColor
+	pop	hl
+	ld	hl, 1
+	push	hl
+	call	_gfx_FillScreen
 	pop	hl
 	ret
 	section	.text,"ax",@progbits
@@ -390,7 +416,7 @@ _drawTile:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB7_2
+	jr	nz, BB8_2
 	ld	hl, (ix - 6)
 	push	hl
 	ld	hl, (ix - 3)
@@ -398,8 +424,8 @@ _drawTile:
 	ld	hl, _sprites_tile_0_data
 	push	hl
 	call	_gfx_Sprite_NoClip
-	jp	BB7_15
-BB7_2:
+	jp	BB8_15
+BB8_2:
 	ld	(ix - 9), iy
 	ld	bc, _sprites_tile_0_data
 	push	bc
@@ -409,7 +435,7 @@ BB7_2:
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB7_4
+	jr	nz, BB8_4
 	ld	hl, (ix - 6)
 	push	hl
 	ld	hl, (ix - 3)
@@ -424,13 +450,13 @@ BB7_2:
 	ld	hl, (ix - 3)
 	push	hl
 	ld	hl, _sprites_tile_2_data
-	jp	BB7_14
-BB7_4:
+	jp	BB8_14
+BB8_4:
 	ld	bc, 2
 	ex	de, hl
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB7_8
+	jr	nz, BB8_8
 	ld	hl, _sprites_tile_1_data
 	ld	de, (ix - 6)
 	push	de
@@ -453,28 +479,28 @@ BB7_4:
 	lea	hl, iy
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB7_9
+	jr	nz, BB8_9
 	ld	hl, (ix + 24)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
 	ld	de, (ix - 3)
 	ld	bc, (ix - 6)
-	jr	z, BB7_11
+	jr	z, BB8_11
 	ld	hl, _sprites_tile_13_data
-	jr	BB7_12
-BB7_8:
+	jr	BB8_12
+BB8_8:
 	ld	hl, 1
 	push	hl
 	call	_exit
 	pop	hl
-BB7_9:
+BB8_9:
 	lea	hl, iy
 	ld	de, 1
 	or	a, a
 	sbc	hl, de
 	call	pe, __setflag
-	jp	m, BB7_16
+	jp	m, BB8_16
 	ld	de, 4
 	add	iy, de
 	ld	bc, 3
@@ -488,31 +514,31 @@ BB7_9:
 	ld	de, (ix - 6)
 	push	de
 	ld	de, (ix - 3)
-	jr	BB7_13
-BB7_11:
+	jr	BB8_13
+BB8_11:
 	ld	hl, _sprites_tile_3_data
-BB7_12:
+BB8_12:
 	push	bc
-BB7_13:
+BB8_13:
 	push	de
-BB7_14:
+BB8_14:
 	push	hl
 	call	_gfx_TransparentSprite_NoClip
-BB7_15:
+BB8_15:
 	pop	hl
 	pop	hl
 	pop	hl
-BB7_16:
+BB8_16:
 	ld	de, (ix + 18)
 	ld	hl, (ix + 6)
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB7_19
+	jr	nz, BB8_19
 	ld	de, (ix + 21)
 	ld	hl, (ix + 9)
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB7_19
+	jr	nz, BB8_19
 	ld	hl, _sprites_tile_4_data
 	ld	de, (ix - 6)
 	push	de
@@ -523,7 +549,7 @@ BB7_16:
 	pop	hl
 	pop	hl
 	pop	hl
-BB7_19:
+BB8_19:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -546,20 +572,24 @@ _drawBoard:
 	ld	(ix - 3), hl
 	ld	hl, (ix + 21)
 	ld	(ix - 18), hl
-	ld	iy, 0
+	ld	hl, 1
+	push	hl
+	call	_gfx_FillScreen
+	pop	hl
 	ld	bc, 10
-BB8_1:
+	ld	iy, 0
+BB9_1:
 	lea	hl, iy
 	or	a, a
 	sbc	hl, bc
 	ld	hl, 0
-	jr	z, BB8_5
-BB8_2:
+	jr	z, BB9_5
+BB9_2:
 	push	hl
 	pop	de
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB8_4
+	jr	z, BB9_4
 	ld	hl, (ix - 18)
 	push	hl
 	ld	hl, (ix - 15)
@@ -582,15 +612,15 @@ BB8_2:
 	ld	sp, hl
 	ld	hl, (ix - 24)
 	inc	hl
-	jr	BB8_2
-BB8_4:
+	jr	BB9_2
+BB9_4:
 	inc	iy
-	jr	BB8_1
-BB8_5:
+	jr	BB9_1
+BB9_5:
 	ld	hl, 1
 	push	hl
 	push	hl
-	ld	hl, _.str.4
+	ld	hl, _.str.5
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -600,7 +630,7 @@ BB8_5:
 	push	hl
 	ld	hl, 1
 	push	hl
-	ld	hl, _.str.5
+	ld	hl, _.str.6
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -610,7 +640,7 @@ BB8_5:
 	push	hl
 	ld	hl, 1
 	push	hl
-	ld	hl, _.str.6
+	ld	hl, _.str.7
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -620,7 +650,7 @@ BB8_5:
 	push	hl
 	ld	hl, 1
 	push	hl
-	ld	hl, _.str.7
+	ld	hl, _.str.8
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -657,41 +687,41 @@ _getNeighborTile:
 	pop	hl
 	or	a, a
 	sbc	hl, de
-	jr	nc, BB9_12
-	ld	hl, JTI9_0
+	jr	nc, BB10_12
+	ld	hl, JTI10_0
 	add	hl, bc
 	add	hl, bc
 	add	hl, bc
 	ld	hl, (hl)
 	jp	(hl)
-BB9_2:
+BB10_2:
 	dec	iy
-	jr	BB9_4
-BB9_3:
+	jr	BB10_4
+BB10_3:
 	inc	iy
-BB9_4:
+BB10_4:
 	ld	hl, (ix - 3)
 	dec	hl
-	jr	BB9_9
-BB9_5:
+	jr	BB10_9
+BB10_5:
 	inc	iy
-	jr	BB9_10
-BB9_6:
+	jr	BB10_10
+BB10_6:
 	inc	iy
-	jr	BB9_8
-BB9_7:
+	jr	BB10_8
+BB10_7:
 	dec	iy
-BB9_8:
+BB10_8:
 	ld	hl, (ix - 3)
 	inc	hl
-BB9_9:
+BB10_9:
 	ld	(ix - 3), hl
-BB9_10:
+BB10_10:
 	ld	de, 10
 	lea	hl, iy
 	or	a, a
 	sbc	hl, de
-	jr	nc, BB9_12
+	jr	nc, BB10_12
 	ld	(ix - 6), iy
 	ld	de, 0
 	ld	bc, (ix - 3)
@@ -700,15 +730,15 @@ BB9_10:
 	or	a, a
 	sbc	hl, de
 	call	pe, __setflag
-	jp	p, BB9_14
-BB9_12:
+	jp	p, BB10_14
+BB10_12:
 	scf
 	sbc	hl, hl
-BB9_13:
+BB10_13:
 	ld	sp, ix
 	pop	ix
 	ret
-BB9_14:
+BB10_14:
 	push	bc
 	pop	hl
 	ld	de, 10
@@ -716,29 +746,29 @@ BB9_14:
 	sbc	hl, de
 	call	pe, __setflag
 	ld	hl, -1
-	jp	p, BB9_13
+	jp	p, BB10_13
 	push	bc
 	pop	hl
 	ld	bc, 10
 	call	__imulu
 	ld	de, (ix - 6)
 	add	hl, de
-	jr	BB9_13
-BB9_16:
+	jr	BB10_13
+BB10_16:
 	dec	iy
-	jr	BB9_10
+	jr	BB10_10
 	section	.text,"ax",@progbits
 	section	.rodata,"a",@progbits
-	private	JTI9_0
-JTI9_0:
-	dl	BB9_2
-	dl	BB9_4
-	dl	BB9_3
-	dl	BB9_5
-	dl	BB9_6
-	dl	BB9_8
-	dl	BB9_7
-	dl	BB9_16
+	private	JTI10_0
+JTI10_0:
+	dl	BB10_2
+	dl	BB10_4
+	dl	BB10_3
+	dl	BB10_5
+	dl	BB10_6
+	dl	BB10_8
+	dl	BB10_7
+	dl	BB10_16
 
 	section	.text,"ax",@progbits
 	public	_generateBoard
@@ -756,12 +786,12 @@ _generateBoard:
 	ld	de, 10
 	or	a, a
 	sbc	hl, hl
-BB10_1:
+BB11_1:
 	ld	(ix - 9), hl
 	or	a, a
 	sbc	hl, de
-	jp	z, BB10_11
-BB10_2:
+	jp	z, BB11_11
+BB11_2:
 	call	_rand
 	ld	bc, 100
 	call	__irems
@@ -776,7 +806,7 @@ BB10_2:
 	ld	de, -1
 	or	a, a
 	sbc	hl, de
-	jr	z, BB10_2
+	jr	z, BB11_2
 	ld	de, (_selX)
 	ld	hl, (_selY)
 	ld	bc, 10
@@ -786,18 +816,18 @@ BB10_2:
 	ld	hl, (ix - 3)
 	or	a, a
 	sbc	hl, de
-	jr	z, BB10_2
+	jr	z, BB11_2
 	scf
 	sbc	hl, hl
 	ld	(iy), hl
 	ld	iy, 0
-BB10_5:
+BB11_5:
 	ld	de, 10
 	lea	hl, iy
 	ld	bc, 8
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB10_10
+	jr	z, BB11_10
 	ld	(ix - 12), iy
 	push	iy
 	ld	hl, (ix - 3)
@@ -812,7 +842,7 @@ BB10_5:
 	ld	bc, -1
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB10_9
+	jr	z, BB11_9
 	ex	de, hl
 	ld	bc, 3
 	call	__imulu
@@ -826,18 +856,18 @@ BB10_5:
 	ld	bc, -1
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB10_9
+	jr	z, BB11_9
 	inc	de
 	ld	(iy), de
-BB10_9:
+BB11_9:
 	ld	iy, (ix - 12)
 	inc	iy
-	jr	BB10_5
-BB10_10:
+	jr	BB11_5
+BB11_10:
 	ld	hl, (ix - 9)
 	inc	hl
-	jp	BB10_1
-BB10_11:
+	jp	BB11_1
+BB11_11:
 	ld	hl, (ix - 6)
 	ld	sp, ix
 	pop	ix
@@ -860,7 +890,7 @@ _reveal:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_5
+	jr	nz, BB12_5
 	ld	hl, 2
 	ld	de, 1
 	ld	(iy), hl
@@ -878,16 +908,16 @@ _reveal:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB11_5
+	jr	nz, BB12_5
 	ld	de, 8
 	or	a, a
 	sbc	hl, hl
-BB11_3:
+BB12_3:
 	ld	(ix - 3), hl
 	or	a, a
 	sbc	hl, de
 	ld	hl, (ix + 6)
-	jr	z, BB11_5
+	jr	z, BB12_5
 	ld	de, (ix - 3)
 	push	de
 	push	hl
@@ -907,8 +937,8 @@ BB11_3:
 	ld	hl, (ix - 3)
 	inc	hl
 	ld	de, 8
-	jr	BB11_3
-BB11_5:
+	jr	BB12_3
+BB12_5:
 	pop	hl
 	pop	ix
 	ret
@@ -925,12 +955,12 @@ _gameIsCompleted:
 	ld	hl, (_mask)
 	ld	(ix - 3), hl
 	ld	bc, 100
-BB12_1:
+BB13_1:
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB12_6
+	jr	z, BB13_6
 	ld	hl, (ix - 6)
 	ld	hl, (hl)
 	ld	iy, (ix - 3)
@@ -938,22 +968,22 @@ BB12_1:
 	ld	bc, -1
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB12_4
+	jr	nz, BB13_4
 	lea	hl, iy
 	ld	bc, 2
 	or	a, a
 	sbc	hl, bc
 	ld	bc, 100
-	jr	z, BB12_6
-	jr	BB12_5
-BB12_4:
+	jr	z, BB13_6
+	jr	BB13_5
+BB13_4:
 	lea	hl, iy
 	ld	bc, 2
 	or	a, a
 	sbc	hl, bc
 	ld	bc, 100
-	jr	nz, BB12_6
-BB12_5:
+	jr	nz, BB13_6
+BB13_5:
 	inc	de
 	ld	iy, (ix - 6)
 	lea	iy, iy + 3
@@ -961,8 +991,8 @@ BB12_5:
 	ld	iy, (ix - 3)
 	lea	iy, iy + 3
 	ld	(ix - 3), iy
-	jr	BB12_1
-BB12_6:
+	jr	BB13_1
+BB13_6:
 	ex	de, hl
 	or	a, a
 	sbc	hl, bc
@@ -985,23 +1015,23 @@ _fillIntArray:
 	or	a, a
 	sbc	hl, bc
 	call	pe, __setflag
-	jp	p, BB13_2
+	jp	p, BB14_2
 	lea	de, iy
-BB13_2:
+BB14_2:
 	ld	iy, (ix + 6)
 	ld	bc, (ix + 12)
-BB13_3:
+BB14_3:
 	push	de
 	pop	hl
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB13_5
+	jr	z, BB14_5
 	ld	(iy), bc
 	lea	iy, iy + 3
 	dec	de
-	jr	BB13_3
-BB13_5:
+	jr	BB14_3
+BB14_5:
 	pop	ix
 	ret
 	section	.text,"ax",@progbits
@@ -1009,41 +1039,46 @@ BB13_5:
 	section	.text,"ax",@progbits
 	public	_update
 _update:
-	ld	hl, -27
+	ld	hl, -33
 	call	__frameset
-	ld	hl, (_restart)
-	add	hl, bc
-	or	a, a
-	sbc	hl, bc
-	jp	nz, BB14_9
-	ld	hl, _selX
-	ld	(ix - 15), hl
 	ld	iy, -720866
 	ld.sis	bc, 2
 	ld	l, (iy)
 	ld	h, (iy + 1)
 	call	__sand
+	ld	de, 0
+	ld	(ix - 24), hl
 	ld	e, l
 	ld	d, h
+	ld	(ix - 6), de
 	ld	l, (iy)
 	ld	h, (iy + 1)
 	ld.sis	bc, 8
 	call	__sand
-	ld	(ix - 18), hl
+	ld	de, 0
+	ld	(ix - 27), hl
+	ld	e, l
+	ld	d, h
+	ld	(ix - 9), de
 	ld	l, (iy)
 	ld	h, (iy + 1)
 	ld.sis	bc, 4
 	call	__sand
-	ld	(ix - 21), hl
-	or	a, a
-	sbc	hl, hl
-	ld	(ix - 3), hl
+	ld	de, 0
+	ld	(ix - 30), hl
+	ld	e, l
+	ld	d, h
+	ld	(ix - 12), de
 	ld	l, (iy)
 	ld	h, (iy + 1)
 	ld.sis	bc, 1
 	call	__sand
-	ld	(ix - 24), hl
 	ld	iy, 0
+	ld	(ix - 33), hl
+	ex	de, hl
+	ld	iyl, e
+	ld	iyh, d
+	ex	de, hl
 	ld	hl, -720878
 	push	de
 	ld	e, (hl)
@@ -1054,7 +1089,13 @@ _update:
 	pop	de
 	ld.sis	bc, 32
 	call	__sand
-	ld	(ix - 9), hl
+	ld	de, 0
+	push	de
+	pop	bc
+	ld	(ix - 21), hl
+	ld	c, l
+	ld	b, h
+	ld	(ix - 18), bc
 	ld	hl, -720876
 	push	de
 	ld	e, (hl)
@@ -1065,60 +1106,70 @@ _update:
 	pop	de
 	ld.sis	bc, 128
 	call	__sand
-	ld	(ix - 12), hl
-	ld	(ix - 27), de
-	ld	a, e
+	ld	e, l
+	ld	d, h
+	ld	(ix - 3), de
+	ld	hl, (_restart)
+	add	hl, bc
 	or	a, a
-	ld	(ix - 6), iy
-	jr	z, BB14_3
+	sbc	hl, bc
+	ld	(ix - 15), iy
+	jr	nz, BB15_9
+	ld	bc, (ix - 27)
+	ld	de, -1
+	ld	iy, _selX
+	ld	hl, (ix - 24)
+	ld	a, l
+	or	a, a
+	jr	z, BB15_3
 	ld	hl, (_leftLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	z, BB14_12
-BB14_3:
-	ld	bc, _selY
-	ld	hl, (ix - 18)
-	ld	a, l
+	jp	z, BB15_14
+BB15_3:
+	ld	a, c
 	or	a, a
-	jr	z, BB14_5
+	jr	z, BB15_5
 	ld	hl, (_upLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	z, BB14_11
-BB14_5:
-	ld	hl, (ix - 21)
+	jp	z, BB15_13
+BB15_5:
+	ld	hl, (ix - 30)
 	ld	a, l
 	or	a, a
-	jr	z, BB14_7
+	jr	z, BB15_7
 	ld	hl, (_rightLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	ld	de, 1
-	jp	z, BB14_13
-BB14_7:
-	ld	hl, (ix - 24)
+	ld	hl, 1
+	ex	de, hl
+	jp	z, BB15_14
+BB15_7:
+	ld	hl, (ix - 33)
 	bit	0, l
-	jp	z, BB14_14
+	jp	z, BB15_15
 	ld	hl, (_downLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	ld	(ix - 15), bc
-	ld	de, 1
-	jp	z, BB14_13
-	jp	BB14_14
-BB14_9:
-	call	_clock
-	ld	bc, (_restartTime)
-	ld	a, (_restartTime+3)
-	call	__lsub
-	ld	bc, 98304
-	xor	a, a
-	call	__lcmpu
-	jp	c, BB14_36
+	ld	iy, _selY
+	ld	hl, 1
+	ex	de, hl
+	jp	z, BB15_14
+	jp	BB15_15
+BB15_9:
+	call	_kb_AnyKey
+	or	a, a
+	jr	z, BB15_12
+	ld	hl, (_uncoverLast)
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	jr	nz, BB15_12
 	ld	hl, 0
 	push	hl
 	call	_time
@@ -1145,24 +1196,29 @@ BB14_9:
 	ld	(_selX), hl
 	ld	(_lastSelY), hl
 	ld	(_lastSelX), hl
-	ld	(_flagLast), hl
-	ld	(_uncoverLast), hl
-	ld	(_downLast), hl
-	ld	(_rightLast), hl
-	ld	(_upLast), hl
-	ld	(_leftLast), hl
 	ld	(_restart), hl
 	ld	(_lost), hl
 	inc	hl
 	ld	(_needToRedrawBoard), hl
-	jp	BB14_36
-BB14_11:
-	ld	(ix - 15), bc
-BB14_12:
-	ld	de, -1
-BB14_13:
+BB15_12:
+	ld	hl, (ix - 6)
+	ld	(_leftLast), hl
+	ld	hl, (ix - 9)
+	ld	(_upLast), hl
+	ld	hl, (ix - 12)
+	ld	(_rightLast), hl
 	ld	hl, (ix - 15)
-	ld	hl, (hl)
+	ld	(_downLast), hl
+	ld	hl, (ix - 18)
+	ld	(_uncoverLast), hl
+	ld	hl, (ix - 3)
+	ld	(_flagLast), hl
+	jp	BB15_37
+BB15_13:
+	ld	iy, _selY
+BB15_14:
+	ld	(ix - 24), iy
+	ld	hl, (iy)
 	add	hl, de
 	ld	de, 10
 	push	de
@@ -1170,20 +1226,20 @@ BB14_13:
 	call	_mod
 	pop	de
 	pop	de
-	ld	iy, (ix - 15)
+	ld	iy, (ix - 24)
 	ld	(iy), hl
-BB14_14:
-	ld	hl, (ix - 9)
+BB15_15:
+	ld	hl, (ix - 21)
 	ld	a, l
 	or	a, a
-	jp	z, BB14_21
+	jp	z, BB15_22
 	ld	hl, (_uncoverLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	nz, BB14_21
+	jp	nz, BB15_22
 	ld	hl, (_mask)
-	ld	(ix - 15), hl
+	ld	(ix - 21), hl
 	ld	hl, (_selY)
 	ld	bc, 10
 	call	__imulu
@@ -1196,18 +1252,18 @@ BB14_14:
 	call	__imulu
 	push	hl
 	pop	de
-	ld	hl, (ix - 15)
+	ld	hl, (ix - 21)
 	add	hl, de
 	ld	hl, (hl)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB14_21
+	jr	nz, BB15_22
 	ld	hl, (_board)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB14_19
+	jr	nz, BB15_20
 	call	_generateBoard
 	ld	(_board), hl
 	ld	hl, (_selY)
@@ -1217,7 +1273,7 @@ BB14_14:
 	push	hl
 	pop	iy
 	add	iy, de
-BB14_19:
+BB15_20:
 	push	iy
 	call	_reveal
 	pop	hl
@@ -1236,7 +1292,7 @@ BB14_19:
 	ld	de, -1
 	or	a, a
 	sbc	hl, de
-	jp	nz, BB14_29
+	jp	nz, BB15_30
 	ld	hl, 1
 	ld	(_lost), hl
 	ld	(_restart), hl
@@ -1244,17 +1300,17 @@ BB14_19:
 	ld	a, e
 	ld	(_restartTime), hl
 	ld	(_restartTime+3), a
-	jp	BB14_31
-BB14_21:
-	ld	hl, (ix - 12)
+	jp	BB15_32
+BB15_22:
+	ld	hl, (ix - 3)
 	ld	a, l
 	or	a, a
-	jp	z, BB14_31
+	jp	z, BB15_32
 	ld	hl, (_flagLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	nz, BB14_31
+	jp	nz, BB15_32
 	ld	iy, (_mask)
 	ld	hl, (_selY)
 	ld	bc, 10
@@ -1272,13 +1328,13 @@ BB14_21:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB14_26
+	jr	nz, BB15_27
 	ld	hl, (_minesFlagged)
 	ld	bc, 10
 	or	a, a
 	sbc	hl, bc
 	call	pe, __setflag
-	jp	p, BB14_26
+	jp	p, BB15_27
 	ld	hl, 1
 	ld	(iy), hl
 	ld	iy, (_updateTargets)
@@ -1296,13 +1352,13 @@ BB14_21:
 	ld	(iy), de
 	ld	hl, (_minesFlagged)
 	inc	hl
-	jr	BB14_28
-BB14_26:
+	jr	BB15_29
+BB15_27:
 	ld	bc, 1
 	ex	de, hl
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB14_31
+	jr	nz, BB15_32
 	or	a, a
 	sbc	hl, hl
 	ld	(iy), hl
@@ -1322,16 +1378,16 @@ BB14_26:
 	ld	(iy), de
 	ld	hl, (_minesFlagged)
 	dec	hl
-BB14_28:
+BB15_29:
 	ld	(_minesFlagged), hl
 	ld	(_needToRedrawMineCount), de
-	jr	BB14_31
-BB14_29:
+	jr	BB15_32
+BB15_30:
 	call	_gameIsCompleted
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB14_31
+	jr	z, BB15_32
 	ld	hl, 1
 	ld	(_restart), hl
 	call	_clock
@@ -1350,65 +1406,29 @@ BB14_29:
 	pop	hl
 	ld	hl, 1
 	ld	(_needToRedrawBoard), hl
-BB14_31:
-	ld	iy, 0
-	ld	hl, (ix - 27)
-	ex	de, hl
-	ld	iyl, e
-	ld	iyh, d
-	ex	de, hl
-	ld	de, 0
-	ld	hl, (ix - 18)
-	ld	e, l
-	ld	d, h
-	ld	(ix - 15), de
-	ld	hl, (ix - 3)
-	ld	bc, (ix - 21)
-	ld	l, c
-	ld	h, b
-	ld	(ix - 3), hl
-	ld	hl, (ix - 6)
-	ld	bc, (ix - 24)
-	ld	l, c
-	ld	h, b
-	ld	(ix - 6), hl
-	or	a, a
-	sbc	hl, hl
-	push	hl
-	pop	de
-	ld	bc, (ix - 9)
-	ld	e, c
-	ld	d, b
-	ld	(ix - 18), de
-	ld	bc, (ix - 12)
-	ld	l, c
-	ld	h, b
-	ld	(ix - 12), hl
-	ld	bc, (_selX)
-	ld	de, (_lastSelX)
-	push	bc
+BB15_32:
+	ld	de, (_selX)
+	ld	bc, (_lastSelX)
+	push	de
 	pop	hl
-	sbc	hl, de
-	ld	(ix - 21), de
-	jr	nz, BB14_33
-	ld	de, (_selY)
-	ld	(ix - 24), de
-	ld	hl, (_lastSelY)
-	ld	(ix - 9), hl
-	ex	de, hl
-	ld	de, (ix - 9)
 	or	a, a
-	sbc	hl, de
-	ld	de, (ix - 24)
-	jr	nz, BB14_34
-	jr	BB14_35
-BB14_33:
+	sbc	hl, bc
+	ld	(ix - 21), bc
+	jr	nz, BB15_34
+	ld	iy, (_selY)
+	ld	bc, (_lastSelY)
+	lea	hl, iy
+	ld	(ix - 24), bc
+	or	a, a
+	sbc	hl, bc
+	jr	nz, BB15_35
+	jr	BB15_36
+BB15_34:
 	ld	hl, (_lastSelY)
-	ld	(ix - 9), hl
-BB14_34:
-	ld	(ix - 24), iy
+	ld	(ix - 24), hl
+BB15_35:
 	ld	iy, (_updateTargets)
-	ld	hl, (ix - 9)
+	ld	hl, (ix - 24)
 	ld	de, 10
 	push	de
 	pop	bc
@@ -1436,24 +1456,24 @@ BB14_34:
 	add	iy, de
 	ld	hl, 1
 	ld	(iy), hl
-	ld	iy, (ix - 24)
-	ld	bc, (_selX)
-	ld	de, (_selY)
-BB14_35:
-	ld	(_leftLast), iy
-	ld	hl, (ix - 15)
-	ld	(_upLast), hl
-	ld	hl, (ix - 3)
-	ld	(_rightLast), hl
+	ld	de, (_selX)
+	ld	iy, (_selY)
+BB15_36:
 	ld	hl, (ix - 6)
+	ld	(_leftLast), hl
+	ld	hl, (ix - 9)
+	ld	(_upLast), hl
+	ld	hl, (ix - 12)
+	ld	(_rightLast), hl
+	ld	hl, (ix - 15)
 	ld	(_downLast), hl
 	ld	hl, (ix - 18)
 	ld	(_uncoverLast), hl
-	ld	hl, (ix - 12)
+	ld	hl, (ix - 3)
 	ld	(_flagLast), hl
-	ld	(_lastSelX), bc
-	ld	(_lastSelY), de
-BB14_36:
+	ld	(_lastSelX), de
+	ld	(_lastSelY), iy
+BB15_37:
 	ld	sp, ix
 	pop	ix
 	ret
@@ -1469,17 +1489,17 @@ _render:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	nz, BB15_6
+	jp	nz, BB16_6
 	ld	a, 10
 	ld	l, -10
 	ld	(ix - 3), hl
-BB15_2:
+BB16_2:
 	ld	bc, 100
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jp	z, BB15_7
+	jp	z, BB16_7
 	ld	iy, (_updateTargets)
 	push	de
 	pop	hl
@@ -1494,7 +1514,7 @@ BB15_2:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB15_5
+	jr	z, BB16_5
 	ld	(ix - 6), bc
 	ld	hl, (ix - 6)
 	ld	b, l
@@ -1538,12 +1558,12 @@ BB15_2:
 	ld	hl, 21
 	add	hl, sp
 	ld	sp, hl
-BB15_5:
+BB16_5:
 	inc	bc
 	push	bc
 	pop	de
-	jp	BB15_2
-BB15_6:
+	jp	BB16_2
+BB16_6:
 	ld	hl, (_board)
 	ld	(ix - 3), hl
 	ld	hl, (_mask)
@@ -1566,19 +1586,24 @@ BB15_6:
 	pop	hl
 	pop	hl
 	pop	hl
-	jr	BB15_9
-BB15_7:
+	jr	BB16_9
+BB16_7:
 	ld	hl, (_needToRedrawMineCount)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB15_10
+	jr	z, BB16_10
 	ld	hl, (_minesFlagged)
 	push	hl
 	call	_drawRemainingFlags
-BB15_9:
+BB16_9:
 	pop	hl
-BB15_10:
+BB16_10:
+	ld	hl, (_restart)
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	call	nz, _drawRestartText
 	ld	hl, 1
 	push	hl
 	call	_gfx_Blit
@@ -1616,7 +1641,7 @@ _main:
 	pop	de
 	pop	de
 	ld	(_updateTargets), hl
-BB16_1:
+BB17_1:
 	call	_kb_Scan
 	call	_update
 	call	_render
@@ -1642,7 +1667,7 @@ BB16_1:
 	pop	de
 	ld	a, l
 	bit	7, a
-	jr	z, BB16_1
+	jr	z, BB17_1
 	ld	hl, (_board)
 	push	hl
 	call	_free
@@ -1714,11 +1739,6 @@ _sprites_tile_12_data:
 _.str:
 	db	"%d", 0
 
-	section	.data,"aw",@progbits
-	public	_global_palette
-_global_palette:
-	db	"|ÿÿ", 0, 0, 0, 0, "", 0, "", 0, "àƒ¹!ï½", 0, "L÷ÞèpÄù", 0, "|¦þŒÿ"
-
 	section	.rodata,"a",@progbits
 	private	_.str.1
 _.str.1:
@@ -1739,6 +1759,16 @@ _sprites_tile_2_data:
 	private	_.str.3
 _.str.3:
 	db	"v1.1 BETA", 0
+
+	section	.rodata,"a",@progbits
+	private	_.str.4
+_.str.4:
+	db	"Press any key to play again", 0
+
+	section	.data,"aw",@progbits
+	public	_global_palette
+_global_palette:
+	db	"|ÿÿ", 0, 0, 0, 0, "", 0, "", 0, "àƒ¹!ï½", 0, "L÷ÞèpÄù", 0, "|¦þŒÿ"
 
 	section	.data,"aw",@progbits
 	public	_sprites_tile_0_data
@@ -1786,23 +1816,23 @@ _sprites_tile_4_data:
 	db	"", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ""
 
 	section	.rodata,"a",@progbits
-	private	_.str.4
-_.str.4:
-	db	"[ARROWS] - Select", 0
-
-	section	.rodata,"a",@progbits
 	private	_.str.5
 _.str.5:
-	db	"[2nd] - Uncover", 0
+	db	"[ARROWS] - Select", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.6
 _.str.6:
-	db	"[alpha] - Flag", 0
+	db	"[2nd] - Uncover", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.7
 _.str.7:
+	db	"[alpha] - Flag", 0
+
+	section	.rodata,"a",@progbits
+	private	_.str.8
+_.str.8:
 	db	"[del] - Quit", 0
 
 	section	.bss,"aw",@nobits
@@ -1927,11 +1957,12 @@ _restartTime:
 	extern	__bdivu
 	extern	__frameset
 	extern	_gfx_SetTransparentColor
+	extern	_kb_AnyKey
 	extern	_gfx_FillRectangle_NoClip
 	extern	_sprintf
-	extern	__lsub
-	extern	_gfx_GetStringWidth
 	extern	_kb_Scan
+	extern	_gfx_GetStringWidth
+	extern	__ishru
 	extern	__fmul
 	extern	_gfx_SetDraw
 	extern	_floorf
@@ -1946,6 +1977,5 @@ _restartTime:
 	extern	_gfx_TransparentSprite_NoClip
 	extern	_gfx_PrintStringXY
 	extern	_gfx_End
-	extern	__lcmpu
 	extern	__frameset0
 	extern	_clock
