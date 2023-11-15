@@ -1758,7 +1758,7 @@ _sprites_tile_2_data:
 	section	.rodata,"a",@progbits
 	private	_.str.3
 _.str.3:
-	db	"v1.1 BETA", 0
+	db	"v2.0 BETA", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.4

@@ -4,7 +4,7 @@
 #define MASK_FLAGGED 1
 #define MASK_UNCOVERED 2
 
-#define VERSION "v1.1 BETA"
+#define VERSION "v2.0 BETA"
 
 #include <stdlib.h>
 #include <string.h>
