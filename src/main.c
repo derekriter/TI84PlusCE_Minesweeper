@@ -4,7 +4,7 @@
 #define MASK_FLAGGED 1
 #define MASK_UNCOVERED 2
 
-#define VERSION "v1.0"
+#define VERSION "v1.1"
 
 #include <stdlib.h>
 #include <string.h>
@@ -18,10 +18,11 @@
 #include "mathutils.h"
 
 int selX = 0, selY = 0;
-int minesDiscovered = 0;
+int minesFlagged = 0;
 int* board = NULL;
 int* mask = NULL;
 clock_t restartTime;
+int lost = 0;
 int restart = 0;
 int* updateTargets = NULL;
 int needToRedrawBoard = 0;
@@ -125,26 +126,33 @@ void fillIntArray(int* array, int length, int value) {
 int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, uncoverLast = 0, flagLast = 0;
 int lastSelX = 0, lastSelY = 0;
 void update() {
-    if(restart) {
-        if((clock() - restartTime) / CLOCKS_PER_SEC < 3) return;
-        
-        srand(time(NULL));
-        memset(mask, MASK_COVERED, 100 * sizeof(int));
-        free(board);
-        board = NULL;
-        
-        restart = leftLast = upLast = rightLast = downLast = uncoverLast = flagLast = lastSelX = lastSelY = selX = selY = minesDiscovered = 0;
-        
-        needToRedrawBoard = 1;
-        return;
-    }
-    
     int left = kb_IsDown(kb_KeyLeft);
     int up = kb_IsDown(kb_KeyUp);
     int right = kb_IsDown(kb_KeyRight);
     int down = kb_IsDown(kb_KeyDown);
     int uncover = kb_IsDown(kb_Key2nd);
     int flag = kb_IsDown(kb_KeyAlpha);
+    
+    if(restart) {
+        if(kb_AnyKey() && !uncoverLast) {
+            srand(time(NULL));
+            memset(mask, MASK_COVERED, 100 * sizeof(int));
+            free(board);
+            board = NULL;
+            
+            lost = restart = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
+            
+            needToRedrawBoard = 1;
+        }
+        
+        leftLast = left;
+        upLast = up;
+        rightLast = right;
+        downLast = down;
+        uncoverLast = uncover;
+        flagLast = flag;
+        return;
+    }
     
     if(left && !leftLast) selX = mod(selX - 1, 10);
     else if(up && !upLast) selY = mod(selY - 1, 10);
@@ -156,6 +164,7 @@ void update() {
         
         reveal(10 * selY + selX);
         if(board[selX + 10 * selY] == BOARD_MINE) {
+            lost = 1;
             restart = 1;
             restartTime = clock();
         }
@@ -166,16 +175,16 @@ void update() {
             needToRedrawBoard = 1;
         }
     }
-    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesDiscovered < 10) {
+    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesFlagged < 10) {
         mask[10 * selY + selX] = MASK_FLAGGED;
         updateTargets[10 * selY + selX] = 1;
-        minesDiscovered++;
+        minesFlagged++;
         needToRedrawMineCount = 1;
     }
     else if(flag && !flagLast && mask[10 * selY + selX] == MASK_FLAGGED) {
         mask[10 * selY + selX] = MASK_COVERED;
         updateTargets[10 * selY + selX] = 1;
-        minesDiscovered--;
+        minesFlagged--;
         needToRedrawMineCount = 1;
     }
     
@@ -196,16 +205,18 @@ void update() {
 }
 void render() {
     if(needToRedrawBoard) {
-        drawBoard(board, mask, selX, selY, minesDiscovered);
+        drawBoard(board, mask, selX, selY, minesFlagged, lost);
     }
     else {
         for(int i = 0; i < 100; i++) {
             if(!updateTargets[i]) continue;
-            drawTile(i % 10, i / 10, board, mask, selX, selY);
+            drawTile(i % 10, i / 10, board, mask, selX, selY, lost);
         }
         
-        if(needToRedrawMineCount) drawMineCount(minesDiscovered);
+        if(needToRedrawMineCount) drawRemainingFlags(minesFlagged);
     }
+    
+    if(restart) drawRestartText();
     
     gfx_BlitBuffer();
 }

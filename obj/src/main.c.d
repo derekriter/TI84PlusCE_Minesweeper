@@ -10,4 +10,5 @@ obj/src/main.c.bc: src\main.c \
   D:\Programs\TI84PlusCE\CEdev\include\stdint.h \
   D:\Programs\TI84PlusCE\CEdev\include\stdbool.h src\draw.h \
   D:\Programs\TI84PlusCE\CEdev\include\graphx.h src\gfx\gfx.h \
-  src\gfx\global_palette.h src\gfx\sprites.h src\mathutils.h
+  src\gfx\global_palette.h src\gfx\sprites.h \
+  D:\Programs\TI84PlusCE\CEdev\include\debug.h src\mathutils.h

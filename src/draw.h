@@ -6,6 +6,34 @@
 #include <graphx.h>
 #include "gfx/gfx.h"
 
+#include "debug.h"
+#include "mathutils.h"
+
+void drawRemainingFlags(int flagsUsed) {
+    //number
+    int width = gfx_GetStringWidth("00");
+    gfx_FillRectangle_NoClip(GFX_LCD_WIDTH - width - 1, 18, width, 9);
+    
+    char* string = (char*) calloc(3, sizeof(int));
+    int flagsLeft = 10 - flagsUsed;
+    sprintf(string, "%d%d", flagsLeft / 10, flagsLeft % 10);
+    
+    gfx_PrintStringXY(string, GFX_LCD_WIDTH - gfx_GetStringWidth(string) - 1, 18);
+    free(string);
+    
+    //flag icon
+    gfx_TransparentSprite_NoClip(sprites_tile_2, GFX_LCD_WIDTH - maxint((width - 16) / 2, 1) - 16, 1);
+}
+void drawVersion() {
+    int width = gfx_GetStringWidth(VERSION);
+    
+    gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
+}
+void drawRestartText() {
+    char* message = "Press any key to play again";
+    gfx_PrintStringXY(message, GFX_LCD_WIDTH / 2 - gfx_GetStringWidth(message) / 2, 210);
+}
+
 void setupGraphics() {
 	gfx_Begin();
     
@@ -17,22 +45,7 @@ void setupGraphics() {
     
     gfx_FillScreen(1);
 }
-void drawMineCount(int discoveredMines) {
-    int width = gfx_GetStringWidth("10/10");
-    gfx_FillRectangle_NoClip(GFX_LCD_WIDTH - width - 1, 1, width, 9);
-    
-    char* minesString = (char*) malloc((int) ((ceil(log10(discoveredMines)) + 1) * sizeof(char)) + 3);
-    sprintf(minesString, "%d/10", discoveredMines);
-    
-    gfx_PrintStringXY(minesString, GFX_LCD_WIDTH - gfx_GetStringWidth(minesString) - 1, 1);
-    free(minesString);
-}
-void drawVersion() {
-    int width = gfx_GetStringWidth(VERSION);
-    
-    gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
-}
-void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
+void drawTile(int x, int y, int* board, int* mask, int selX, int selY, int lost) {
     int tileX = 80 + x * 16;
     int tileY = 40 + y * 16;
     
@@ -47,8 +60,10 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
         case MASK_UNCOVERED:
             gfx_Sprite_NoClip(sprites_tile_1, tileX, tileY);
             
-            if(board[10 * y + x] == BOARD_MINE)
-                gfx_TransparentSprite_NoClip(sprites_tile_3, tileX, tileY);
+            if(board[10 * y + x] == BOARD_MINE) {
+                gfx_sprite_t* displayMode = lost ? sprites_tile_13 : sprites_tile_3;
+                gfx_TransparentSprite_NoClip(displayMode, tileX, tileY);
+            }
             else if(board[10 * y + x] > BOARD_CLEAR)
                 gfx_TransparentSprite_NoClip(sprites_tiles[4 + board[10 * y + x]], tileX, tileY);
             
@@ -62,10 +77,12 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY) {
         gfx_TransparentSprite_NoClip(sprites_tile_4, tileX, tileY);
     }
 }
-void drawBoard(int* board, int* mask, int selX, int selY, int discoveredMines) {
+void drawBoard(int* board, int* mask, int selX, int selY, int flagsUsed, int lost) {
+    gfx_FillScreen(1);
+    
     for(int y = 0; y < 10; y++) {
         for(int x = 0; x < 10; x++) {
-            drawTile(x, y, board, mask, selX, selY);
+            drawTile(x, y, board, mask, selX, selY, lost);
         }
     }
     
@@ -74,6 +91,6 @@ void drawBoard(int* board, int* mask, int selX, int selY, int discoveredMines) {
     gfx_PrintStringXY("[alpha] - Flag", 1, 21);
     gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
     
-    drawMineCount(discoveredMines);
+    drawRemainingFlags(flagsUsed);
     drawVersion();
 }
