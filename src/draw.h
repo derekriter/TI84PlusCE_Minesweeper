@@ -9,17 +9,6 @@
 #include "debug.h"
 #include "mathutils.h"
 
-void setupGraphics() {
-	gfx_Begin();
-    
-    gfx_SetDrawBuffer(); //using blit buffer (see https://ce-programming.github.io/toolchain/libraries/graphx.html#buffering-graphics)
-    gfx_SetPalette(global_palette, sizeof_global_palette, 0);
-    gfx_SetTransparentColor(0);
-    gfx_SetTextFGColor(2);
-    gfx_SetColor(1);
-    
-    gfx_FillScreen(1);
-}
 void drawRemainingFlags(int flagsUsed) {
     //number
     int width = gfx_GetStringWidth("00");
@@ -39,6 +28,22 @@ void drawVersion() {
     int width = gfx_GetStringWidth(VERSION);
     
     gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
+}
+void drawRestartText() {
+    char* message = "Press any key to play again";
+    gfx_PrintStringXY(message, GFX_LCD_WIDTH / 2 - gfx_GetStringWidth(message) / 2, 210);
+}
+
+void setupGraphics() {
+	gfx_Begin();
+    
+    gfx_SetDrawBuffer(); //using blit buffer (see https://ce-programming.github.io/toolchain/libraries/graphx.html#buffering-graphics)
+    gfx_SetPalette(global_palette, sizeof_global_palette, 0);
+    gfx_SetTransparentColor(0);
+    gfx_SetTextFGColor(2);
+    gfx_SetColor(1);
+    
+    gfx_FillScreen(1);
 }
 void drawTile(int x, int y, int* board, int* mask, int selX, int selY, int lost) {
     int tileX = 80 + x * 16;
@@ -73,6 +78,8 @@ void drawTile(int x, int y, int* board, int* mask, int selX, int selY, int lost)
     }
 }
 void drawBoard(int* board, int* mask, int selX, int selY, int flagsUsed, int lost) {
+    gfx_FillScreen(1);
+    
     for(int y = 0; y < 10; y++) {
         for(int x = 0; x < 10; x++) {
             drawTile(x, y, board, mask, selX, selY, lost);
