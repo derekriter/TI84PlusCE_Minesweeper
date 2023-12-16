@@ -93,8 +93,25 @@ int* generateBoard() {
     
     return newBoard;
 }
-void reveal(int index) {
-    if(mask[index] != MASK_COVERED) return;
+void reveal(int index, int isOriginal) {
+    if(mask[index] == MASK_UNCOVERED && isOriginal && board[index] > BOARD_CLEAR) {
+        int known = 0;
+        for(int i = 0; i < 8; i++) {
+            int neighborIndex = getNeighborTile(index, i);
+            if(neighborIndex == -1) continue;
+            known += mask[neighborIndex] == MASK_FLAGGED;
+        }
+        if(known >= board[index]) {
+            for(int i = 0; i < 8; i++) {
+                int neighborIndex = getNeighborTile(index, i);\
+                if(neighborIndex == -1) continue;
+                if(mask[neighborIndex] == MASK_COVERED) reveal(neighborIndex, 0);
+            }
+        }
+        
+        return;
+    }
+    else if(mask[index] != MASK_COVERED) return;
     
     mask[index] = MASK_UNCOVERED;
     updateTargets[index] = 1;
@@ -104,7 +121,7 @@ void reveal(int index) {
         int neighborLoc = getNeighborTile(index, i);
         if(neighborLoc == -1) continue;
         
-        reveal(neighborLoc);
+        reveal(neighborLoc, 0);
     }
 }
 int gameIsCompleted() {
@@ -160,10 +177,10 @@ void update() {
     else if(right && !rightLast) selX = mod(selX + 1, 10);
     else if(down && !downLast) selY = mod(selY + 1, 10);
     
-    if(uncover && !uncoverLast && mask[10 * selY + selX] == MASK_COVERED) {
+    if(uncover && !uncoverLast) {
         if(board == NULL) board = generateBoard();
         
-        reveal(10 * selY + selX);
+        reveal(10 * selY + selX, 1);
         if(board[selX + 10 * selY] == BOARD_MINE) {
             lost = 1;
             restart = 1;
