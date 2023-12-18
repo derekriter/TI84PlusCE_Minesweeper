@@ -893,13 +893,13 @@ _reveal:
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jp	z, BB12_8
+	jp	z, BB12_10
 	ld	de, 2
 	push	bc
 	pop	hl
 	or	a, a
 	sbc	hl, de
-	jr	nz, BB12_8
+	jp	nz, BB12_10
 	ld	iy, (_board)
 	ld	bc, 3
 	ld	hl, (ix + 6)
@@ -907,86 +907,98 @@ _reveal:
 	push	hl
 	pop	de
 	add	iy, de
-	ld	de, (iy)
-	ld	bc, 1
-	push	de
-	pop	hl
-	or	a, a
-	sbc	hl, bc
-	call	pe, __setflag
-	jp	m, BB12_14
-	ld	(ix - 6), de
-	ld	de, 8
-	ld	iy, 0
-	lea	bc, iy
-BB12_4:
+	ld	bc, (iy)
+	ld	de, 1
 	push	bc
 	pop	hl
 	or	a, a
 	sbc	hl, de
-	jp	z, BB12_13
-	ld	(ix - 9), iy
-	ld	(ix - 12), bc
-	push	bc
+	call	pe, __setflag
+	jp	m, BB12_16
+	ld	(ix - 9), bc
+	ld	iy, 8
+	or	a, a
+	sbc	hl, hl
+	push	hl
+	pop	de
+	ld	(ix - 6), hl
+BB12_4:
+	push	de
+	pop	hl
+	lea	bc, iy
+	or	a, a
+	sbc	hl, bc
+	jp	z, BB12_15
+	ld	(ix - 12), de
+	push	de
 	ld	hl, (ix + 6)
 	push	hl
 	call	_getNeighborTile
+	push	hl
 	pop	de
-	pop	de
+	pop	hl
+	pop	hl
+	push	de
+	pop	hl
+	ld	bc, -1
+	or	a, a
+	sbc	hl, bc
+	jr	z, BB12_9
+	ex	de, hl
 	ld	bc, 3
 	call	__imulu
-	ld	bc, 1
 	push	hl
 	pop	de
 	ld	hl, (ix - 3)
 	add	hl, de
 	ld	hl, (hl)
+	ld	de, 1
 	or	a, a
-	sbc	hl, bc
-	push	bc
-	pop	de
-	jr	z, BB12_7
+	sbc	hl, de
+	jr	z, BB12_8
 	ld	de, 0
-BB12_7:
-	ld	iy, (ix - 9)
-	add	iy, de
-	ld	bc, (ix - 12)
-	inc	bc
-	ld	de, 8
-	jr	BB12_4
 BB12_8:
+	ld	hl, (ix - 6)
+	add	hl, de
+	ld	(ix - 6), hl
+BB12_9:
+	ld	iy, 8
+	ld	de, (ix - 12)
+	inc	de
+	jr	BB12_4
+BB12_10:
 	push	bc
 	pop	hl
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB12_14
+	jr	nz, BB12_16
 	ld	hl, 2
-	ld	de, 1
 	ld	(iy), hl
 	ld	iy, (_updateTargets)
 	ld	bc, 3
 	ld	hl, (ix + 6)
 	call	__imulu
 	push	hl
-	pop	bc
-	add	iy, bc
-	ld	(iy), de
+	pop	de
+	add	iy, de
+	ld	hl, 1
+	ld	(iy), hl
 	ld	hl, (_board)
-	add	hl, bc
+	add	hl, de
 	ld	hl, (hl)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	nz, BB12_14
+	jr	nz, BB12_16
 	ld	de, 8
 	ld	bc, 0
-BB12_11:
+BB12_13:
 	push	bc
 	pop	hl
 	or	a, a
 	sbc	hl, de
-	jr	z, BB12_14
+	jr	z, BB12_16
 	ld	(ix - 3), bc
 	push	bc
 	ld	hl, (ix + 6)
@@ -1010,57 +1022,91 @@ BB12_11:
 	ld	bc, (ix - 3)
 	inc	bc
 	ld	de, 8
-	jr	BB12_11
-BB12_13:
-	lea	hl, iy
-	ld	bc, (ix - 6)
+	jr	BB12_13
+BB12_15:
+	ld	hl, (ix - 6)
+	ld	bc, (ix - 9)
 	or	a, a
 	sbc	hl, bc
 	call	pe, __setflag
-	jp	p, BB12_15
-BB12_14:
+	jp	p, BB12_17
+BB12_16:
 	ld	sp, ix
 	pop	ix
 	ret
-BB12_15:
+BB12_17:
 	ld	bc, 0
-BB12_16:
+	lea	de, iy
+BB12_18:
 	push	bc
 	pop	hl
 	or	a, a
 	sbc	hl, de
-	jr	z, BB12_14
+	jr	z, BB12_16
 	ld	(ix - 3), bc
 	push	bc
 	ld	hl, (ix + 6)
 	push	hl
 	call	_getNeighborTile
 	push	hl
-	pop	de
+	pop	bc
 	pop	hl
 	pop	hl
+	push	bc
+	pop	hl
+	ld	de, -1
+	or	a, a
+	sbc	hl, de
+	jr	z, BB12_23
 	ld	iy, (_mask)
-	push	de
+	push	bc
 	pop	hl
+	push	bc
+	pop	de
 	ld	bc, 3
 	call	__imulu
-	push	hl
+	push	de
 	pop	bc
-	add	iy, bc
+	push	hl
+	pop	de
+	add	iy, de
 	ld	hl, (iy)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	ld	hl, 0
+	jr	nz, BB12_23
+	or	a, a
+	sbc	hl, hl
 	push	hl
-	push	de
-	call	z, _reveal
+	push	bc
+	ld	(ix - 6), bc
+	call	_reveal
 	pop	hl
 	pop	hl
+	ld	iy, (_board)
+	ld	hl, (ix - 6)
+	ld	bc, 3
+	call	__imulu
+	push	hl
+	pop	de
+	add	iy, de
+	ld	hl, (iy)
+	ld	de, -1
+	or	a, a
+	sbc	hl, de
+	jr	nz, BB12_23
+	ld	hl, 1
+	ld	(_lost), hl
+	ld	(_restart), hl
+	call	_clock
+	ld	a, e
+	ld	(_restartTime), hl
+	ld	(_restartTime+3), a
+BB12_23:
 	ld	bc, (ix - 3)
 	inc	bc
 	ld	de, 8
-	jr	BB12_16
+	jp	BB12_18
 	section	.text,"ax",@progbits
 
 	section	.text,"ax",@progbits
@@ -1995,6 +2041,11 @@ _needToRedrawMineCount:
 	rb	3
 
 	section	.bss,"aw",@nobits
+	public	_restartTime
+_restartTime:
+	rb	4
+
+	section	.bss,"aw",@nobits
 	public	_leftLast
 _leftLast:
 	rb	3
@@ -2033,11 +2084,6 @@ _lastSelX:
 	public	_lastSelY
 _lastSelY:
 	rb	3
-
-	section	.bss,"aw",@nobits
-	public	_restartTime
-_restartTime:
-	rb	4
 
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 6c61664110f888c0285ae4c48b150c9a7a4361bb)"
 	ident	"clang version 15.0.0 (https://github.com/jacobly0/llvm-project 6c61664110f888c0285ae4c48b150c9a7a4361bb)"
@@ -2078,10 +2124,10 @@ _restartTime:
 	extern	_gfx_FillScreen
 	extern	__irems
 	extern	__fneg
+	extern	__Unwind_SjLj_Unregister
 	extern	__fdiv
 	extern	__imulu
 	extern	_gfx_SetColor
-	extern	__Unwind_SjLj_Unregister
 	extern	_calloc
 	extern	_gfx_TransparentSprite_NoClip
 	extern	_gfx_PrintStringXY

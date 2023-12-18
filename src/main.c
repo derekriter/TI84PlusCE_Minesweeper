@@ -105,7 +105,14 @@ void reveal(int index, int isOriginal) {
             for(int i = 0; i < 8; i++) {
                 int neighborIndex = getNeighborTile(index, i);\
                 if(neighborIndex == -1) continue;
-                if(mask[neighborIndex] == MASK_COVERED) reveal(neighborIndex, 0);
+                if(mask[neighborIndex] == MASK_COVERED) {
+                    reveal(neighborIndex, 0);
+                    if(board[neighborIndex] == BOARD_MINE) {
+                        lost = 1;
+                        restart = 1;
+                        restartTime = clock();
+                    }
+                }
             }
         }
         
