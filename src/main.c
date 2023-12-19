@@ -74,7 +74,10 @@ int* generateBoard() {
     for(int i = 0; i < 10; i++) {
         do {
             int loc = randInt(0, 99);
-            if(newBoard[loc] != BOARD_MINE && loc != selX + 10 * selY) {
+            int locX = loc % 10;
+            int locY = loc / 10;
+            
+            if(newBoard[loc] != BOARD_MINE && abs(locX - selX) >= 2 && abs(locY - selY) >= 2) {
                 newBoard[loc] = BOARD_MINE;
                 
                 for(int i = 0; i < 8; i++) {

@@ -773,10 +773,12 @@ JTI10_0:
 	section	.text,"ax",@progbits
 	public	_generateBoard
 _generateBoard:
-	ld	hl, -12
+	ld	hl, -15
 	call	__frameset
 	ld	hl, 100
 	ld	de, 3
+	ld	c, -10
+	ld	(ix - 3), bc
 	push	de
 	push	hl
 	call	_calloc
@@ -787,50 +789,109 @@ _generateBoard:
 	or	a, a
 	sbc	hl, hl
 BB11_1:
-	ld	(ix - 9), hl
+	ld	(ix - 15), hl
 	or	a, a
 	sbc	hl, de
-	jp	z, BB11_11
+	jp	z, BB11_12
 BB11_2:
 	call	_rand
 	ld	bc, 100
 	call	__irems
+	push	hl
+	pop	iy
+	ld	b, iyl
+	ld	c, 10
+	call	__bdivs
+	ld	hl, (ix - 3)
+	ld	h, a
 	ld	(ix - 3), hl
+	rlc	a
+	sbc	hl, hl
+	push	hl
+	pop	de
+	lea	hl, iy
 	ld	bc, 3
 	call	__imulu
 	push	hl
-	pop	de
-	ld	iy, (ix - 6)
-	add	iy, de
-	ld	hl, (iy)
-	ld	de, -1
+	pop	bc
+	ld	hl, (ix - 6)
+	add	hl, bc
+	ld	(ix - 9), hl
+	ld	hl, (hl)
+	ld	bc, -1
 	or	a, a
-	sbc	hl, de
+	sbc	hl, bc
 	jr	z, BB11_2
-	ld	de, (_selX)
-	ld	hl, (_selY)
-	ld	bc, 10
-	call	__imulu
-	add	hl, de
-	ex	de, hl
 	ld	hl, (ix - 3)
+	mlt	hl
+	ld	a, l
+	add	a, iyl
+	ld	l, a
+	rlc	l
+	sbc	hl, hl
+	ld	l, a
+	ld	bc, (_selX)
+	or	a, a
+	sbc	hl, bc
+	push	de
+	pop	bc
+	push	hl
+	pop	de
+	ld	(ix - 12), iy
+	push	de
+	pop	iy
+	add	iy, iy
+	push	bc
+	pop	iy
+	sbc	hl, hl
+	push	hl
+	pop	bc
+	ex	de, hl
+	add	hl, bc
+	call	__ixor
+	ld	bc, 2
+	or	a, a
+	sbc	hl, bc
+	jr	c, BB11_2
+	ld	hl, (ix - 3)
+	ex	de, hl
+	ld	iyl, d
+	ex	de, hl
+	ld	bc, (_selY)
+	lea	hl, iy
+	or	a, a
+	sbc	hl, bc
+	push	hl
+	pop	de
+	push	de
+	pop	iy
+	add	iy, iy
+	ld	iy, (ix - 12)
+	sbc	hl, hl
+	push	hl
+	pop	bc
+	ex	de, hl
+	add	hl, bc
+	call	__ixor
+	ld	de, 2
 	or	a, a
 	sbc	hl, de
-	jr	z, BB11_2
+	jp	c, BB11_2
 	scf
 	sbc	hl, hl
+	ld	iy, (ix - 9)
 	ld	(iy), hl
 	ld	iy, 0
-BB11_5:
+BB11_6:
 	ld	de, 10
 	lea	hl, iy
 	ld	bc, 8
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB11_10
-	ld	(ix - 12), iy
+	jr	z, BB11_11
+	ld	(ix - 9), iy
 	push	iy
-	ld	hl, (ix - 3)
+	ld	hl, (ix - 12)
 	push	hl
 	call	_getNeighborTile
 	push	hl
@@ -842,7 +903,7 @@ BB11_5:
 	ld	bc, -1
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB11_9
+	jr	z, BB11_10
 	ex	de, hl
 	ld	bc, 3
 	call	__imulu
@@ -856,18 +917,18 @@ BB11_5:
 	ld	bc, -1
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB11_9
+	jr	z, BB11_10
 	inc	de
 	ld	(iy), de
-BB11_9:
-	ld	iy, (ix - 12)
-	inc	iy
-	jr	BB11_5
 BB11_10:
-	ld	hl, (ix - 9)
+	ld	iy, (ix - 9)
+	inc	iy
+	jr	BB11_6
+BB11_11:
+	ld	hl, (ix - 15)
 	inc	hl
 	jp	BB11_1
-BB11_11:
+BB11_12:
 	ld	hl, (ix - 6)
 	ld	sp, ix
 	pop	ix
@@ -2103,12 +2164,14 @@ _lastSelY:
 	extern	__setflag
 	extern	_gfx_Blit
 	extern	_exit
+	extern	__ixor
 	extern	__ltof
 	extern	_gfx_Sprite_NoClip
 	extern	_free
 	extern	_log10
 	extern	_ceilf
 	extern	_time
+	extern	__bdivs
 	extern	__bdivu
 	extern	__frameset
 	extern	_gfx_SetTransparentColor
