@@ -8,6 +8,7 @@
 		"keypadc.h": "c",
 		"gfx.h": "c",
 		"mathutils.h": "c",
-		"stdint.h": "c"
+		"stdint.h": "c",
+		"menu.h": "c"
 	}
 }
