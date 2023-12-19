@@ -69,7 +69,7 @@ int getNeighborTile(int loc, int neighborIndex) {
     return neighborX + 10 * neighborY;
 }
 int* generateBoard() {
-    int* newBoard = (int*) calloc(100, sizeof(int));
+    int* newBoard = (int*) malloc(100 * sizeof(int));
     
     for(int i = 0; i < 10; i++) {
         do {
@@ -254,9 +254,9 @@ int main() {
     
     setupGraphics();
     
-    mask = (int*) calloc(100, sizeof(int));
+    mask = (int*) malloc(100 * sizeof(int));
     needToRedrawBoard = 1;
-    updateTargets = (int*) calloc(100, sizeof(int));
+    updateTargets = (int*) malloc(100 * sizeof(int));
     
     do {
         kb_Scan();

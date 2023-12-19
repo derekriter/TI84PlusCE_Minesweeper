@@ -14,7 +14,7 @@ void drawRemainingFlags(int flagsUsed) {
     int width = gfx_GetStringWidth("00");
     gfx_FillRectangle_NoClip(GFX_LCD_WIDTH - width - 1, 18, width, 9);
     
-    char* string = (char*) calloc(3, sizeof(int));
+    char* string = (char*) malloc(3 * sizeof(int));
     int flagsLeft = 10 - flagsUsed;
     sprintf(string, "%d%d", flagsLeft / 10, flagsLeft % 10);
     

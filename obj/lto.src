@@ -207,12 +207,10 @@ _drawRemainingFlags:
 	pop	hl
 	pop	hl
 	pop	hl
-	ld	hl, 3
+	ld	hl, 9
 	push	hl
-	push	hl
-	call	_calloc
+	call	_malloc
 	ld	(ix - 3), hl
-	pop	hl
 	pop	hl
 	ld	bc, 10
 	push	bc
@@ -775,15 +773,12 @@ JTI10_0:
 _generateBoard:
 	ld	hl, -15
 	call	__frameset
-	ld	hl, 100
-	ld	de, 3
-	ld	c, -10
-	ld	(ix - 3), bc
-	push	de
+	ld	hl, 300
+	ld	e, -10
+	ld	(ix - 3), de
 	push	hl
-	call	_calloc
+	call	_malloc
 	ld	(ix - 6), hl
-	pop	hl
 	pop	hl
 	ld	de, 10
 	or	a, a
@@ -1839,22 +1834,16 @@ _main:
 	call	_srand
 	pop	hl
 	call	_setupGraphics
-	ld	hl, 3
+	ld	hl, 300
 	push	hl
-	ld	hl, 100
-	push	hl
-	call	_calloc
-	pop	de
+	call	_malloc
 	pop	de
 	ld	(_mask), hl
 	ld	hl, 1
 	ld	(_needToRedrawBoard), hl
-	ld	hl, 3
+	ld	hl, 300
 	push	hl
-	ld	hl, 100
-	push	hl
-	call	_calloc
-	pop	de
+	call	_malloc
 	pop	de
 	ld	(_updateTargets), hl
 BB17_1:
@@ -2191,7 +2180,6 @@ _lastSelY:
 	extern	__fdiv
 	extern	__imulu
 	extern	_gfx_SetColor
-	extern	_calloc
 	extern	_gfx_TransparentSprite_NoClip
 	extern	_gfx_PrintStringXY
 	extern	_gfx_End
