@@ -1,9 +1,9 @@
-# TI-84+ CE Minesweeper
-Just a small project I figured I would mess around with after playing *[Minesweeper](https://www.ti84calcwiz.com/ti84plusce-games/#:~:text=Download!-,Minesweeper,-Author%3A%20merthsoft%0AThe)* by merthsoft. It uses *[CE C/C++ Toolchain](https://github.com/CE-Programming/toolchain)* to be able to run C code on a TI-84+ CE.
+# TI-84 Plus CE Minesweeper
+Just a small project I figured I would mess around with after playing *[Minesweeper](https://www.ti84calcwiz.com/ti84plusce-games/#:~:text=Download!-,Minesweeper,-Author%3A%20merthsoft%0AThe)* by merthsoft. It uses *[CE C/C++ Toolchain](https://github.com/CE-Programming/toolchain)* to be able to run C code on a TI-84 Plus CE.
 
 # Installation
 ## Things you need:
-1. A TI-84+ CE.
+1. A TI-84 Plus CE.
 2. A cable to connect your calculator to your computer (the charging cable it comes with works fine).
 3. A computer.
 4. *[TI Connect CE](https://education.ti.com/en/product-resources/ti-connect-ce-get-the-right-version#:~:text=your%20graphing%20calculator.-,TI%20Connect%E2%84%A2%20CE%20software,-Computer%20software%20for)*. This is the software used to transfer the game files to your calculator.
