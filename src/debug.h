@@ -6,7 +6,7 @@
 #include <graphx.h>
 
 void debugInt(int n) {
-    char* debug = (char*) malloc((int) ((ceil(log10(n)) + 1) * sizeof(char)));
+    char* debug = (char*) calloc((int) (ceil(log10(n)) + 1), sizeof(char));
     sprintf(debug, "%d", n);
     
     gfx_FillRectangle_NoClip(100, GFX_LCD_HEIGHT - 9, GFX_LCD_WIDTH - 101, 8);

@@ -4,6 +4,7 @@ palettes:
       - color: {index: 0, hex: "#FF00FF"}
       - color: {index: 1, hex: "#FFFFFF"}
       - color: {index: 2, hex: "#000000"}
+      - color: {index: 3, hex: "#F5C518"}
     images: automatic
 
 converts:

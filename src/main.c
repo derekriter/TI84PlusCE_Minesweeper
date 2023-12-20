@@ -4,6 +4,9 @@
 #define MASK_COVERED 0
 #define MASK_FLAGGED 1
 #define MASK_UNCOVERED 2
+#define DIFFIC_BEGINNER 0
+#define DIFFIC_INTERMEDIATE 1
+#define DIFFIC_EXPERT 2
 
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +20,8 @@
 int inMenu = 1;
 int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, selectLast = 0, alphaLast = 0;
 int shouldRedrawBoard = 0, shouldRedrawMenu = 1;
+int difficulty = 0;
+int boardWidth = 8, boardHeight = 8, totalMines = 10, boardArea = 64;
 
 void end();
 

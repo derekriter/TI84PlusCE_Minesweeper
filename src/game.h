@@ -25,12 +25,9 @@ void initGame() {
     
     srand(time(NULL));
     board = NULL;
-    mask = (int*) malloc(100 * sizeof(int));
-    updateTargets = (int*) malloc(100 * sizeof(int));
+    mask = (int*) calloc(boardArea, sizeof(int));
+    updateTargets = (int*) calloc(boardArea, sizeof(int));
     shouldRedrawMineCount = lastSelX = lastSelY = selX = selY = minesFlagged = lost = restart = 0;
-    
-    fillIntArray(mask, 100, 0);
-    fillIntArray(updateTargets, 100, 0);
 }
 void stopGame() {
     gameWasLoaded = 0;
@@ -43,7 +40,7 @@ void stopGame() {
 }
 
 int getNeighborTile(int loc, int neighborIndex) {
-    int neighborX = loc % 10, neighborY = loc / 10;
+    int neighborX = loc % boardWidth, neighborY = loc / boardWidth;
     
     switch(neighborIndex) {
         case 0:
@@ -78,18 +75,17 @@ int getNeighborTile(int loc, int neighborIndex) {
             return -1;
     }
     
-    if(neighborX < 0 || neighborX > 9 || neighborY < 0 || neighborY > 9) return -1;
-    return neighborX + 10 * neighborY;
+    if(neighborX < 0 || neighborX > boardWidth - 1 || neighborY < 0 || neighborY > boardHeight - 1) return -1;
+    return neighborX + boardWidth * neighborY;
 }
 int* generateBoard() {
-    int* newBoard = (int*) malloc(100 * sizeof(int));
-    fillIntArray(newBoard, 100, 0);
+    int* newBoard = (int*) calloc(boardArea, sizeof(int));
     
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < totalMines; i++) {
         do {
-            int loc = randInt(0, 99);
-            int locX = loc % 10;
-            int locY = loc / 10;
+            int loc = randInt(0, boardArea - 1);
+            int locX = loc % boardWidth;
+            int locY = loc / boardWidth;
             
             if(newBoard[loc] != BOARD_MINE && abs(locX - selX) >= 2 && abs(locY - selY) >= 2) {
                 newBoard[loc] = BOARD_MINE;
@@ -148,7 +144,7 @@ void reveal(int index, int isOriginal) {
     }
 }
 int gameIsCompleted() {
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < boardArea; i++) {
         if(board[i] == BOARD_MINE) {
             if(mask[i] != MASK_UNCOVERED) continue;
         }
@@ -171,7 +167,7 @@ void updateGame() {
     if(restart) {
         if(kb_AnyKey() && !selectLast) {
             srand(time(NULL));
-            memset(mask, MASK_COVERED, 100 * sizeof(int));
+            memset(mask, MASK_COVERED, boardArea * sizeof(int));
             free(board);
             board = NULL;
             
@@ -189,41 +185,41 @@ void updateGame() {
         return;
     }
     
-    if(left && !leftLast) selX = mod(selX - 1, 10);
-    else if(up && !upLast) selY = mod(selY - 1, 10);
-    else if(right && !rightLast) selX = mod(selX + 1, 10);
-    else if(down && !downLast) selY = mod(selY + 1, 10);
+    if(left && !leftLast) selX = mod(selX - 1, boardWidth);
+    else if(up && !upLast) selY = mod(selY - 1, boardHeight);
+    else if(right && !rightLast) selX = mod(selX + 1, boardWidth);
+    else if(down && !downLast) selY = mod(selY + 1, boardHeight);
     
     if(select && !selectLast) {
         if(board == NULL) board = generateBoard();
         
-        reveal(10 * selY + selX, 1);
-        if(board[selX + 10 * selY] == BOARD_MINE) {
+        reveal(boardWidth * selY + selX, 1);
+        if(board[selX + boardWidth * selY] == BOARD_MINE) {
             lost = 1;
             restart = 1;
         }
         else if(gameIsCompleted()) {
             restart = 1;
-            fillIntArray(mask, 100, MASK_UNCOVERED);
+            fillIntArray(mask, boardArea, MASK_UNCOVERED);
             shouldRedrawBoard = 1;
         }
     }
-    else if(alpha && !alphaLast && mask[10 * selY + selX] == MASK_COVERED && minesFlagged < 10) {
-        mask[10 * selY + selX] = MASK_FLAGGED;
-        updateTargets[10 * selY + selX] = 1;
+    else if(alpha && !alphaLast && mask[boardWidth * selY + selX] == MASK_COVERED && minesFlagged < totalMines) {
+        mask[boardWidth * selY + selX] = MASK_FLAGGED;
+        updateTargets[boardWidth * selY + selX] = 1;
         minesFlagged++;
         shouldRedrawMineCount = 1;
     }
-    else if(alpha && !alphaLast && mask[10 * selY + selX] == MASK_FLAGGED) {
-        mask[10 * selY + selX] = MASK_COVERED;
-        updateTargets[10 * selY + selX] = 1;
+    else if(alpha && !alphaLast && mask[boardWidth * selY + selX] == MASK_FLAGGED) {
+        mask[boardWidth * selY + selX] = MASK_COVERED;
+        updateTargets[boardWidth * selY + selX] = 1;
         minesFlagged--;
         shouldRedrawMineCount = 1;
     }
     
     if(selX != lastSelX || selY != lastSelY) {
-        updateTargets[10 * lastSelY + lastSelX] = 1;
-        updateTargets[10 * selY + selX] = 1;
+        updateTargets[boardWidth * lastSelY + lastSelX] = 1;
+        updateTargets[boardWidth * selY + selX] = 1;
     }
     
     leftLast = left;
@@ -245,9 +241,9 @@ void renderGame() {
         updated = 1;
     }
     else {
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < boardArea; i++) {
             if(!updateTargets[i]) continue;
-            drawTile(i % 10, i / 10, board, mask, selX, selY, lost);
+            drawTile(i % boardWidth, i / boardWidth, board, mask, selX, selY, lost);
             
             updated = 1;
         }
@@ -267,5 +263,5 @@ void renderGame() {
     
     shouldRedrawBoard = 0;
     shouldRedrawMineCount = 0;
-    memset(updateTargets, 0, 100 * sizeof(int)); //clear update targets (reset to all 0)
+    memset(updateTargets, 0, boardArea * sizeof(int)); //clear update targets (reset to all 0)
 }

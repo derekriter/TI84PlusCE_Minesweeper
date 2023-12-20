@@ -8,6 +8,7 @@
 
 int shouldRedrawCursor = 0;
 int cursorPos = 0;
+int shouldRedrawDiffic = 0;
 
 void updateMenu() {
     int up = kb_IsDown(kb_KeyUp);
@@ -32,6 +33,27 @@ void updateMenu() {
                 break;
             case 1:
                 //change difficulty
+                difficulty = mod(difficulty + 1, 3);
+                switch(difficulty) {
+                    case DIFFIC_BEGINNER:
+                        boardWidth = 8;
+                        boardHeight = 8;
+                        totalMines = 10;
+                        break;
+                    case DIFFIC_INTERMEDIATE:
+                        boardWidth = 11;
+                        boardHeight = 11;
+                        totalMines = 20;
+                        break;
+                    case DIFFIC_EXPERT:
+                        boardWidth = 16;
+                        boardHeight = 13;
+                        totalMines = 40;
+                        break;
+                }
+                boardArea = boardWidth * boardHeight;
+                shouldRedrawDiffic = 1;
+                
                 break;
             case 2:
                 //quit
@@ -57,9 +79,13 @@ void renderMenu() {
             drawCursor(cursorPos);
             updated = 1;
         }
+        if(shouldRedrawDiffic) {
+            drawDiffic();
+            updated = 1;
+        }
     }
     
     if(updated) gfx_BlitBuffer();
     
-    shouldRedrawMenu = shouldRedrawCursor = 0;
+    shouldRedrawMenu = shouldRedrawCursor = shouldRedrawDiffic = 0;
 }
