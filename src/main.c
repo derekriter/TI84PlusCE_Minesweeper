@@ -12,46 +12,54 @@
 #include <time.h>
 
 #include <keypadc.h>
+#include <graphx.h>
+
+int inMenu = 1;
+int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, selectLast = 0, alphaLast = 0;
+int shouldRedrawBoard = 0, shouldRedrawMenu = 1;
+
+void end();
 
 #include "debug.h"
 #include "draw.h"
 #include "mathutils.h"
-#include "menu.h"
 #include "game.h"
+#include "menu.h"
 
-int inMenu = 1;
-
-int main() {
-    srand(time(NULL)); //set seed for rand
-    
-    setupGraphics();
-    
-    do {
-        kb_Scan();
-        
-        switch(inMenu) {
-            case 1:
-                updateMenu();
-                renderMenu();
-                
-                break;
-            case 0:
-                if(!gameWasLoaded) initGame();
-                
-                updateGame();
-                renderGame();
-                
-                needToRedrawBoard = 0;
-                needToRedrawMineCount = 0;
-                memset(updateTargets, 0, 100 * sizeof(int)); //clear update targets (reset to all 0)
-                
-                break;
-        }
-    }
-    while(!kb_IsDown(kb_KeyDel));
-    
+void end() {
     if(gameWasLoaded) stopGame();
     
     gfx_End();
+}
+
+int main() {
+    setupGraphics();
+    
+    int delLast = 0;
+    while(1) {
+        kb_Scan();
+        
+        if(inMenu) {
+            updateMenu();
+            renderMenu();
+        }
+        else {
+            if(!gameWasLoaded) initGame();
+            
+            updateGame();
+            renderGame();
+        }
+        
+        int del = kb_IsDown(kb_KeyDel);
+        if(del && !delLast && inMenu) break;
+        else if(del && !inMenu) {
+            if(gameWasLoaded) stopGame();
+            inMenu = 1;
+            shouldRedrawMenu = 1;
+        }
+        delLast = del;
+    }
+    
+    end();
     return 0;
 }

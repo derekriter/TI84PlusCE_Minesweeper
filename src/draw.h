@@ -6,8 +6,19 @@
 #include <graphx.h>
 #include "gfx/gfx.h"
 
-#include "debug.h"
 #include "mathutils.h"
+
+void setupGraphics() {
+    gfx_Begin();
+    
+    gfx_SetDrawBuffer(); //using blit buffer (see https://ce-programming.github.io/toolchain/libraries/graphx.html#buffering-graphics)
+    gfx_SetPalette(global_palette, sizeof_global_palette, 0);
+    gfx_SetTransparentColor(0);
+    gfx_SetTextFGColor(2);
+    gfx_SetColor(1);
+    
+    gfx_FillScreen(1);
+}
 
 void drawRemainingFlags(int flagsUsed) {
     //number
@@ -24,26 +35,9 @@ void drawRemainingFlags(int flagsUsed) {
     //flag icon
     gfx_TransparentSprite_NoClip(sprites_tile_2, GFX_LCD_WIDTH - maxint((width - 16) / 2, 1) - 16, 1);
 }
-void drawVersion() {
-    int width = gfx_GetStringWidth(VERSION);
-    
-    gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
-}
 void drawRestartText() {
     char* message = "Press any key to play again";
     gfx_PrintStringXY(message, GFX_LCD_WIDTH / 2 - gfx_GetStringWidth(message) / 2, 210);
-}
-
-void setupGraphics() {
-    gfx_Begin();
-    
-    gfx_SetDrawBuffer(); //using blit buffer (see https://ce-programming.github.io/toolchain/libraries/graphx.html#buffering-graphics)
-    gfx_SetPalette(global_palette, sizeof_global_palette, 0);
-    gfx_SetTransparentColor(0);
-    gfx_SetTextFGColor(2);
-    gfx_SetColor(1);
-    
-    gfx_FillScreen(1);
 }
 void drawTile(int x, int y, int* board, int* mask, int selX, int selY, int lost) {
     int tileX = 80 + x * 16;
@@ -86,11 +80,37 @@ void drawBoard(int* board, int* mask, int selX, int selY, int flagsUsed, int los
         }
     }
     
-    gfx_PrintStringXY("[ARROWS] - Select", 1, 1);
-    gfx_PrintStringXY("[2nd] - Uncover", 1, 11);
-    gfx_PrintStringXY("[alpha] - Flag", 1, 21);
     gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
     
     drawRemainingFlags(flagsUsed);
+}
+
+int titleX = 100;
+void drawVersion() {
+    int width = gfx_GetStringWidth(VERSION);
+    
+    gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
+}
+void drawCursor(int cursorPos) {
+    int width = gfx_GetCharWidth('>');
+    gfx_FillRectangle_NoClip(titleX - width - 1, 100, width, 60);
+    
+    gfx_PrintStringXY(">", titleX - width - 1, cursorPos * 20 + 100);
+}
+void drawMenu(int cursorPos) {
+    gfx_FillScreen(1);
+    
+    titleX = (GFX_LCD_WIDTH - title_width * 3) / 2;
+    gfx_ScaledTransparentSprite_NoClip(title, titleX, 30, 3, 3);
     drawVersion();
+    
+    drawCursor(cursorPos);
+    gfx_PrintStringXY("Play", titleX, 100);
+    gfx_PrintStringXY("Difficulty: Beginner", titleX, 120);
+    gfx_PrintStringXY("Quit", titleX, 140);
+    gfx_PrintStringXY("    Controls:", titleX, 170);
+    gfx_PrintStringXY("      [ARROWS] - Move", titleX, 179);
+    gfx_PrintStringXY("      [2nd] or [enter] - Select", titleX, 188);
+    gfx_PrintStringXY("      [alpha] - Flag", titleX, 197);
+    gfx_PrintStringXY("      [del] - Quit", titleX, 206);
 }

@@ -6,8 +6,10 @@ extern "C" {
 #endif
 
 #include "global_palette.h"
-#define sprites_palette_offset 0
+#define game_sprites_palette_offset 0
 #include "sprites.h"
+#define title_sprite_palette_offset 0
+#include "title.h"
 
 #ifdef __cplusplus
 }

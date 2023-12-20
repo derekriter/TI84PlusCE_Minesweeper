@@ -10,15 +10,37 @@
 #include "draw.h"
 
 int selX = 0, selY = 0;
+int lastSelX = 0, lastSelY = 0;
 int minesFlagged = 0;
 int* board = NULL;
 int* mask = NULL;
 int lost = 0;
 int restart = 0;
 int* updateTargets = NULL;
-int needToRedrawBoard = 0;
-int needToRedrawMineCount = 0;
+int shouldRedrawMineCount = 0;
 int gameWasLoaded = 0;
+
+void initGame() {
+    gameWasLoaded = 1;
+    
+    srand(time(NULL));
+    board = NULL;
+    mask = (int*) malloc(100 * sizeof(int));
+    updateTargets = (int*) malloc(100 * sizeof(int));
+    shouldRedrawMineCount = lastSelX = lastSelY = selX = selY = minesFlagged = lost = restart = 0;
+    
+    fillIntArray(mask, 100, 0);
+    fillIntArray(updateTargets, 100, 0);
+}
+void stopGame() {
+    gameWasLoaded = 0;
+    
+    free(board);
+    free(mask);
+    free(updateTargets);
+    
+    board = mask = updateTargets = NULL;
+}
 
 int getNeighborTile(int loc, int neighborIndex) {
     int neighborX = loc % 10, neighborY = loc / 10;
@@ -61,6 +83,7 @@ int getNeighborTile(int loc, int neighborIndex) {
 }
 int* generateBoard() {
     int* newBoard = (int*) malloc(100 * sizeof(int));
+    fillIntArray(newBoard, 100, 0);
     
     for(int i = 0; i < 10; i++) {
         do {
@@ -136,23 +159,17 @@ int gameIsCompleted() {
     
     return 1;
 }
-void fillIntArray(int* array, int length, int value) {
-    for(int i = 0; i < length; i++)
-        array[i] = value;
-}
 
-int leftLast = 0, upLast = 0, rightLast = 0, downLast = 0, uncoverLast = 0, flagLast = 0;
-int lastSelX = 0, lastSelY = 0;
 void updateGame() {
     int left = kb_IsDown(kb_KeyLeft);
     int up = kb_IsDown(kb_KeyUp);
     int right = kb_IsDown(kb_KeyRight);
     int down = kb_IsDown(kb_KeyDown);
-    int uncover = kb_IsDown(kb_Key2nd);
-    int flag = kb_IsDown(kb_KeyAlpha);
+    int select = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
+    int alpha = kb_IsDown(kb_KeyAlpha);
     
     if(restart) {
-        if(kb_AnyKey() && !uncoverLast) {
+        if(kb_AnyKey() && !selectLast) {
             srand(time(NULL));
             memset(mask, MASK_COVERED, 100 * sizeof(int));
             free(board);
@@ -160,15 +177,15 @@ void updateGame() {
             
             lost = restart = lastSelX = lastSelY = selX = selY = minesFlagged = 0;
             
-            needToRedrawBoard = 1;
+            shouldRedrawBoard = 1;
         }
         
         leftLast = left;
         upLast = up;
         rightLast = right;
         downLast = down;
-        uncoverLast = uncover;
-        flagLast = flag;
+        selectLast = select;
+        alphaLast = alpha;
         return;
     }
     
@@ -177,7 +194,7 @@ void updateGame() {
     else if(right && !rightLast) selX = mod(selX + 1, 10);
     else if(down && !downLast) selY = mod(selY + 1, 10);
     
-    if(uncover && !uncoverLast) {
+    if(select && !selectLast) {
         if(board == NULL) board = generateBoard();
         
         reveal(10 * selY + selX, 1);
@@ -188,20 +205,20 @@ void updateGame() {
         else if(gameIsCompleted()) {
             restart = 1;
             fillIntArray(mask, 100, MASK_UNCOVERED);
-            needToRedrawBoard = 1;
+            shouldRedrawBoard = 1;
         }
     }
-    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_COVERED && minesFlagged < 10) {
+    else if(alpha && !alphaLast && mask[10 * selY + selX] == MASK_COVERED && minesFlagged < 10) {
         mask[10 * selY + selX] = MASK_FLAGGED;
         updateTargets[10 * selY + selX] = 1;
         minesFlagged++;
-        needToRedrawMineCount = 1;
+        shouldRedrawMineCount = 1;
     }
-    else if(flag && !flagLast && mask[10 * selY + selX] == MASK_FLAGGED) {
+    else if(alpha && !alphaLast && mask[10 * selY + selX] == MASK_FLAGGED) {
         mask[10 * selY + selX] = MASK_COVERED;
         updateTargets[10 * selY + selX] = 1;
         minesFlagged--;
-        needToRedrawMineCount = 1;
+        shouldRedrawMineCount = 1;
     }
     
     if(selX != lastSelX || selY != lastSelY) {
@@ -213,41 +230,42 @@ void updateGame() {
     upLast = up;
     rightLast = right;
     downLast = down;
-    uncoverLast = uncover;
-    flagLast = flag;
+    selectLast = select;
+    alphaLast = alpha;
     
     lastSelX = selX;
     lastSelY = selY;
 }
 void renderGame() {
-    if(needToRedrawBoard) {
+    if(mask == NULL) return;
+    
+    int updated = 0;
+    if(shouldRedrawBoard) {
         drawBoard(board, mask, selX, selY, minesFlagged, lost);
+        updated = 1;
     }
     else {
         for(int i = 0; i < 100; i++) {
             if(!updateTargets[i]) continue;
             drawTile(i % 10, i / 10, board, mask, selX, selY, lost);
+            
+            updated = 1;
         }
         
-        if(needToRedrawMineCount) drawRemainingFlags(minesFlagged);
+        if(shouldRedrawMineCount) {
+            drawRemainingFlags(minesFlagged);
+            updated = 1;
+        }
     }
     
-    if(restart) drawRestartText();
+    if(restart) {
+        drawRestartText();
+        updated = 1;
+    }
     
-    gfx_BlitBuffer();
-}
-
-void initGame() {
-    gameWasLoaded = 1;
+    if(updated) gfx_BlitBuffer();
     
-    mask = (int*) malloc(100 * sizeof(int));
-    needToRedrawBoard = 1;
-    updateTargets = (int*) malloc(100 * sizeof(int));
-}
-void stopGame() {
-    gameWasLoaded = 0;
-    
-    free(board);
-    free(mask);
-    free(updateTargets);
+    shouldRedrawBoard = 0;
+    shouldRedrawMineCount = 0;
+    memset(updateTargets, 0, 100 * sizeof(int)); //clear update targets (reset to all 0)
 }
