@@ -22,7 +22,7 @@ void setupGraphics() {
 
 void drawRemainingFlags(int flagsUsed) {
     //number
-    int width = gfx_GetStringWidth("00");
+    int width = gfx_GetStringWidth("000");
     gfx_FillRectangle_NoClip(GFX_LCD_WIDTH - width - 1, 18, width, 9);
     
     char* string = (char*) calloc(3, sizeof(int));
@@ -103,7 +103,7 @@ void drawDiffic() {
     int prefixWidth = gfx_GetStringWidth("Difficulty: ");
     
     gfx_FillRectangle_NoClip(titleX + prefixWidth, 120, gfx_GetStringWidth("Intermediate"), 8); //clear by widest possible output "Intermediate"
-    gfx_PrintStringXY(difficulty == DIFFIC_BEGINNER ? "Beginner" : (difficulty == DIFFIC_INTERMEDIATE ? "Intermediate" : "Expert"), titleX + prefixWidth, 120);
+    gfx_PrintStringXY(difficulty == DIFFIC_BEGINNER ? "Beginner" : (difficulty == DIFFIC_INTERMEDIATE ? "Intermediate" : (difficulty == DIFFIC_EXPERT ? "Expert" : "Insane")), titleX + prefixWidth, 120);
 }
 void drawSkin() {
     int prefixWidth = gfx_GetStringWidth("Skin: ");

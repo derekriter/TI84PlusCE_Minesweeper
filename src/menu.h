@@ -33,7 +33,7 @@ void updateMenu() {
                 break;
             case 1:
                 //change difficulty
-                difficulty = mod(difficulty + 1, 3);
+                difficulty = mod(difficulty + 1, 4);
                 switch(difficulty) {
                     case DIFFIC_BEGINNER:
                         boardWidth = 8;
@@ -50,6 +50,10 @@ void updateMenu() {
                         boardHeight = 13;
                         totalMines = 40;
                         break;
+                    case DIFFIC_INSANE:
+                        boardWidth = 16;
+                        boardWidth = 13;
+                        totalMines = 104; //50% mines
                 }
                 boardArea = boardWidth * boardHeight;
                 shouldRedrawDiffic = 1;

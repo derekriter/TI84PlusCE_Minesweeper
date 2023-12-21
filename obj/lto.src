@@ -885,7 +885,7 @@ _drawCursor:
 	section	.text,"ax",@progbits
 	public	_drawDiffic
 _drawDiffic:
-	ld	hl, -9
+	ld	hl, -6
 	call	__frameset
 	ld	hl, _.str.14
 	push	hl
@@ -894,11 +894,10 @@ _drawDiffic:
 	pop	de
 	pop	hl
 	ld	hl, (_titleX)
-	ld	(ix - 6), de
+	ld	(ix - 3), de
 	add	hl, de
-	ld	(ix - 9), hl
+	ld	(ix - 6), hl
 	ld	hl, _.str.15
-	ld	(ix - 3), hl
 	push	hl
 	call	_gfx_GetStringWidth
 	pop	de
@@ -907,7 +906,7 @@ _drawDiffic:
 	push	hl
 	ld	hl, 120
 	push	hl
-	ld	hl, (ix - 9)
+	ld	hl, (ix - 6)
 	push	hl
 	call	_gfx_FillRectangle_NoClip
 	pop	hl
@@ -915,32 +914,41 @@ _drawDiffic:
 	pop	hl
 	pop	hl
 	ld	de, (_difficulty)
+	push	de
+	pop	hl
+	add	hl, bc
+	or	a, a
+	sbc	hl, bc
+	jr	nz, BB12_2
+	ld	bc, _.str.16
+	jr	BB12_7
+BB12_2:
 	ld	bc, 1
 	push	de
 	pop	hl
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB12_2
-	ld	hl, _.str.17
-	ld	(ix - 3), hl
-BB12_2:
+	jr	nz, BB12_4
+	ld	bc, _.str.15
+	jr	BB12_7
+BB12_4:
+	ld	bc, 2
 	ex	de, hl
-	add	hl, bc
 	or	a, a
 	sbc	hl, bc
-	jr	z, BB12_4
-	ld	de, (ix - 3)
-	jr	BB12_5
-BB12_4:
-	ld	de, _.str.16
-BB12_5:
+	jr	z, BB12_6
+	ld	bc, _.str.18
+	jr	BB12_7
+BB12_6:
+	ld	bc, _.str.17
+BB12_7:
 	ld	hl, (_titleX)
-	ld	bc, (ix - 6)
-	add	hl, bc
-	ld	bc, 120
-	push	bc
-	push	hl
+	ld	de, (ix - 3)
+	add	hl, de
+	ld	de, 120
 	push	de
+	push	hl
+	push	bc
 	call	_gfx_PrintStringXY
 	ld	sp, ix
 	pop	ix
@@ -952,7 +960,7 @@ BB12_5:
 _drawSkin:
 	ld	hl, -3
 	call	__frameset
-	ld	hl, _.str.18
+	ld	hl, _.str.19
 	push	hl
 	call	_gfx_GetStringWidth
 	push	hl
@@ -1043,7 +1051,7 @@ _drawMenu:
 	ld	de, 100
 	push	de
 	push	hl
-	ld	hl, _.str.19
+	ld	hl, _.str.20
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -1053,7 +1061,7 @@ _drawMenu:
 	ld	de, 120
 	push	de
 	push	hl
-	ld	hl, _.str.20
+	ld	hl, _.str.21
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -1064,7 +1072,7 @@ _drawMenu:
 	ld	de, 140
 	push	de
 	push	hl
-	ld	hl, _.str.21
+	ld	hl, _.str.22
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -1075,7 +1083,7 @@ _drawMenu:
 	ld	de, 160
 	push	de
 	push	hl
-	ld	hl, _.str.22
+	ld	hl, _.str.23
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -1085,7 +1093,7 @@ _drawMenu:
 	push	hl
 	ld	hl, 1
 	push	hl
-	ld	hl, _.str.23
+	ld	hl, _.str.24
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -1095,7 +1103,7 @@ _drawMenu:
 	push	hl
 	ld	hl, 1
 	push	hl
-	ld	hl, _.str.24
+	ld	hl, _.str.25
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -1105,7 +1113,7 @@ _drawMenu:
 	push	hl
 	ld	hl, 1
 	push	hl
-	ld	hl, _.str.25
+	ld	hl, _.str.26
 	push	hl
 	call	_gfx_PrintStringXY
 	pop	hl
@@ -2401,7 +2409,7 @@ BB22_16:
 	section	.text,"ax",@progbits
 	public	_updateMenu
 _updateMenu:
-	ld	hl, -9
+	ld	hl, -12
 	call	__frameset
 	ld	iy, -720866
 	ld.sis	bc, 8
@@ -2412,12 +2420,9 @@ _updateMenu:
 	ld	(ix - 6), hl
 	ld	l, (iy)
 	ld	h, (iy + 1)
-	ld.sis	iy, 1
-	ld	c, iyl
-	ld	b, iyh
+	ld.sis	bc, 1
 	call	__sand
-	ld	c, l
-	ld	b, h
+	ld	(ix - 3), hl
 	ld	hl, -720878
 	push	de
 	ld	e, (hl)
@@ -2428,7 +2433,6 @@ _updateMenu:
 	pop	de
 	ld	a, l
 	bit	5, a
-	ld	(ix - 3), de
 	jr	nz, BB23_2
 	ld	hl, -720868
 	push	de
@@ -2438,22 +2442,18 @@ _updateMenu:
 	ld	l, e
 	ld	h, d
 	pop	de
-	ld	e, c
-	ld	d, b
-	ld	c, iyl
-	ld	b, iyh
 	call	__sand
-	ld	c, e
-	ld	b, d
 	ld	de, 0
 	ld	e, l
 	ld	d, h
-	ld	(ix - 3), de
 BB23_2:
-	ld	de, 4
+	ld	bc, 4
+	ld	hl, _shouldRedrawCursor
+	ld	(ix - 12), hl
 	ld	iy, (ix - 6)
 	ld	a, iyl
 	or	a, a
+	ld	(ix - 9), de
 	jr	z, BB23_4
 	ld	hl, (_upLast)
 	add	hl, bc
@@ -2461,7 +2461,8 @@ BB23_2:
 	sbc	hl, bc
 	jr	z, BB23_11
 BB23_4:
-	bit	0, c
+	ld	hl, (ix - 3)
+	bit	0, l
 	jr	z, BB23_6
 	ld	hl, (_downLast)
 	add	hl, bc
@@ -2469,36 +2470,33 @@ BB23_4:
 	sbc	hl, bc
 	jr	z, BB23_12
 BB23_6:
-	ld	hl, (ix - 3)
-	bit	0, l
+	bit	0, e
 	jr	z, BB23_15
 	ld	hl, (_selectLast)
 	add	hl, bc
 	or	a, a
 	sbc	hl, bc
 	jr	nz, BB23_15
-	ld	de, (_cursorPos)
-	ld	(ix - 9), bc
-	ld	bc, 4
-	push	de
+	ld	bc, (_cursorPos)
+	ld	de, 4
+	push	bc
 	pop	hl
 	or	a, a
-	sbc	hl, bc
-	ld	bc, (ix - 9)
+	sbc	hl, de
 	jr	nc, BB23_15
 	ld	hl, JTI23_0
-	add	hl, de
-	add	hl, de
-	add	hl, de
+	add	hl, bc
+	add	hl, bc
+	add	hl, bc
 	ld	hl, (hl)
 	jp	(hl)
 BB23_10:
-	ld	de, _shouldRedrawBoard
+	ld	hl, _shouldRedrawBoard
+	ld	(ix - 12), hl
 	or	a, a
 	sbc	hl, hl
 	ld	(_inMenu), hl
-	ex	de, hl
-	jp	BB23_17
+	jr	BB23_14
 BB23_11:
 	ld	hl, (_cursorPos)
 	dec	hl
@@ -2507,39 +2505,60 @@ BB23_12:
 	ld	hl, (_cursorPos)
 	inc	hl
 BB23_13:
-	push	de
+	push	bc
 	push	hl
-	ld	(ix - 9), bc
 	call	_mod
-	ld	bc, (ix - 9)
-	ld	iy, (ix - 6)
 	pop	de
 	pop	de
 	ld	(_cursorPos), hl
-	ld	de, 1
-	ld	hl, _shouldRedrawCursor
 BB23_14:
-	ld	(hl), de
+	ld	hl, 1
+	ld	iy, (ix - 12)
+	ld	(iy), hl
+	ld	iy, (ix - 6)
 BB23_15:
 	or	a, a
 	sbc	hl, hl
-	push	hl
-	pop	de
-	ld	e, c
-	ld	d, b
+	ex	de, hl
+	ld	hl, (ix - 3)
+	ld	e, l
+	ld	d, h
+	sbc	hl, hl
 	ex	de, hl
 	ld	e, iyl
 	ld	d, iyh
 	ex	de, hl
 	ld	(_upLast), hl
 	ld	(_downLast), de
-	ld	hl, (ix - 3)
+	ld	hl, (ix - 9)
 	ld	(_selectLast), hl
 	ld	sp, ix
 	pop	ix
 	ret
 BB23_16:
+	ld	hl, (_difficulty)
+	inc	hl
+	ld	de, 4
+	push	de
+	push	hl
+	call	_mod
+	push	hl
+	pop	de
+	pop	hl
+	pop	hl
+	ld	(_difficulty), de
+	push	de
+	pop	hl
+	ld	bc, 4
+	or	a, a
+	sbc	hl, bc
+	jr	c, BB23_20
+	ld	bc, (_boardWidth)
+	jp	BB23_27
+BB23_18:
 	ld	hl, 7
+	ld	de, _shouldRedrawMenu
+	ld	(ix - 12), de
 	ld	de, (_skin)
 	inc	de
 	push	hl
@@ -2568,92 +2587,69 @@ BB23_16:
 	ld	l, (iy + 9)
 	push	hl
 	call	_gfx_SetColor
-	ld	bc, (ix - 9)
-	ld	iy, (ix - 6)
 	pop	hl
-	ld	hl, _shouldRedrawMenu
-BB23_17:
-	ld	de, 1
 	jp	BB23_14
-BB23_18:
+BB23_19:
 	call	_end
 	or	a, a
 	sbc	hl, hl
 	push	hl
 	call	_exit
 	pop	hl
-BB23_19:
-	ld	hl, 3
-	ld	de, (_difficulty)
-	inc	de
-	push	hl
-	push	de
-	call	_mod
-	push	hl
-	pop	de
-	pop	hl
-	pop	hl
-	ld	(_difficulty), de
-	push	de
-	pop	hl
-	add	hl, bc
-	or	a, a
-	sbc	hl, bc
-	jr	nz, BB23_21
+BB23_20:
+	ld	iy, 13
+	ld	hl, JTI23_1
+	add	hl, de
+	add	hl, de
+	add	hl, de
+	ld	hl, (hl)
+	jp	(hl)
+BB23_21:
 	ld	bc, 8
 	ld	hl, 10
 	jr	BB23_23
-BB23_21:
-	ld	bc, 1
-	push	de
-	pop	hl
-	or	a, a
-	sbc	hl, bc
-	jr	nz, BB23_24
+BB23_22:
 	ld	bc, 11
 	ld	hl, 20
 BB23_23:
 	ld	(_boardWidth), bc
 	ld	(_boardHeight), bc
-	ld	(_totalMines), hl
-	push	bc
-	pop	hl
-	ld	de, 1
-	ld	iy, (ix - 6)
-	jr	BB23_28
+	jr	BB23_25
 BB23_24:
-	ld	bc, 2
-	ex	de, hl
-	or	a, a
-	sbc	hl, bc
-	ld	iy, (ix - 6)
-	jr	nz, BB23_26
-	ld	hl, 16
-	ld	bc, 13
-	ld	de, 40
-	ld	(_boardWidth), hl
-	ld	(_boardHeight), bc
-	ld	(_totalMines), de
+	ld	bc, 16
+	ld	hl, 40
+	ld	(_boardWidth), bc
+	ld	(_boardHeight), iy
+BB23_25:
+	ld	(_totalMines), hl
 	jr	BB23_27
 BB23_26:
-	ld	hl, (_boardWidth)
-	ld	bc, (_boardHeight)
+	ld	hl, 104
+	ld	(_boardWidth), iy
+	ld	(_totalMines), hl
+	lea	bc, iy
 BB23_27:
-	ld	de, 1
-BB23_28:
+	ld	hl, (ix - 6)
+	ld	hl, _shouldRedrawDiffic
+	ld	(ix - 12), hl
+	ld	hl, (_boardHeight)
 	call	__imulu
 	ld	(_boardArea), hl
-	ld	hl, _shouldRedrawDiffic
-	ld	bc, (ix - 9)
 	jp	BB23_14
 	section	.text,"ax",@progbits
 	section	.rodata,"a",@progbits
 	private	JTI23_0
 JTI23_0:
 	dl	BB23_10
-	dl	BB23_19
 	dl	BB23_16
 	dl	BB23_18
+	dl	BB23_19
+	private	JTI23_1
+JTI23_1:
+	dl	BB23_21
+	dl	BB23_22
+	dl	BB23_24
+	dl	BB23_26
 
 	section	.text,"ax",@progbits
 	public	_end
@@ -3695,7 +3691,7 @@ _global_palette:
 	section	.rodata,"a",@progbits
 	private	_.str.8
 _.str.8:
-	db	"00", 0
+	db	"000", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.9
@@ -3750,41 +3746,46 @@ _.str.17:
 	section	.rodata,"a",@progbits
 	private	_.str.18
 _.str.18:
-	db	"Skin: ", 0
+	db	"Insane", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.19
 _.str.19:
-	db	"Play", 0
+	db	"Skin: ", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.20
 _.str.20:
-	db	"Difficulty:", 0
+	db	"Play", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.21
 _.str.21:
-	db	"Skin:", 0
+	db	"Difficulty:", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.22
 _.str.22:
-	db	"Quit", 0
+	db	"Skin:", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.23
 _.str.23:
-	db	"[ARROWS] - Move", 0
+	db	"Quit", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.24
 _.str.24:
-	db	"[2nd] or [enter] - Select", 0
+	db	"[ARROWS] - Move", 0
 
 	section	.rodata,"a",@progbits
 	private	_.str.25
 _.str.25:
+	db	"[2nd] or [enter] - Select", 0
+
+	section	.rodata,"a",@progbits
+	private	_.str.26
+_.str.26:
 	db	"[alpha] - Flag", 0
 
 	section	.bss,"aw",@nobits

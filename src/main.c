@@ -7,6 +7,7 @@
 #define DIFFIC_BEGINNER 0
 #define DIFFIC_INTERMEDIATE 1
 #define DIFFIC_EXPERT 2
+#define DIFFIC_INSANE 3
 
 #include <stdlib.h>
 #include <string.h>
