@@ -5,22 +5,102 @@ palettes:
       - color: {index: 1, hex: "#FFFFFF"}
       - color: {index: 2, hex: "#000000"}
       - color: {index: 3, hex: "#F5C518"}
+      - color: {index: 4, hex: "#202124"}
+    quality: 10
     images: automatic
 
 converts:
-  - name: game_sprites
+  - name: classic_sprites
     palette: global_palette
     transparent-color-index: 0
     tilesets:
       tile-width: 16
       tile-height: 16
       images:
-        - sprites.png
-  - name: title_sprite
+        - classic/classic_sprites.png
+  - name: classic_title
     palette: global_palette
     transparent-color-index: 0
     images:
-      - title.png
+      - classic/classic_title.png
+  - name: plastic_sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - plastic/plastic_sprites.png
+  - name: plastic_title
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - plastic/plastic_title.png
+  - name: google_sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - google/google_sprites.png
+  - name: google_title
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - google/google_title.png
+  - name: classic_dark_sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - classic_dark/classic_dark_sprites.png
+  - name: classic_dark_title
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - classic_dark/classic_dark_title.png
+  - name: words_sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - words/words_sprites.png
+  - name: words_title
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - words/words_title.png
+  - name: colors_sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - colors/colors_sprites.png
+  - name: colors_title
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - colors/colors_title.png
+  - name: roman_sprites
+    palette: global_palette
+    transparent-color-index: 0
+    tilesets:
+      tile-width: 16
+      tile-height: 16
+      images:
+        - roman/roman_sprites.png
+  - name: roman_title
+    palette: global_palette
+    transparent-color-index: 0
+    images:
+      - roman/roman_title.png
 
 outputs:
   - type: c
@@ -28,5 +108,17 @@ outputs:
     palettes:
       - global_palette
     converts:
-      - game_sprites
-      - title_sprite
+      - classic_sprites
+      - classic_title
+      - plastic_sprites
+      - plastic_title
+      - google_sprites
+      - google_title
+      - classic_dark_sprites
+      - classic_dark_title
+      - words_sprites
+      - words_title
+      - colors_sprites
+      - colors_title
+      - roman_sprites
+      - roman_title

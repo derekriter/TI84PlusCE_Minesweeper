@@ -6,8 +6,8 @@
 #include "draw.h"
 #include "mathutils.h"
 
-int shouldRedrawCursor = 0;
 int cursorPos = 0;
+int shouldRedrawCursor = 0;
 int shouldRedrawDiffic = 0;
 
 void updateMenu() {
@@ -16,11 +16,11 @@ void updateMenu() {
     int select = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
     
     if(up && !upLast) {
-        cursorPos = mod(cursorPos - 1, 3);
+        cursorPos = mod(cursorPos - 1, 4);
         shouldRedrawCursor = 1;
     }
     else if(down && !downLast) {
-        cursorPos = mod(cursorPos + 1, 3);
+        cursorPos = mod(cursorPos + 1, 4);
         shouldRedrawCursor = 1;
     }
     else if(select && !selectLast) {
@@ -56,6 +56,14 @@ void updateMenu() {
                 
                 break;
             case 2:
+                //change skin
+                skin = mod(skin + 1, sizeof(skinList) / sizeof(struct Skin));
+                gfx_SetTextFGColor(skinList[skin].fgColor);
+                gfx_SetColor(skinList[skin].bgColor);
+                shouldRedrawMenu = 1;
+                
+                break;
+            case 3:
                 //quit
                 end();
                 exit(0);
