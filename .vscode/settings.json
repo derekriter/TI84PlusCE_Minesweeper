@@ -7,6 +7,10 @@
 		"stdio.h": "c",
 		"keypadc.h": "c",
 		"gfx.h": "c",
-		"mathutils.h": "c"
+		"mathutils.h": "c",
+		"stdint.h": "c",
+		"menu.h": "c",
+		"title.h": "c",
+		"sprites.h": "c"
 	}
 }
