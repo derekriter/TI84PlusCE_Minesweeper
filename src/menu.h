@@ -52,9 +52,12 @@ void updateMenu() {
                         break;
                     case DIFFIC_INSANE:
                         boardWidth = 16;
-                        boardWidth = 13;
+                        boardHeight = 13;
                         totalMines = 104; //50% mines
                 }
+                boardWidth = minint(boardWidth, 16); //max safe width
+                boardHeight = minint(boardHeight, 13); //max safe height
+                
                 boardArea = boardWidth * boardHeight;
                 shouldRedrawDiffic = 1;
                 

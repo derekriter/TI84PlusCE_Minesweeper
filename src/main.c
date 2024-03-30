@@ -1,4 +1,4 @@
-#define VERSION "v2.0 BETA"
+#define VERSION "v2.1 BETA"
 #define BOARD_MINE -1
 #define BOARD_CLEAR 0
 #define MASK_COVERED 0

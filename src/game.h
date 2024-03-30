@@ -87,14 +87,13 @@ int* generateBoard() {
             int locX = loc % boardWidth;
             int locY = loc / boardWidth;
             
-            if(newBoard[loc] != BOARD_MINE && abs(locX - selX) >= 2 && abs(locY - selY) >= 2) {
+            if(newBoard[loc] != BOARD_MINE && (abs(locX - selX) > 1 || abs(locY - selY) > 1)) {
                 newBoard[loc] = BOARD_MINE;
                 
                 for(int i = 0; i < 8; i++) {
                     int neighborLoc = getNeighborTile(loc, i);
-                    if(neighborLoc == -1) continue;
+                    if(neighborLoc == -1 || newBoard[neighborLoc] == BOARD_MINE) continue;
                     
-                    if(newBoard[neighborLoc] == BOARD_MINE) continue;
                     newBoard[neighborLoc]++;
                 }
                 
