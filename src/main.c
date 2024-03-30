@@ -1,4 +1,5 @@
-#define VERSION "v2.0"
+#define VERSION "v2.1"
+#define ROMAN_VERSION "vII.I"
 #define BOARD_MINE -1
 #define BOARD_CLEAR 0
 #define MASK_COVERED 0
@@ -40,7 +41,6 @@ int skin = 0;
 const struct Skin skinList[] = {{"Classic", classic_sprites_tiles, classic_title, 1, 2, 3}, {"Plastic", plastic_sprites_tiles, plastic_title, 1, 2, 3}, {"Google", google_sprites_tiles, google_title, 1, 2, 3}, {"Classic Dark", classic_dark_sprites_tiles, classic_dark_title, 4, 1, 3}, {"Words", words_sprites_tiles, words_title, 1, 2, 3}, {"Colors", colors_sprites_tiles, colors_title, 1, 2, 3}, {"Roman", roman_sprites_tiles, roman_title, 1, 2, 3}};
 
 #include "mathutils.h"
-#include "debug.h"
 #include "draw.h"
 #include "game.h"
 #include "menu.h"

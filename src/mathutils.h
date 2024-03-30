@@ -12,6 +12,9 @@ int mod(int a, int b) {
 int maxint(int a, int b) {
     return a > b ? a : b;
 }
+int minint(int a, int b) {
+    return a < b ? a : b;
+}
 void fillIntArray(int* array, int length, int value) {
     for(int i = 0; i < length; i++)
         array[i] = value;
