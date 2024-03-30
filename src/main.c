@@ -1,4 +1,5 @@
 #define VERSION "v2.1 BETA"
+#define ROMAN_VERSION "vII.I BETA"
 #define BOARD_MINE -1
 #define BOARD_CLEAR 0
 #define MASK_COVERED 0

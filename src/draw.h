@@ -89,9 +89,10 @@ void drawBoard(int* board, int* mask, int selX, int selY, int flagsUsed, int los
 
 int titleX = 95; //(GFX_LCD_WIDTH - title_width * 3) / 2
 void drawVersion() {
-    int width = gfx_GetStringWidth(VERSION);
+    char* text = strcmp(skinList[skin].name, "Roman") == 0 ? ROMAN_VERSION : VERSION; //strcmp returns 0 if equal
+    int width = gfx_GetStringWidth(text);
     
-    gfx_PrintStringXY(VERSION, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
+    gfx_PrintStringXY(text, GFX_LCD_WIDTH - width - 1, GFX_LCD_HEIGHT - 9);
 }
 void drawCursor(int cursorPos) {
     int width = gfx_GetCharWidth('>');
