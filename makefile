@@ -20,3 +20,4 @@ GFX_FILES = $(wildcard src/gfx/*.c) $(wildcard src/gfx/*.h) src/gfx/convimg.yaml
 .PHONY: cleangfx
 cleangfx: $(GFX_FILES)
 	@rm $(GFX_FILES)
+	@echo Removed built GFX sources
