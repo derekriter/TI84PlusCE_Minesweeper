@@ -14,3 +14,9 @@ CXXFLAGS = -Wall -Wextra -Oz
 # ----------------------------
 
 include $(shell cedev-config --makefile)
+
+GFX_FILES = $(wildcard src/gfx/*.c) $(wildcard src/gfx/*.h) src/gfx/convimg.yaml.lst
+
+.PHONY: cleangfx
+cleangfx: $(GFX_FILES)
+	@rm $(GFX_FILES)
