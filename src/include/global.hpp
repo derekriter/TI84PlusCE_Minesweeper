@@ -12,8 +12,8 @@ namespace Global {
     extern const char* ROMAN_VERSION;
 
     extern Scene currentScene;
+    extern bool shouldClose;
 
-    int getCenteredTextX(const char* text);
     int min(int a, int b);
     int max(int a, int b);
     int mod(int a, int b);

@@ -11,11 +11,13 @@ namespace Draw {
         uint8_t bg, fg;
     };
 
+    extern const uint8_t COL_TRANS;
     extern const uint8_t COL_WHITE;
     extern const uint8_t COL_BLACK;
     extern const uint8_t COL_YELLOW;
     extern const uint8_t COL_GRAY;
     extern const struct Skin skins[];
+    extern const uint8_t skinCount;
 
     extern bool redrawFull;
     extern bool redrawPartial;
@@ -25,4 +27,5 @@ namespace Draw {
     void end();
     void redraw();
     struct Skin getSkin();
+    int getCenteredTextX(const char* text);
 }

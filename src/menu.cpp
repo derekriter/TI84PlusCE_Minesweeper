@@ -1,6 +1,7 @@
 #include "include/menu.hpp"
 #include "include/global.hpp"
 #include "include/draw.hpp"
+#include "include/game.hpp"
 
 #include <keypadc.h>
 
@@ -19,6 +20,32 @@ void Menu::update() {
     else if(down && !downLast) {
         cursorPos = Global::mod(cursorPos + 1, 4);
         Draw::redrawPartial = true;
+    }
+    else if(select && !selectLast) {
+        switch(cursorPos) {
+            case 0: {
+                //Play
+                break;
+            }
+            case 1: {
+                //Difficulty
+                Game::currentDifficulty = static_cast<Game::Difficulty>(Global::mod(Game::currentDifficulty + 1, 4));
+                Draw::redrawPartial = true;
+                break;
+            }
+            case 2: {
+                //Skin
+                Draw::currentSkin = Global::mod(Draw::currentSkin + 1, Draw::skinCount);
+                Draw::redrawFull = true;
+                break;
+            }
+            default:
+            case 3: {
+                //Quit
+                Global::shouldClose = true;
+                break;
+            }
+        }
     }
 
     upLast = up;

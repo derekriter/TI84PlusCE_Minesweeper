@@ -6,12 +6,13 @@
 int main() {
     Draw::init();
 
-    Draw::redrawFull = true;
-    while(true) {
+    while(!Global::shouldClose) {
         kb_Scan();
 
-        if(kb_IsDown(kb_KeyDel))
-            break;
+        if(kb_IsDown(kb_KeyDel)) {
+            Global::shouldClose = true;
+            continue;
+        }
 
         switch(Global::currentScene) {
             case Global::MENU: {

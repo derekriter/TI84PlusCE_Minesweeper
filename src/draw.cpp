@@ -9,10 +9,11 @@
 #include "include/menu.hpp"
 #include "include/game.hpp"
 
-const uint8_t Draw::COL_WHITE = 0;
-const uint8_t Draw::COL_BLACK = 1;
-const uint8_t Draw::COL_YELLOW = 2;
-const uint8_t Draw::COL_GRAY = 3;
+const uint8_t Draw::COL_TRANS = 0;
+const uint8_t Draw::COL_WHITE = 1;
+const uint8_t Draw::COL_BLACK = 2;
+const uint8_t Draw::COL_YELLOW = 3;
+const uint8_t Draw::COL_GRAY = 4;
 const struct Draw::Skin Draw::skins[] = {
     {"Classic", classic_sprites_tiles, standard_title, Draw::COL_WHITE, Draw::COL_BLACK},
     {"Classic Dark", classic_dark_sprites_tiles, classic_dark_title, Draw::COL_GRAY, Draw::COL_WHITE},
@@ -22,6 +23,7 @@ const struct Draw::Skin Draw::skins[] = {
     {"Colors", colors_sprites_tiles, colors_title, Draw::COL_WHITE, Draw::COL_BLACK},
     {"Roman", roman_sprites_tiles, standard_title, Draw::COL_WHITE, Draw::COL_BLACK}
 };
+const uint8_t Draw::skinCount = 7;
 
 bool Draw::redrawFull = false;
 bool Draw::redrawPartial = false;
@@ -32,51 +34,57 @@ void Draw::init() {
 
     gfx_SetDrawBuffer();
     gfx_SetPalette(global_palette, sizeof_global_palette, 0);
+    gfx_SetTransparentColor(COL_TRANS);
     gfx_FillScreen(Draw::getSkin().bg);
+
+    redrawFull = true;
 }
 void Draw::end() {
     gfx_End();
 }
 void Draw::redraw() {
-    if(!Draw::redrawFull && !Draw::redrawPartial) return;
+    if(!redrawFull && !redrawPartial) return;
 
     switch(Global::currentScene) {
         case Global::MENU: {
-            const char* difficLabel = Game::currentDifficulty == Game::Difficulty::BEGINNER ? "Beginner" : (Game::currentDifficulty == Game::Difficulty::INTERMEDIATE ? "Intermediate" : (Game::currentDifficulty == Game::Difficulty::EXPERT ? "Expert" : "Insane"));
-            char* difficText = (char*) malloc(strlen("Difficulty: ") + strlen(difficLabel) + 1);
-            sprintf(difficText, "Difficulty: %s", difficLabel);
+            const char* difficText = Game::currentDifficulty == Game::Difficulty::BEGINNER ? "Difficulty: Beginner" : (Game::currentDifficulty == Game::Difficulty::INTERMEDIATE ? "Difficulty: Intermediate" : (Game::currentDifficulty == Game::Difficulty::EXPERT ? "Difficulty: Expert" : "Difficulty: Insane"));
+            const unsigned int maxDifficWidth = gfx_GetStringWidth("Difficulty: Intermediate");
 
-            char* skinText = (char*) malloc(strlen("Skin: ") + strlen(Draw::getSkin().name) + 1);
-            sprintf(skinText, "Skin: %s", Draw::getSkin().name);
+            char* skinText = (char*) malloc(strlen("Skin: ") + strlen(getSkin().name) + 1);
+            sprintf(skinText, "Skin: %s", getSkin().name);
+            unsigned int maxSkinWidth = 0;
+            for(const struct Skin& skin : skins) {
+                maxSkinWidth = Global::max((int) maxSkinWidth, (int) gfx_GetStringWidth(skin.name));
+            }
 
-            int playX = Global::getCenteredTextX("Play");
-            int difficX = Global::getCenteredTextX(difficText);
-            int skinX = Global::getCenteredTextX(skinText);
-            int quitX = Global::getCenteredTextX("Quit");
+            int playX = getCenteredTextX("Play");
+            int difficX = getCenteredTextX(difficText);
+            int skinX = getCenteredTextX(skinText);
+            int quitX = getCenteredTextX("Quit");
 
             const unsigned int cursorOffset = gfx_GetCharWidth('>') + 1;
             int minX = 0;
             unsigned int maxWidth = 0;
 
-            gfx_SetTextFGColor(Draw::getSkin().fg);
-            if(Draw::redrawFull) {
-                gfx_FillScreen(Draw::getSkin().bg);
+            gfx_SetTextFGColor(getSkin().fg);
+            if(redrawFull) {
+                gfx_FillScreen(getSkin().bg);
 
-                gfx_ScaledTransparentSprite_NoClip(Draw::getSkin().title, (GFX_LCD_WIDTH - standard_title_width * 3) / 2, 30, 3, 3);
+                gfx_ScaledTransparentSprite_NoClip(getSkin().title, (GFX_LCD_WIDTH - standard_title_width * 3) / 2, 30, 3, 3);
 
                 gfx_PrintStringXY("[ARROWS] - Move", 1, GFX_LCD_HEIGHT - 36);
                 gfx_PrintStringXY("[2nd] or [enter] - Select", 1, GFX_LCD_HEIGHT - 27);
                 gfx_PrintStringXY("[alpha] - Flag", 1, GFX_LCD_HEIGHT - 18);
                 gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
 
-                const char* versionText = strcmp(Draw::getSkin().name, "Roman") == 0 ? Global::ROMAN_VERSION : Global::VERSION;
+                const char* versionText = strcmp(getSkin().name, "Roman") == 0 ? Global::ROMAN_VERSION : Global::VERSION;
                 gfx_PrintStringXY(versionText, GFX_LCD_WIDTH - gfx_GetStringWidth(versionText) - 1, GFX_LCD_HEIGHT - 9);
             }
             else {
-                gfx_SetColor(Draw::getSkin().bg);
+                gfx_SetColor(getSkin().bg);
 
-                minX = Global::min(playX, Global::min(difficX, Global::min(skinX, quitX))) - (int) cursorOffset;
-                maxWidth = Global::max(gfx_GetStringWidth("Play"), Global::max(gfx_GetStringWidth(difficText), Global::max(gfx_GetStringWidth(skinText), gfx_GetStringWidth("Quit")))) + cursorOffset;
+                minX = Global::min((int) (GFX_LCD_WIDTH - maxDifficWidth) / 2, (int) (GFX_LCD_WIDTH - maxSkinWidth) / 2) - (int) cursorOffset;
+                maxWidth = Global::max((int) maxDifficWidth, (int) maxSkinWidth) + cursorOffset;
 
                 gfx_FillRectangle(minX, 100, (int) maxWidth, 68);
             }
@@ -90,10 +98,9 @@ void Draw::redraw() {
             gfx_PrintStringXY(skinText, skinX, 140);
             gfx_PrintStringXY("Quit", quitX, 160);
 
-            free(difficText);
             free(skinText);
 
-            if(Draw::redrawFull)
+            if(redrawFull)
                 gfx_SwapDraw();
             else
                 gfx_BlitRectangle(gfx_buffer, minX, 100, maxWidth, 68);
@@ -104,8 +111,11 @@ void Draw::redraw() {
         }
     }
 
-    Draw::redrawFull = Draw::redrawPartial = false;
+    redrawFull = redrawPartial = false;
 }
 struct Draw::Skin Draw::getSkin() {
     return skins[currentSkin];
+}
+int Draw::getCenteredTextX(const char* text) {
+    return (int) (GFX_LCD_WIDTH - gfx_GetStringWidth(text)) / 2;
 }
