@@ -123,6 +123,17 @@ void Draw::render() {
 
                 free(flagText);
 
+                if(Game::currentState != Game::PLAYING) {
+                    const char* restartText = "Press any key to play again";
+                    unsigned int restartWidth = gfx_GetStringWidth(restartText);
+                    int restartX = getCenteredTextX(restartText);
+
+                    gfx_SetColor(getSkin().bg);
+                    gfx_FillRectangle_NoClip(restartX, 208, restartWidth, 8);
+                    gfx_SetTextFGColor(COL_YELLOW);
+                    gfx_PrintStringXY(restartText, restartX, 208);
+                }
+
                 gfx_SwapDraw();
             }
             else {
@@ -163,38 +174,58 @@ void Draw::drawTile(unsigned int boardX, unsigned int boardY, uint16_t loc) {
     unsigned int x = loc % Game::boardW * 16 + boardX;
     unsigned int y = loc / Game::boardW * 16 + boardY;
 
-    switch(Game::mask[loc]) {
-        default:
-        case Game::MASK_COVERED: {
-            gfx_Sprite_NoClip(getSkin().sprites[SPRITE_COVERED], x, y);
-            break;
-        }
-        case Game::MASK_FLAGGED: {
-            gfx_Sprite_NoClip(getSkin().sprites[SPRITE_COVERED], x, y);
-            gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_FLAG], x, y);
-            break;
-        }
-        case Game::MASK_REVEALED: {
-            if(Game::board == nullptr) {
-                Global::shouldClose = true;
-                return;
+    if(Game::currentState == Game::WON) {
+        gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
+
+        uint8_t val = Game::board[loc];
+        switch(val) {
+            case Game::BOARD_MINE: {
+                gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_MINE], x, y);
+                break;
             }
+            case Game::BOARD_CLEAR: {
+                //draw nothing
+                break;
+            }
+            default: {
+                gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_NUMBERS + val - 1], x, y);
+                break;
+            }
+        }
+    }
+    else if(Game::currentState == Game::LOST && Game::board[loc] == Game::BOARD_MINE) {
+        gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
+        gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_EXPLOSION], x, y);
+    }
+    else {
+        switch(Game::mask[loc]) {
+            default:
+            case Game::MASK_COVERED: {
+                gfx_Sprite_NoClip(getSkin().sprites[SPRITE_COVERED], x, y);
+                break;
+            }
+            case Game::MASK_FLAGGED: {
+                gfx_Sprite_NoClip(getSkin().sprites[SPRITE_COVERED], x, y);
+                gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_FLAG], x, y);
+                break;
+            }
+            case Game::MASK_REVEALED: {
+                gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
 
-            gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
-
-            uint8_t val = Game::board[loc];
-            switch(val) {
-                case Game::BOARD_MINE: {
-                    gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_MINE], x, y);
-                    break;
-                }
-                case Game::BOARD_CLEAR: {
-                    //draw nothing
-                    break;
-                }
-                default: {
-                    gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_NUMBERS + val - 1], x, y);
-                    break;
+                uint8_t val = Game::board[loc];
+                switch(val) {
+                    case Game::BOARD_MINE: {
+                        gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_MINE], x, y);
+                        break;
+                    }
+                    case Game::BOARD_CLEAR: {
+                        //draw nothing
+                        break;
+                    }
+                    default: {
+                        gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_NUMBERS + val - 1], x, y);
+                        break;
+                    }
                 }
             }
         }

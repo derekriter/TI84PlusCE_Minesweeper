@@ -9,6 +9,11 @@ namespace Game {
         EXPERT = 2,
         INSANE = 3
     };
+    enum State {
+        PLAYING,
+        WON,
+        LOST
+    };
 
     const uint8_t MASK_COVERED = 0;
     const uint8_t MASK_FLAGGED = 1;
@@ -29,10 +34,12 @@ namespace Game {
     extern bool* redrawTiles;
     extern bool upLast, leftLast, downLast, rightLast, selectLast, flagLast;
     extern uint16_t flagsLeft;
+    extern State currentState;
 
     void init();
     void end();
     void update();
     int16_t getNeighborTile(uint16_t tile, uint8_t neighbor);
     void genBoard();
+    void reveal(uint16_t loc, bool isOG=true);
 }

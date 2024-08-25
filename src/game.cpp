@@ -7,6 +7,7 @@
 #include <keypadc.h>
 #include <cstring>
 #include <cmath>
+#include <debug.h>
 
 Game::Difficulty Game::currentDifficulty = BEGINNER;
 bool Game::hasInited = false;
@@ -21,6 +22,7 @@ uint8_t Game::cursorY = 0;
 bool* Game::redrawTiles = nullptr;
 bool Game::upLast = true, Game::leftLast = true, Game::downLast = true, Game::rightLast = true, Game::selectLast = true, Game::flagLast = true;
 uint16_t Game::flagsLeft = 0;
+Game::State Game::currentState = Game::PLAYING;
 
 void Game::init() {
     if(hasInited)
@@ -58,6 +60,7 @@ void Game::init() {
     cursorX = (boardW - 1) / 2;
     cursorY = (boardH - 1) / 2;
     upLast = leftLast = downLast = rightLast = selectLast = flagLast = true;
+    currentState = Game::PLAYING;
 
     mask = (uint8_t*) calloc(boardArea, sizeof(uint8_t));
     redrawTiles = (bool*) calloc(boardArea, sizeof(bool));
@@ -87,6 +90,16 @@ void Game::end() {
 void Game::update() {
     if(!hasInited)
         init();
+
+    if(currentState != Game::PLAYING) {
+        if(kb_AnyKey() && !selectLast) {
+            Game::end();
+            Game::init();
+        }
+
+        selectLast = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
+        return;
+    }
 
     bool up = kb_IsDown(kb_KeyUp);
     bool left = kb_IsDown(kb_KeyLeft);
@@ -125,8 +138,7 @@ void Game::update() {
         if(board == nullptr)
             genBoard();
 
-        memset(mask, MASK_REVEALED, boardArea * sizeof(uint8_t));
-        Draw::redrawFull = true;
+        reveal(cursorLoc);
     }
     if(flag && !flagLast && mask[cursorLoc] != MASK_REVEALED) {
         if(mask[cursorLoc] == MASK_COVERED && flagsLeft > 0) {
@@ -209,7 +221,7 @@ void Game::genBoard() {
                 board[loc] = BOARD_MINE;
 
                 for(int j = 0; j < 8; j++) {
-                    int nLoc = getNeighborTile(loc, j);
+                    int16_t nLoc = getNeighborTile(loc, j);
 
                     if(nLoc == -1 || board[nLoc] == BOARD_MINE)
                         continue;
@@ -219,5 +231,72 @@ void Game::genBoard() {
             }
         }
         while(true);
+    }
+}
+void Game::reveal(uint16_t loc, bool isOG) {
+    if(mask[loc] == MASK_REVEALED && isOG && board[loc] > BOARD_CLEAR) {
+        uint8_t known = 0;
+        for(int i = 0; i < 8; i++) {
+            int16_t nLoc = getNeighborTile(loc, i);
+
+            if(nLoc == -1)
+                continue;
+            known += mask[nLoc] == MASK_FLAGGED;
+        }
+
+        if(known >= board[loc]) {
+            for(int i = 0; i < 8; i++) {
+                int16_t nLoc = getNeighborTile(loc, i);
+
+                if(nLoc == -1)
+                    continue;
+                if(mask[nLoc] == MASK_COVERED)
+                    reveal(nLoc, false);
+            }
+        }
+    }
+    else if(mask[loc] != MASK_COVERED)
+        return;
+
+    mask[loc] = MASK_REVEALED;
+    redrawTiles[loc] = true;
+    Draw::redrawPartial = true;
+
+    if(board[loc] == BOARD_CLEAR) {
+        for(int i = 0; i < 8; i++) {
+            int16_t nLoc = getNeighborTile(loc, i);
+
+            if(nLoc == -1)
+                continue;
+            reveal(nLoc, false);
+        }
+    }
+
+    //only run once after recursion has finished
+    if(isOG) {
+        dbg_printf("check\n");
+
+        bool won = true;
+        for(int i = 0; i < boardArea; i++) {
+            if(board[i] == BOARD_MINE) {
+                if(mask[i] != MASK_REVEALED)
+                    continue;
+                else {
+                    dbg_printf("lost\n");
+                    currentState = Game::LOST;
+                    Draw::redrawFull = true;
+                    return;
+                }
+            }
+            if(mask[i] == MASK_REVEALED)
+                continue;
+
+            won = false;
+        }
+        if(won) {
+            dbg_printf("won\n");
+            currentState = Game::WON;
+            Draw::redrawFull = true;
+        }
     }
 }
