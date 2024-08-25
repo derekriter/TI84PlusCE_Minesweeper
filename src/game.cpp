@@ -7,7 +7,6 @@
 #include <keypadc.h>
 #include <cstring>
 #include <cmath>
-#include <debug.h>
 
 Game::Difficulty Game::currentDifficulty = BEGINNER;
 bool Game::hasInited = false;
@@ -274,15 +273,12 @@ void Game::reveal(uint16_t loc, bool isOG) {
 
     //only run once after recursion has finished
     if(isOG) {
-        dbg_printf("check\n");
-
         bool won = true;
         for(int i = 0; i < boardArea; i++) {
             if(board[i] == BOARD_MINE) {
                 if(mask[i] != MASK_REVEALED)
                     continue;
                 else {
-                    dbg_printf("lost\n");
                     currentState = Game::LOST;
                     Draw::redrawFull = true;
                     return;
@@ -294,7 +290,6 @@ void Game::reveal(uint16_t loc, bool isOG) {
             won = false;
         }
         if(won) {
-            dbg_printf("won\n");
             currentState = Game::WON;
             Draw::redrawFull = true;
         }
