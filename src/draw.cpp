@@ -156,6 +156,11 @@ void Draw::render() {
                     gfx_PrintStringXY(restartText, restartX, 208);
                 }
 
+                char* dimText = (char*) malloc(Global::digitCount(Game::boardW) + Global::digitCount(Game::boardH) + 2);
+                sprintf(dimText, "%ux%u", Game::boardW, Game::boardH);
+                gfx_PrintStringXY(dimText, 1, 1);
+                free(dimText);
+
                 gfx_SwapDraw();
             }
             else {
