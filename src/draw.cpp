@@ -129,7 +129,7 @@ void Draw::render() {
                     int restartX = getCenteredTextX(restartText);
 
                     gfx_SetColor(getSkin().bg);
-                    gfx_FillRectangle_NoClip(restartX, 208, restartWidth, 8);
+                    gfx_FillRectangle_NoClip(restartX - 1, 207, restartWidth + 1, 10);
                     gfx_SetTextFGColor(COL_YELLOW);
                     gfx_PrintStringXY(restartText, restartX, 208);
                 }

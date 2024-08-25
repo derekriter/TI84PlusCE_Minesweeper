@@ -162,47 +162,52 @@ void Game::update() {
     flagLast = flag;
 }
 int16_t Game::getNeighborTile(uint16_t tile, uint8_t neighbor) {
-    auto n = (int16_t) tile;
+    auto nX = (int16_t) (tile % boardW);
+    auto nY = (int16_t) (tile / boardW);
 
     switch(neighbor) {
         default:
         case 0: {
-            n -= boardW + 1;
+            nX--;
+            nY--;
             break;
         }
         case 1: {
-            n -= boardW;
+            nY--;
             break;
         }
         case 2: {
-            n -= boardW - 1;
+            nX++;
+            nY--;
             break;
         }
         case 3: {
-            n += 1;
+            nX++;
             break;
         }
         case 4: {
-            n += boardW + 1;
+            nX++;
+            nY++;
             break;
         }
         case 5: {
-            n += boardW;
+            nY++;
             break;
         }
         case 6: {
-            n += boardW - 1;
+            nX--;
+            nY++;
             break;
         }
         case 7: {
-            n -= 1;
+            nX--;
             break;
         }
     }
 
-    if(n < 0 || n >= Game::boardArea)
+    if(nX < 0 || nX >= boardW || nY < 0 || nY >= boardH)
         return -1;
-    return n;
+    return nX + nY * boardW;
 }
 void Game::genBoard() {
     if(board != nullptr)
