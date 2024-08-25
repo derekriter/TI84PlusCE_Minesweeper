@@ -9,6 +9,12 @@
 #include "include/menu.hpp"
 #include "include/game.hpp"
 
+#if NO_SKINS
+const struct Draw::Skin Draw::SKINS[] = {
+    {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK}
+};
+const uint8_t Draw::SKIN_COUNT = 1;
+#else
 const struct Draw::Skin Draw::SKINS[] = {
     {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
     {"Classic Dark", classic_dark_sprites_tiles, classic_dark_title, classic_dark_arrow, Draw::COL_GRAY, Draw::COL_WHITE},
@@ -19,6 +25,7 @@ const struct Draw::Skin Draw::SKINS[] = {
     {"Roman", roman_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK}
 };
 const uint8_t Draw::SKIN_COUNT = 7;
+#endif
 
 bool Draw::redrawFull = false;
 bool Draw::redrawPartial = false;
@@ -45,16 +52,20 @@ void Draw::render() {
             const char* difficText = Game::currentDifficulty == Game::Difficulty::BEGINNER ? "Difficulty: Beginner" : (Game::currentDifficulty == Game::Difficulty::INTERMEDIATE ? "Difficulty: Intermediate" : (Game::currentDifficulty == Game::Difficulty::EXPERT ? "Difficulty: Expert" : "Difficulty: Insane"));
             const unsigned int maxDifficWidth = gfx_GetStringWidth("Difficulty: Intermediate");
 
+            #if !NO_SKINS
             char* skinText = (char*) malloc(strlen("Skin: ") + strlen(getSkin().name) + 1);
             sprintf(skinText, "Skin: %s", getSkin().name);
             unsigned int maxSkinWidth = 0;
             for(const struct Skin& skin : SKINS) {
                 maxSkinWidth = Global::maxI((int) maxSkinWidth, (int) gfx_GetStringWidth(skin.name));
             }
+            #endif
 
             int playX = getCenteredTextX("Play");
             int difficX = getCenteredTextX(difficText);
+            #if !NO_SKINS
             int skinX = getCenteredTextX(skinText);
+            #endif
             int quitX = getCenteredTextX("Quit");
 
             const unsigned int cursorOffset = gfx_GetCharWidth('>') + 1;
@@ -78,22 +89,37 @@ void Draw::render() {
             else {
                 gfx_SetColor(getSkin().bg);
 
+                #if NO_SKINS
+                minX = (int) ((GFX_LCD_WIDTH - maxDifficWidth) / 2 - cursorOffset);
+                maxWidth = maxDifficWidth + cursorOffset;
+                #else
                 minX = Global::minI((int) (GFX_LCD_WIDTH - maxDifficWidth) / 2, (int) (GFX_LCD_WIDTH - maxSkinWidth) / 2) - (int) cursorOffset;
                 maxWidth = Global::maxI((int) maxDifficWidth, (int) maxSkinWidth) + cursorOffset;
+                #endif
 
                 gfx_FillRectangle(minX, 100, (int) maxWidth, 68);
             }
 
+            #if NO_SKINS
+            int cursorX = (Menu::cursorPos == 0 ? playX : (Menu::cursorPos == 1 ? difficX : quitX)) - (int) cursorOffset;
+            #else
             int cursorX = (Menu::cursorPos == 0 ? playX : (Menu::cursorPos == 1 ? difficX : (Menu::cursorPos == 2 ? skinX : quitX))) - (int) cursorOffset;
+            #endif
             gfx_SetTextXY(cursorX, Menu::cursorPos * 20 + 100);
             gfx_PrintChar('>');
 
             gfx_PrintStringXY("Play", playX, 100);
             gfx_PrintStringXY(difficText, difficX, 120);
+            #if NO_SKINS
+            gfx_PrintStringXY("Quit", quitX, 140);
+            #else
             gfx_PrintStringXY(skinText, skinX, 140);
             gfx_PrintStringXY("Quit", quitX, 160);
+            #endif
 
+            #if !NO_SKINS
             free(skinText);
+            #endif
 
             if(redrawFull)
                 gfx_SwapDraw();

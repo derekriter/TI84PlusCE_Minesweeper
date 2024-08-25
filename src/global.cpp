@@ -3,8 +3,13 @@
 
 #include <cmath>
 
+#if NO_SKINS
+const char* Global::VERSION = "v2.2 NS BETA";
+const char* Global::ROMAN_VERSION = "vII.II NS BETA";
+#else
 const char* Global::VERSION = "v2.2 BETA";
 const char* Global::ROMAN_VERSION = "vII.II BETA";
+#endif
 
 Global::Scene Global::currentScene = MENU;
 bool Global::shouldClose = false;

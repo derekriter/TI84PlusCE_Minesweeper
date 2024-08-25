@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#define NO_SKINS false
+
 namespace Global {
     enum Scene {
         MENU,
