@@ -2,7 +2,7 @@
 # Makefile Options
 # ----------------------------
 
-NAME = MSWPR_B
+NAME = MSWPR
 ICON = icon.png
 DESCRIPTION = "It's Minesweeper"
 COMPRESSED = YES
