@@ -159,15 +159,23 @@ void Draw::render() {
                 gfx_SwapDraw();
             }
             else {
-                uint16_t blitX1 = Game::boardW, blitY1 = Game::boardH, blitX2 = 0, blitY2 = 0;
+                int16_t blitX1 = -1, blitY1 = -1, blitX2 = -1, blitY2 = -1;
                 for(int i = 0; i < Game::boardArea; i++) {
                     if(Game::redrawTiles[i]) {
-                        blitX1 = Global::minI(blitX1, i % Game::boardW);
-                        blitY1 = Global::minI(blitY1, i / Game::boardW);
-                        blitX2 = Global::maxI(blitX2, i % Game::boardW);
-                        blitY2 = Global::maxI(blitY2, i / Game::boardW);
+                        int8_t x = (int8_t) (i % Game::boardW) - Game::scrollX;
+                        int8_t y = (int8_t) (i / Game::boardW) - Game::scrollY;
+                        if(x < 0 || x >= Game::windowW || y < 0 || y >= Game::windowH)
+                            continue;
+
+                        blitX1 = (int16_t) Global::minI(blitX1, x);
+                        blitY1 = (int16_t) Global::minI(blitY1, y);
+                        blitX2 = (int16_t) Global::maxI(blitX2, x);
+                        blitY2 = (int16_t) Global::maxI(blitY2, y);
                     }
                 }
+                if(blitX1 == -1 && blitY1 == -1 && blitX2 == -1 && blitY2 == -1)
+                    break;
+
                 gfx_BlitRectangle(gfx_screen, blitX1 * 16 + windowX, blitY1 * 16 + windowY, (blitX2 - blitX1 + 1) * 16, (blitY2 - blitY1 + 1) * 16);
 
                 for(int i = 0; i < Game::boardArea; i++) {
@@ -193,8 +201,14 @@ int Draw::getCenteredTextX(const char* text) {
     return (int) (GFX_LCD_WIDTH - gfx_GetStringWidth(text)) / 2;
 }
 void Draw::drawTile(unsigned int windowX, unsigned int windowY, uint16_t loc) {
-    unsigned int x = loc % Game::boardW * 16 + windowX;
-    unsigned int y = loc / Game::boardW * 16 + windowY;
+    uint8_t boardX = loc % Game::boardW;
+    uint8_t boardY = loc / Game::boardW;
+
+    if(boardX < Game::scrollX || boardX >= Game::scrollX + Game::windowW || boardY < Game::scrollY || boardY >= Game::scrollY + Game::windowH)
+        return;
+
+    unsigned int x = (boardX - Game::scrollX) * 16 + windowX;
+    unsigned int y = (boardY - Game::scrollY) * 16 + windowY;
 
     if(Game::currentState == Game::WON) {
         gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
@@ -253,6 +267,6 @@ void Draw::drawTile(unsigned int windowX, unsigned int windowY, uint16_t loc) {
         }
     }
 
-    if(loc == Game::cursorX + Game::cursorY * Game::boardW)
+    if(boardX == Game::cursorX && boardY == Game::cursorY)
         gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_CURSOR], x, y);
 }
