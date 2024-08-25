@@ -10,13 +10,13 @@
 #include "include/game.hpp"
 
 const struct Draw::Skin Draw::SKINS[] = {
-    {"Classic", classic_sprites_tiles, standard_title, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Classic Dark", classic_dark_sprites_tiles, classic_dark_title, Draw::COL_GRAY, Draw::COL_WHITE},
-    {"Plastic", plastic_sprites_tiles, plastic_title, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Google", google_sprites_tiles, google_title, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Words", words_sprites_tiles, standard_title, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Colors", colors_sprites_tiles, colors_title, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Roman", roman_sprites_tiles, standard_title, Draw::COL_WHITE, Draw::COL_BLACK}
+    {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
+    {"Classic Dark", classic_dark_sprites_tiles, classic_dark_title, classic_dark_arrow, Draw::COL_GRAY, Draw::COL_WHITE},
+    {"Plastic", plastic_sprites_tiles, plastic_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
+    {"Google", google_sprites_tiles, google_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
+    {"Words", words_sprites_tiles, standard_title, words_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
+    {"Colors", colors_sprites_tiles, colors_title, colors_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
+    {"Roman", roman_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK}
 };
 const uint8_t Draw::SKIN_COUNT = 7;
 

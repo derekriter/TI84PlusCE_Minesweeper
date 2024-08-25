@@ -8,6 +8,7 @@ namespace Draw {
         const char* name;
         gfx_sprite_t** sprites;
         gfx_sprite_t* title;
+        gfx_sprite_t* arrow;
         uint8_t bg, fg;
     };
 
