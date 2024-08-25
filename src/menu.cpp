@@ -17,14 +17,15 @@ void Menu::update() {
         cursorPos = Global::mod(cursorPos - 1, 4);
         Draw::redrawPartial = true;
     }
-    else if(down && !downLast) {
+    if(down && !downLast) {
         cursorPos = Global::mod(cursorPos + 1, 4);
         Draw::redrawPartial = true;
     }
-    else if(select && !selectLast) {
+    if(select && !selectLast) {
         switch(cursorPos) {
             case 0: {
                 //Play
+                Global::currentScene = Global::GAME;
                 break;
             }
             case 1: {
@@ -35,7 +36,7 @@ void Menu::update() {
             }
             case 2: {
                 //Skin
-                Draw::currentSkin = Global::mod(Draw::currentSkin + 1, Draw::skinCount);
+                Draw::currentSkin = Global::mod(Draw::currentSkin + 1, Draw::SKIN_COUNT);
                 Draw::redrawFull = true;
                 break;
             }

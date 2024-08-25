@@ -14,7 +14,10 @@ namespace Global {
     extern Scene currentScene;
     extern bool shouldClose;
 
-    int min(int a, int b);
-    int max(int a, int b);
+    int minI(int a, int b);
+    int maxI(int a, int b);
+    unsigned int minUI(unsigned int a, unsigned int b);
+    unsigned int maxUI(unsigned int a, unsigned int b);
     int mod(int a, int b);
+    unsigned int digitCount(int n);
 }
