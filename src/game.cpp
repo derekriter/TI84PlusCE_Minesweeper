@@ -7,6 +7,7 @@
 #include <keypadc.h>
 #include <cstring>
 #include <cmath>
+#include <cassert>
 
 Game::Difficulty Game::currentDifficulty = BEGINNER;
 bool Game::hasInited = false;
@@ -113,30 +114,58 @@ void Game::update() {
     bool select = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
     bool flag = kb_IsDown(kb_KeyAlpha);
 
+    bool cursorMoved = false;
     if(up && !upLast) {
         redrawTiles[cursorX + cursorY * boardW] = true;
         cursorY = Global::mod(cursorY - 1, boardH);
         redrawTiles[cursorX + cursorY * boardW] = true;
         Draw::redrawPartial = true;
+
+        cursorMoved = true;
     }
     if(left && !leftLast) {
         redrawTiles[cursorX + cursorY * boardW] = true;
         cursorX = Global::mod(cursorX - 1, boardW);
         redrawTiles[cursorX + cursorY * boardW] = true;
         Draw::redrawPartial = true;
+
+        cursorMoved = true;
     }
     if(down && !downLast) {
         redrawTiles[cursorX + cursorY * boardW] = true;
         cursorY = Global::mod(cursorY + 1, boardH);
         redrawTiles[cursorX + cursorY * boardW] = true;
         Draw::redrawPartial = true;
+
+        cursorMoved = true;
     }
     if(right && !rightLast) {
         redrawTiles[cursorX + cursorY * boardW] = true;
         cursorX = Global::mod(cursorX + 1, boardW);
         redrawTiles[cursorX + cursorY * boardW] = true;
         Draw::redrawPartial = true;
+
+        cursorMoved = true;
     }
+    if(cursorMoved) {
+        if(cursorX <= scrollX) {
+            scrollX = Global::maxI((int) cursorX - 1, 0);
+            Draw::redrawFull = true;
+        }
+        else if(cursorX >= scrollX + windowW - 1) {
+            scrollX = Global::minUI(cursorX - windowW + 2, boardW - windowW);
+            Draw::redrawFull = true;
+        }
+        if(cursorY <= scrollY) {
+            scrollY = Global::maxI((int) cursorY - 1, 0);
+            Draw::redrawFull = true;
+        }
+        else if(cursorY >= scrollY + windowH - 1) {
+            scrollY = Global::minUI(cursorY - windowH + 2, boardH - windowH);
+            Draw::redrawFull = true;
+        }
+    }
+
     uint16_t cursorLoc = cursorX + cursorY * boardW;
 
     if(select && !selectLast) {
@@ -213,13 +242,15 @@ int16_t Game::getNeighborTile(uint16_t tile, uint8_t neighbor) {
 
     if(nX < 0 || nX >= boardW || nY < 0 || nY >= boardH)
         return -1;
-    return nX + nY * boardW;
+    return (int16_t) (nX + nY * boardW);
 }
 void Game::genBoard() {
     if(board != nullptr)
         memset(board, 0, boardArea * sizeof(uint8_t));
-    else
+    else {
         board = (uint8_t*) calloc(boardArea, sizeof(uint8_t));
+        assert(board != nullptr);
+    }
 
     for(int i = 0; i < totalMines; i++) {
         do {
