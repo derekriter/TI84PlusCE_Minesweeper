@@ -102,14 +102,14 @@ void Draw::render() {
             break;
         }
         case Global::GAME: {
-            unsigned int boardX = (GFX_LCD_WIDTH - Game::boardW * 16) / 2;
-            unsigned int boardY = (GFX_LCD_HEIGHT - Game::boardH * 16) / 2;
+            unsigned int windowX = (GFX_LCD_WIDTH - Game::windowW * 16) / 2;
+            unsigned int windowY = (GFX_LCD_HEIGHT - Game::windowH * 16) / 2;
 
             if(redrawFull) {
                 gfx_FillScreen(getSkin().bg);
 
                 for(int i = 0; i < Game::boardArea; i++)
-                    drawTile(boardX, boardY, i);
+                    drawTile(windowX, windowY, i);
 
                 gfx_SetTextFGColor(getSkin().fg);
                 gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
@@ -122,6 +122,28 @@ void Draw::render() {
                 gfx_PrintStringXY(flagText, GFX_LCD_WIDTH - flagWidth - 1, 18);
 
                 free(flagText);
+
+                if(Game::scrollX > 0) {
+                    gfx_sprite_t* tempArrow = gfx_MallocSprite(standard_arrow_width, standard_arrow_height);
+                    gfx_FlipSpriteY(getSkin().arrow, tempArrow);
+                    gfx_TransparentSprite_NoClip(tempArrow, windowX - standard_arrow_width, (GFX_LCD_HEIGHT - standard_arrow_height) / 2);
+                    free(tempArrow);
+                }
+                if(Game::scrollX < (int) Game::boardW - Game::windowW) {
+                    gfx_TransparentSprite_NoClip(getSkin().arrow, windowX + Game::windowW * 16, (GFX_LCD_HEIGHT - standard_arrow_height) / 2);
+                }
+                if(Game::scrollY > 0) {
+                    gfx_sprite_t* tempArrow = gfx_MallocSprite(standard_arrow_height, standard_arrow_width);
+                    gfx_RotateSpriteCC(getSkin().arrow, tempArrow);
+                    gfx_TransparentSprite_NoClip(tempArrow, (GFX_LCD_WIDTH - standard_arrow_height) / 2, windowY - standard_arrow_width);
+                    free(tempArrow);
+                }
+                if(Game::scrollY < (int) Game::boardH - Game::windowH) {
+                    gfx_sprite_t* tempArrow = gfx_MallocSprite(standard_arrow_height, standard_arrow_width);
+                    gfx_RotateSpriteC(getSkin().arrow, tempArrow);
+                    gfx_TransparentSprite_NoClip(tempArrow, (GFX_LCD_WIDTH - standard_arrow_height) / 2, windowY + Game::windowH * 16);
+                    free(tempArrow);
+                }
 
                 if(Game::currentState != Game::PLAYING) {
                     const char* restartText = "Press any key to play again";
@@ -146,14 +168,14 @@ void Draw::render() {
                         blitY2 = Global::maxI(blitY2, i / Game::boardW);
                     }
                 }
-                gfx_BlitRectangle(gfx_screen, blitX1 * 16 + boardX, blitY1 * 16 + boardY, (blitX2 - blitX1 + 1) * 16, (blitY2 - blitY1 + 1) * 16);
+                gfx_BlitRectangle(gfx_screen, blitX1 * 16 + windowX, blitY1 * 16 + windowY, (blitX2 - blitX1 + 1) * 16, (blitY2 - blitY1 + 1) * 16);
 
                 for(int i = 0; i < Game::boardArea; i++) {
                     if(Game::redrawTiles[i])
-                        drawTile(boardX, boardY, i);
+                        drawTile(windowX, windowY, i);
                 }
 
-                gfx_BlitRectangle(gfx_buffer, blitX1 * 16 + boardX, blitY1 * 16 + boardY, (blitX2 - blitX1 + 1) * 16, (blitY2 - blitY1 + 1) * 16);
+                gfx_BlitRectangle(gfx_buffer, blitX1 * 16 + windowX, blitY1 * 16 + windowY, (blitX2 - blitX1 + 1) * 16, (blitY2 - blitY1 + 1) * 16);
             }
 
             if(redrawPartial)
@@ -170,9 +192,9 @@ struct Draw::Skin Draw::getSkin() {
 int Draw::getCenteredTextX(const char* text) {
     return (int) (GFX_LCD_WIDTH - gfx_GetStringWidth(text)) / 2;
 }
-void Draw::drawTile(unsigned int boardX, unsigned int boardY, uint16_t loc) {
-    unsigned int x = loc % Game::boardW * 16 + boardX;
-    unsigned int y = loc / Game::boardW * 16 + boardY;
+void Draw::drawTile(unsigned int windowX, unsigned int windowY, uint16_t loc) {
+    unsigned int x = loc % Game::boardW * 16 + windowX;
+    unsigned int y = loc / Game::boardW * 16 + windowY;
 
     if(Game::currentState == Game::WON) {
         gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);

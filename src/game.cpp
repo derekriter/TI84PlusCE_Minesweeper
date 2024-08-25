@@ -22,6 +22,8 @@ bool* Game::redrawTiles = nullptr;
 bool Game::upLast = true, Game::leftLast = true, Game::downLast = true, Game::rightLast = true, Game::selectLast = true, Game::flagLast = true;
 uint16_t Game::flagsLeft = 0;
 Game::State Game::currentState = Game::PLAYING;
+uint8_t Game::scrollX = 0, Game::scrollY = 0;
+uint8_t Game::windowW = 0, Game::windowH = 0;
 
 void Game::init() {
     if(hasInited)
@@ -35,21 +37,21 @@ void Game::init() {
             break;
         }
         case INTERMEDIATE: {
-            boardW = 11;
-            boardH = 11;
-            totalMines = 20;
-            break;
-        }
-        case EXPERT: {
             boardW = 16;
-            boardH = 13;
+            boardH = 16;
             totalMines = 40;
             break;
         }
+        case EXPERT: {
+            boardW = 30;
+            boardH = 16;
+            totalMines = 99;
+            break;
+        }
         case INSANE: {
-            boardW = 16;
-            boardH = 13;
-            totalMines = 104;
+            boardW = 30;
+            boardH = 16;
+            totalMines = 240;
             break;
         }
     }
@@ -60,6 +62,10 @@ void Game::init() {
     cursorY = (boardH - 1) / 2;
     upLast = leftLast = downLast = rightLast = selectLast = flagLast = true;
     currentState = Game::PLAYING;
+    scrollX = Global::maxI(((int) boardW - MAX_WINDOW_WIDTH) / 2, 0);
+    scrollY = Global::maxI(((int) boardH - MAX_WINDOW_HEIGHT) / 2, 0);
+    windowW = Global::minUI(boardW, MAX_WINDOW_WIDTH);
+    windowH = Global::minUI(boardH, MAX_WINDOW_HEIGHT);
 
     mask = (uint8_t*) calloc(boardArea, sizeof(uint8_t));
     redrawTiles = (bool*) calloc(boardArea, sizeof(bool));

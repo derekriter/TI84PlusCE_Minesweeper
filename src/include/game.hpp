@@ -20,6 +20,8 @@ namespace Game {
     const uint8_t MASK_REVEALED = 2;
     const uint8_t BOARD_MINE = -1;
     const uint8_t BOARD_CLEAR = 0;
+    const uint8_t MAX_WINDOW_WIDTH = 16;
+    const uint8_t MAX_WINDOW_HEIGHT = 13;
 
     extern Difficulty currentDifficulty;
     extern bool hasInited;
@@ -35,6 +37,8 @@ namespace Game {
     extern bool upLast, leftLast, downLast, rightLast, selectLast, flagLast;
     extern uint16_t flagsLeft;
     extern State currentState;
+    extern uint8_t scrollX, scrollY;
+    extern uint8_t windowW, windowH;
 
     void init();
     void end();
