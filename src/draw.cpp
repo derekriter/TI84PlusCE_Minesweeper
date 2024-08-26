@@ -16,13 +16,13 @@ const struct Draw::Skin Draw::SKINS[] = {
 const uint8_t Draw::SKIN_COUNT = 1;
 #else
 const struct Draw::Skin Draw::SKINS[] = {
-    {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Classic Dark", classic_dark_sprites_tiles, classic_dark_title, classic_dark_arrow, Draw::COL_GRAY, Draw::COL_WHITE},
-    {"Plastic", plastic_sprites_tiles, plastic_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Google", google_sprites_tiles, google_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Words", words_sprites_tiles, standard_title, words_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Colors", colors_sprites_tiles, colors_title, colors_arrow, Draw::COL_WHITE, Draw::COL_BLACK},
-    {"Roman", roman_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK}
+    {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
+    {"Dracula", dracula_sprites_tiles, dracula_title, dracula_arrow, Draw::COL_GRAY, Draw::COL_LT_GRAY, COL_PINK}, //Dracula colors from https://draculatheme.com/contribute
+    {"Plastic", plastic_sprites_tiles, plastic_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
+    {"Google", google_sprites_tiles, google_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
+    {"Words", words_sprites_tiles, standard_title, words_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
+    {"Colors", colors_sprites_tiles, colors_title, colors_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
+    {"Roman", roman_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW}
 };
 const uint8_t Draw::SKIN_COUNT = 7;
 #endif
@@ -182,7 +182,7 @@ void Draw::render() {
 
                     gfx_SetColor(getSkin().bg);
                     gfx_FillRectangle_NoClip(restartX - 1, 207, restartWidth + 1, 10);
-                    gfx_SetTextFGColor(COL_YELLOW);
+                    gfx_SetTextFGColor(getSkin().prompt);
                     gfx_PrintStringXY(restartText, restartX, 208);
                 }
 

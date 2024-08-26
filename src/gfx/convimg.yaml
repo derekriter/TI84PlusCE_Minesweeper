@@ -5,7 +5,9 @@ palettes:
       - color: {index: 1, hex: "#FFFFFF"}
       - color: {index: 2, hex: "#000000"}
       - color: {index: 3, hex: "#F5C518"}
-      - color: {index: 4, hex: "#202124"}
+      - color: {index: 4, hex: "#282A36"}
+      - color: {index: 5, hex: "#F8F8F2"}
+      - color: {index: 6, hex: "#FF79C6"}
     quality: 10
     images: automatic
 
@@ -54,24 +56,24 @@ converts:
     transparent-color-index: 0
     images:
       - google/google_title.png
-  - name: classic_dark_sprites
+  - name: dracula_sprites
     palette: global_palette
     transparent-color-index: 0
     tilesets:
       tile-width: 16
       tile-height: 16
       images:
-        - classic_dark/classic_dark_sprites.png
-  - name: classic_dark_title
+        - dracula/dracula_sprites.png
+  - name: dracula_title
     palette: global_palette
     transparent-color-index: 0
     images:
-      - classic_dark/classic_dark_title.png
-  - name: classic_dark_arrow
+      - dracula/dracula_title.png
+  - name: dracula_arrow
     palette: global_palette
     transparent-color-index: 0
     images:
-      - classic_dark/classic_dark_arrow.png
+      - dracula/dracula_arrow.png
   - name: words_sprites
     palette: global_palette
     transparent-color-index: 0
@@ -125,9 +127,9 @@ outputs:
       - plastic_title
       - google_sprites
       - google_title
-      - classic_dark_sprites
-      - classic_dark_title
-      - classic_dark_arrow
+      - dracula_sprites
+      - dracula_title
+      - dracula_arrow
       - words_sprites
       - words_arrow
       - colors_sprites

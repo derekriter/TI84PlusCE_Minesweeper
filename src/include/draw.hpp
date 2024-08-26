@@ -9,7 +9,7 @@ namespace Draw {
         gfx_sprite_t** sprites;
         gfx_sprite_t* title;
         gfx_sprite_t* arrow;
-        uint8_t bg, fg;
+        uint8_t bg, fg, prompt;
     };
 
     const uint8_t COL_TRANS = 0;
@@ -17,6 +17,8 @@ namespace Draw {
     const uint8_t COL_BLACK = 2;
     const uint8_t COL_YELLOW = 3;
     const uint8_t COL_GRAY = 4;
+    const uint8_t COL_LT_GRAY = 5;
+    const uint8_t COL_PINK = 6;
     const uint8_t SPRITE_COVERED = 0;
     const uint8_t SPRITE_REVEALED = 1;
     const uint8_t SPRITE_FLAG = 2;
