@@ -9,21 +9,20 @@
 #include "include/menu.hpp"
 #include "include/game.hpp"
 
-#if NO_SKINS
-const struct Draw::Skin Draw::SKINS[] = {
-    {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK}
-};
-const uint8_t Draw::SKIN_COUNT = 1;
-#else
 const struct Draw::Skin Draw::SKINS[] = {
     {"Classic", classic_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
-    {"Dracula", dracula_sprites_tiles, dracula_title, dracula_arrow, Draw::COL_GRAY, Draw::COL_LT_GRAY, COL_PINK}, //Dracula colors from https://draculatheme.com/contribute
+#if !NO_SKINS
+    {"Dracula", dracula_sprites_tiles, dracula_title, dracula_arrow, Draw::COL_GRAY, Draw::COL_SILVER, COL_PINK}, //Dracula colors from https://draculatheme.com/contribute
     {"Plastic", plastic_sprites_tiles, plastic_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
     {"Google", google_sprites_tiles, google_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
     {"Words", words_sprites_tiles, standard_title, words_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
     {"Colors", colors_sprites_tiles, colors_title, colors_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW},
     {"Roman", roman_sprites_tiles, standard_title, standard_arrow, Draw::COL_WHITE, Draw::COL_BLACK, Draw::COL_YELLOW}
+#endif
 };
+#if NO_SKINS
+const uint8_t Draw::SKIN_COUNT = 1;
+#else
 const uint8_t Draw::SKIN_COUNT = 7;
 #endif
 
@@ -265,7 +264,14 @@ void Draw::drawTile(unsigned int windowX, unsigned int windowY, uint16_t loc) {
         }
     }
     else if(Game::currentState == Game::LOST && Game::board[loc] == Game::BOARD_MINE) {
-        gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
+        switch(Game::mask[loc]) {
+            case Game::MASK_REVEALED: {
+                gfx_Sprite_NoClip(getSkin().sprites[SPRITE_REVEALED], x, y);
+            }
+            default: {
+                gfx_Sprite_NoClip(getSkin().sprites[SPRITE_COVERED], x, y);
+            }
+        }
         gfx_TransparentSprite_NoClip(getSkin().sprites[SPRITE_EXPLOSION], x, y);
     }
     else {

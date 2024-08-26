@@ -17,7 +17,7 @@ namespace Draw {
     const uint8_t COL_BLACK = 2;
     const uint8_t COL_YELLOW = 3;
     const uint8_t COL_GRAY = 4;
-    const uint8_t COL_LT_GRAY = 5;
+    const uint8_t COL_SILVER = 5;
     const uint8_t COL_PINK = 6;
     const uint8_t SPRITE_COVERED = 0;
     const uint8_t SPRITE_REVEALED = 1;
