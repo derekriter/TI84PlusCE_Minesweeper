@@ -83,8 +83,12 @@ void Draw::render() {
                 gfx_PrintStringXY("[alpha] - Flag", 1, GFX_LCD_HEIGHT - 18);
                 gfx_PrintStringXY("[del] - Quit", 1, GFX_LCD_HEIGHT - 9);
 
+                #if NO_SKINS
+                gfx_PrintStringXY(Global::VERSION, GFX_LCD_WIDTH - gfx_GetStringWidth(Global::VERSION) - 1, GFX_LCD_HEIGHT - 9);
+                #else
                 const char* versionText = strcmp(getSkin().name, "Roman") == 0 ? Global::ROMAN_VERSION : Global::VERSION;
                 gfx_PrintStringXY(versionText, GFX_LCD_WIDTH - gfx_GetStringWidth(versionText) - 1, GFX_LCD_HEIGHT - 9);
+                #endif
             }
             else {
                 gfx_SetColor(getSkin().bg);
