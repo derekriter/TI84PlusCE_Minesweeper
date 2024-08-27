@@ -4,11 +4,11 @@
 #include <cmath>
 
 #if NO_SKINS
-const char* Global::VERSION = "v2.3 NS BETA";
+const char* Global::VERSION = "v3.0 NS BETA";
 const char* Global::ROMAN_VERSION = nullptr;
 #else
-const char* Global::VERSION = "v2.3 BETA";
-const char* Global::ROMAN_VERSION = "vII.III BETA";
+const char* Global::VERSION = "v3.0 BETA";
+const char* Global::ROMAN_VERSION = "vIII BETA";
 #endif
 
 Global::Scene Global::currentScene = MENU;
