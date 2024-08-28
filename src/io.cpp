@@ -130,7 +130,7 @@ void IO::saveWithoutGame() {
     data[0] = 0;
     data[1] = Draw::currentSkin;
 
-    dbg_printf("--WOG Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\n", data[0] & 0x80, data[0] & 0x40, data[0] & 0x20, data[0] & 0x10, data[0] & 0x8, data[0] & 0x4, data[0] & 0x2, data[0] & 0x1, data[1]);
+    dbg_printf("--WOG Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\n", (data[0] >> 7) & 1, (data[0] >> 6) & 1, (data[0] >> 5) & 1, (data[0] >> 4) & 1, (data[0] >> 3) & 1, (data[0] >> 2) & 1, (data[0] >> 1) & 1, data[0] & 1, data[1]);
 
     ti_Write(data, 1, 2, handle);
     ti_Close(handle);
@@ -158,7 +158,7 @@ void IO::saveWithGame(const Global::GameData& gd) {
     data[8] = gd.scrollX;
     data[9] = gd.scrollY;
 
-    dbg_printf("--WG Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\nGame Dim: %ux%u\nMines: %u\nCursor: (%u, %u)\nScroll: (%u, %u)\n", data[0] & 0x80, data[0] & 0x40, data[0] & 0x20, data[0] & 0x10, data[0] & 0x8, data[0] & 0x4, data[0] & 0x2, data[0] & 0x1, data[1], data[2], data[3], (((uint16_t) data[4]) << 8) | data[5], data[6], data[7], data[8], data[9]);
+    dbg_printf("--WG Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\nGame Dim: %ux%u\nMines: %u\nCursor: (%u, %u)\nScroll: (%u, %u)\n", (data[0] >> 7) & 1, (data[0] >> 6) & 1, (data[0] >> 5) & 1, (data[0] >> 4) & 1, (data[0] >> 3) & 1, (data[0] >> 2) & 1, (data[0] >> 1) & 1, data[0] & 1, data[1], data[2], data[3], (((uint16_t) data[4]) << 8) | data[5], data[6], data[7], data[8], data[9]);
 
     uint8_t digits = Global::digitCount(gameArea);
     dbg_printf("Game State:\nI%*c Tile Msk  Brd\n", digits, ' ');
@@ -186,7 +186,7 @@ void IO::saveDisabled() {
     data[0] = 0b1;
     data[1] = Draw::currentSkin;
 
-    dbg_printf("--D Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\n", data[0] & 0x80, data[0] & 0x40, data[0] & 0x20, data[0] & 0x10, data[0] & 0x8, data[0] & 0x4, data[0] & 0x2, data[0] & 0x1, data[1]);
+    dbg_printf("--D Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\n", (data[0] >> 7) & 1, (data[0] >> 6) & 1, (data[0] >> 5) & 1, (data[0] >> 4) & 1, (data[0] >> 3) & 1, (data[0] >> 2) & 1, (data[0] >> 1) & 1, data[0] & 1, data[1]);
 
     ti_Write(data, 1, 2, handle);
     ti_Close(handle);

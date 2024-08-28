@@ -38,9 +38,9 @@ namespace IO {
      * =====================
      * Flags Format
      * =====================
-     * 000000HD
+     * 000000GD
      * D: Save disabled
-     * H: Has game
+     * G: Has game
      *
      * =====================
      * Game State Format

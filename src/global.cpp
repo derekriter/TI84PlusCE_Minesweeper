@@ -45,6 +45,10 @@ unsigned int Global::digitCount(int n) {
 }
 void Global::loadFromIO() {
     const IO::Save save = IO::load();
+    saveEnabled = !save.saveDisabled;
+    if(!saveEnabled)
+        return;
+
     if(save.hasGame) {
         Global::lastGame = {
             save.gameW, save.gameH,
@@ -58,5 +62,4 @@ void Global::loadFromIO() {
     #if !NO_SKINS
     Draw::currentSkin = save.skin;
     #endif
-    saveEnabled = !save.saveDisabled;
 }

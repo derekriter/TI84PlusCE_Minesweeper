@@ -111,12 +111,17 @@ void Game::end(bool store) {
         return;
 
     if(store && board != nullptr) {
+        auto boardCopy = (int8_t*) malloc(boardArea);
+        auto maskCopy = (uint8_t*) malloc(boardArea);
+        memcpy(boardCopy, board, boardArea);
+        memcpy(maskCopy, mask, boardArea);
+
         Global::lastGame = {
             boardW, boardH,
             totalMines,
             cursorX, cursorY,
             scrollX, scrollY,
-            board, mask,
+            boardCopy, maskCopy,
             flagsLeft
         };
     }

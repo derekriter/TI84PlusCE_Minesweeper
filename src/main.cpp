@@ -51,5 +51,9 @@ int main() {
     }
 
     Draw::end();
+    if(Global::lastGame.board != nullptr)
+        free(Global::lastGame.board);
+    if(Global::lastGame.mask != nullptr)
+        free(Global::lastGame.mask);
     return 0;
 }
