@@ -5,6 +5,7 @@
 
 namespace IO {
     struct Save {
+        bool saveDisabled;
         bool hasGame;
         uint8_t skin;
         uint8_t gameW, gameH;
@@ -23,7 +24,7 @@ namespace IO {
      * =====================
      * Save Format
      * =====================
-     * 0: hasGame (bool)
+     * 0: flags (uint8_t)
      * 1: skin (uint8_t)
      * ?2: gameW (uint8_t)
      * ?3: gameH (uint8_t)
@@ -35,16 +36,24 @@ namespace IO {
      * ?10+: gameState (uint8_t[])
      *
      * =====================
+     * Flags Format
+     * =====================
+     * 000000HD
+     * D: Save disabled
+     * H: Has game
+     *
+     * =====================
      * Game State Format
      * =====================
      * Per Byte:
-     * 00AABBBB
-     * A (2 bits): The mask for the tile. 0 = covered, 1 = flagged, 2 = uncovered
+     * 00MMBBBB
+     * M (2 bits): The mask for the tile. 0 = covered, 1 = flagged, 2 = uncovered
      * B (4 bits): The board for the title. 0 = empty, 1-8 = numbers, 15 = mine
      */
 
     [[nodiscard]] Save load();
     void saveWithoutGame();
     void saveWithGame(const Global::GameData& gd);
+    void saveDisabled();
     void save();
 }

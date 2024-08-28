@@ -4,7 +4,7 @@
 #include "include/draw.hpp"
 
 const char* IO::SAVE_NAME = "MSWPRSAV";
-const struct IO::Save& IO::DEFAULT = {false, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, nullptr, nullptr, NULL};
+const struct IO::Save& IO::DEFAULT = {false, false, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, nullptr, nullptr, NULL};
 
 IO::Save IO::load() {
     uint8_t handle = ti_Open(SAVE_NAME, "r");
@@ -23,11 +23,12 @@ IO::Save IO::load() {
     }
 
     struct Save out = DEFAULT;
-    out.hasGame = (bool) data[0];
+    out.saveDisabled = (bool) (data[0] & 0x1);
+    out.hasGame = (bool) (data[0] & 0x2);
     out.skin = data[1];
     free(data);
 
-    dbg_printf("--Read 1--\nHas Game: %u\nSkin: %u\n", out.hasGame, out.skin);
+    dbg_printf("--Read 1--\nSave Disabled: %u\nHas Game: %u\nSkin: %u\n", out.saveDisabled, out.hasGame, out.skin);
 
     if(out.skin >= Draw::SKIN_COUNT) {
         dbg_printf("Invalid save (check 1), assuming defaults\n");
@@ -126,10 +127,10 @@ void IO::saveWithoutGame() {
     }
 
     auto data = (uint8_t*) malloc(2);
-    data[0] = false;
+    data[0] = 0;
     data[1] = Draw::currentSkin;
 
-    dbg_printf("--WOG Write--\nHas Game: %u\nSkin: %u\n", data[0], data[1]);
+    dbg_printf("--WOG Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\n", data[0] & 0x80, data[0] & 0x40, data[0] & 0x20, data[0] & 0x10, data[0] & 0x8, data[0] & 0x4, data[0] & 0x2, data[0] & 0x1, data[1]);
 
     ti_Write(data, 1, 2, handle);
     ti_Close(handle);
@@ -146,7 +147,7 @@ void IO::saveWithGame(const Global::GameData& gd) {
     uint16_t gameArea = gd.w * gd.h;
     auto data = (uint8_t*) malloc(10 + gameArea);
 
-    data[0] = true;
+    data[0] = 0b10;
     data[1] = Draw::currentSkin;
     data[2] = gd.w;
     data[3] = gd.h;
@@ -157,7 +158,7 @@ void IO::saveWithGame(const Global::GameData& gd) {
     data[8] = gd.scrollX;
     data[9] = gd.scrollY;
 
-    dbg_printf("--WG Write--\nHas Game: %u\nSkin: %u\nGame Dim: %ux%u\nMines: %u\nCursor: (%u, %u)\nScroll: (%u, %u)\n", data[0], data[1], data[2], data[3], (((uint16_t) data[4]) << 8) | data[5], data[6], data[7], data[8], data[9]);
+    dbg_printf("--WG Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\nGame Dim: %ux%u\nMines: %u\nCursor: (%u, %u)\nScroll: (%u, %u)\n", data[0] & 0x80, data[0] & 0x40, data[0] & 0x20, data[0] & 0x10, data[0] & 0x8, data[0] & 0x4, data[0] & 0x2, data[0] & 0x1, data[1], data[2], data[3], (((uint16_t) data[4]) << 8) | data[5], data[6], data[7], data[8], data[9]);
 
     uint8_t digits = Global::digitCount(gameArea);
     dbg_printf("Game State:\nI%*c Tile Msk  Brd\n", digits, ' ');
@@ -174,7 +175,30 @@ void IO::saveWithGame(const Global::GameData& gd) {
     free(data);
     dbg_printf("Successfully wrote to save (WG)\n");
 }
+void IO::saveDisabled() {
+    uint8_t handle = ti_Open(SAVE_NAME, "w");
+    if(handle == 0) {
+        dbg_printf("Failed to open save (D), aborting\n");
+        return;
+    }
+
+    auto data = (uint8_t*) malloc(2);
+    data[0] = 0b1;
+    data[1] = Draw::currentSkin;
+
+    dbg_printf("--D Write--\nFlags: %u%u%u%u%u%u%u%u\nSkin: %u\n", data[0] & 0x80, data[0] & 0x40, data[0] & 0x20, data[0] & 0x10, data[0] & 0x8, data[0] & 0x4, data[0] & 0x2, data[0] & 0x1, data[1]);
+
+    ti_Write(data, 1, 2, handle);
+    ti_Close(handle);
+    free(data);
+    dbg_printf("Successfully wrote to save (D)\n");
+}
 void IO::save() {
+    if(!Global::saveEnabled) {
+        saveDisabled();
+        return;
+    }
+
     if(Global::lastGame.w == NULL)
         saveWithoutGame();
     else

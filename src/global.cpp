@@ -15,6 +15,7 @@ const char* Global::ROMAN_VERSION = "vIII BETA";
 Global::Scene Global::currentScene = MENU;
 bool Global::shouldClose = false;
 Global::GameData Global::lastGame = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, nullptr, nullptr, NULL};
+bool Global::saveEnabled = true;
 
 int Global::minI(int a, int b) {
     return a < b ? a : b;
@@ -57,4 +58,5 @@ void Global::loadFromIO() {
     #if !NO_SKINS
     Draw::currentSkin = save.skin;
     #endif
+    saveEnabled = !save.saveDisabled;
 }

@@ -25,6 +25,7 @@ namespace Global {
     extern Scene currentScene;
     extern bool shouldClose;
     extern GameData lastGame;
+    extern bool saveEnabled;
 
     [[nodiscard]] int minI(int a, int b);
     [[nodiscard]] int maxI(int a, int b);

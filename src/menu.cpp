@@ -7,12 +7,13 @@
 #include <keypadc.h>
 
 uint8_t Menu::cursorPos = 0;
-bool Menu::upLast = true, Menu::downLast = true, Menu::selectLast = true;
+bool Menu::upLast = true, Menu::downLast = true, Menu::selectLast = true, Menu::toggleLast = true;
 
 void Menu::update() {
     bool up = kb_IsDown(kb_KeyUp);
     bool down = kb_IsDown(kb_KeyDown);
     bool select = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
+    bool toggle = kb_IsDown(kb_KeyMode);
 
     bool canContinue = Global::lastGame.w != NULL;
     uint8_t optionCount;
@@ -57,8 +58,14 @@ void Menu::update() {
             Global::shouldClose = true;
         }
     }
+    if(toggle && !toggleLast) {
+        Global::saveEnabled = !Global::saveEnabled;
+        IO::save();
+        Draw::redrawFull = true;
+    }
 
     upLast = up;
     downLast = down;
     selectLast = select;
+    toggleLast = toggle;
 }

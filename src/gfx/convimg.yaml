@@ -8,6 +8,10 @@ palettes:
       - color: {index: 4, hex: "#282A36"}
       - color: {index: 5, hex: "#F8F8F2"}
       - color: {index: 6, hex: "#FF79C6"}
+      - color: {index: 7, hex: "#FF0000"}
+      - color: {index: 8, hex: "#00FF00"}
+      - color: {index: 9, hex: "#FF5555"}
+      - color: {index: 10, hex: "#50FA7B"}
     quality: 10
     images: automatic
 

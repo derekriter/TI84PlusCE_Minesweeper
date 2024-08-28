@@ -4,7 +4,7 @@
 
 namespace Menu {
     extern uint8_t cursorPos;
-    extern bool upLast, downLast, selectLast;
+    extern bool upLast, downLast, selectLast, toggleLast;
 
     void update();
 }
