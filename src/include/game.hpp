@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "global.hpp"
+
 namespace Game {
     enum Difficulty {
         BEGINNER = 0,
@@ -18,14 +20,14 @@ namespace Game {
     const uint8_t MASK_COVERED = 0;
     const uint8_t MASK_FLAGGED = 1;
     const uint8_t MASK_REVEALED = 2;
-    const uint8_t BOARD_MINE = -1;
-    const uint8_t BOARD_CLEAR = 0;
+    const int8_t BOARD_MINE = -1;
+    const int8_t BOARD_CLEAR = 0;
     const uint8_t MAX_WINDOW_WIDTH = 16;
     const uint8_t MAX_WINDOW_HEIGHT = 13;
 
     extern Difficulty currentDifficulty;
     extern bool hasInited;
-    extern uint8_t* board;
+    extern int8_t* board;
     extern uint8_t* mask;
     extern uint8_t boardW;
     extern uint8_t boardH;
@@ -41,9 +43,10 @@ namespace Game {
     extern uint8_t windowW, windowH;
 
     void init();
-    void end();
+    void init(Global::GameData gd);
+    void end(bool store);
     void update();
-    int16_t getNeighborTile(uint16_t tile, uint8_t neighbor);
+    [[nodiscard]] int16_t getNeighborTile(uint16_t tile, uint8_t neighbor);
     void genBoard();
     void reveal(uint16_t loc, bool isOG=true);
 }

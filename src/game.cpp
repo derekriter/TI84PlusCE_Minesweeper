@@ -1,6 +1,8 @@
 #include "include/game.hpp"
 #include "include/draw.hpp"
 #include "include/global.hpp"
+#include "include/io.hpp"
+#include "include/menu.hpp"
 
 #include <cstdint>
 #include <cstdlib>
@@ -8,10 +10,11 @@
 #include <cstring>
 #include <cmath>
 #include <cassert>
+#include <debug.h>
 
 Game::Difficulty Game::currentDifficulty = BEGINNER;
 bool Game::hasInited = false;
-uint8_t* Game::board = nullptr;
+int8_t* Game::board = nullptr;
 uint8_t* Game::mask = nullptr;
 uint8_t Game::boardW = 0;
 uint8_t Game::boardH = 0;
@@ -29,6 +32,7 @@ uint8_t Game::windowW = 0, Game::windowH = 0;
 void Game::init() {
     if(hasInited)
         return;
+    dbg_printf("Initing WOG\n");
 
     switch(currentDifficulty) {
         case BEGINNER: {
@@ -59,10 +63,9 @@ void Game::init() {
     boardArea = boardW * boardH;
     flagsLeft = totalMines;
 
+    upLast = leftLast = downLast = rightLast = selectLast = flagLast = true;
     cursorX = (boardW - 1) / 2;
     cursorY = (boardH - 1) / 2;
-    upLast = leftLast = downLast = rightLast = selectLast = flagLast = true;
-    currentState = Game::PLAYING;
     scrollX = Global::maxI(((int) boardW - MAX_WINDOW_WIDTH) / 2, 0);
     scrollY = Global::maxI(((int) boardH - MAX_WINDOW_HEIGHT) / 2, 0);
     windowW = Global::minUI(boardW, MAX_WINDOW_WIDTH);
@@ -71,12 +74,56 @@ void Game::init() {
     mask = (uint8_t*) calloc(boardArea, sizeof(uint8_t));
     redrawTiles = (bool*) calloc(boardArea, sizeof(bool));
 
+    currentState = Game::PLAYING;
     Draw::redrawFull = true;
     hasInited = true;
 }
-void Game::end() {
+void Game::init(Global::GameData gd) {
+    if(hasInited)
+        return;
+    dbg_printf("Initing WG\n");
+
+    boardW = gd.w;
+    boardH = gd.h;
+    totalMines = gd.mineCount;
+    flagsLeft = gd.flagsLeft;
+    cursorX = gd.cursorX;
+    cursorY = gd.cursorY;
+    scrollX = gd.scrollX;
+    scrollY = gd.scrollY;
+    board = gd.board;
+    mask = gd.mask;
+
+    boardArea = boardW * boardH;
+
+    upLast = leftLast = downLast = rightLast = selectLast = flagLast = true;
+    windowW = Global::minUI(boardW, MAX_WINDOW_WIDTH);
+    windowH = Global::minUI(boardH, MAX_WINDOW_HEIGHT);
+
+    redrawTiles = (bool*) calloc(boardArea, sizeof(bool));
+
+    currentState = Game::PLAYING;
+    Draw::redrawFull = true;
+    hasInited = true;
+}
+void Game::end(bool store) {
     if(!hasInited)
         return;
+
+    if(store && board != nullptr) {
+        Global::lastGame = {
+            boardW, boardH,
+            totalMines,
+            cursorX, cursorY,
+            scrollX, scrollY,
+            board, mask,
+            flagsLeft
+        };
+    }
+    else {
+        Global::lastGame = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, nullptr, nullptr, NULL};
+    }
+    IO::save();
 
     if(board != nullptr) {
         free(board);
@@ -94,13 +141,19 @@ void Game::end() {
     hasInited = false;
 }
 void Game::update() {
-    if(!hasInited)
-        init();
+    if(!hasInited) {
+        if(Global::lastGame.w == NULL)
+            init();
+        else
+            init(Global::lastGame);
+    }
 
     if(currentState != Game::PLAYING) {
         if(kb_AnyKey() && !selectLast) {
-            Game::end();
-            Game::init();
+            Game::end(false);
+
+            if(!kb_IsDown(kb_KeyDel))
+                Game::init();
         }
 
         selectLast = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
@@ -248,7 +301,7 @@ void Game::genBoard() {
     if(board != nullptr)
         memset(board, 0, boardArea * sizeof(uint8_t));
     else {
-        board = (uint8_t*) calloc(boardArea, sizeof(uint8_t));
+        board = (int8_t*) calloc(boardArea, sizeof(uint8_t));
         assert(board != nullptr);
     }
 

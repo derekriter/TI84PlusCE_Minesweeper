@@ -36,7 +36,6 @@ void Draw::init() {
     gfx_SetDrawBuffer();
     gfx_SetPalette(global_palette, sizeof_global_palette, 0);
     gfx_SetTransparentColor(COL_TRANS);
-    gfx_FillScreen(Draw::getSkin().bg);
 
     redrawFull = true;
 }
@@ -48,28 +47,22 @@ void Draw::render() {
 
     switch(Global::currentScene) {
         case Global::MENU: {
+            bool canContinue = Global::lastGame.w != NULL;
+
             const char* difficText = Game::currentDifficulty == Game::Difficulty::BEGINNER ? "Difficulty: Beginner" : (Game::currentDifficulty == Game::Difficulty::INTERMEDIATE ? "Difficulty: Intermediate" : (Game::currentDifficulty == Game::Difficulty::EXPERT ? "Difficulty: Expert" : "Difficulty: Insane"));
-            const unsigned int maxDifficWidth = gfx_GetStringWidth("Difficulty: Intermediate");
 
             #if !NO_SKINS
             char* skinText = (char*) malloc(strlen("Skin: ") + strlen(getSkin().name) + 1);
             sprintf(skinText, "Skin: %s", getSkin().name);
-            unsigned int maxSkinWidth = 0;
-            for(const struct Skin& skin : SKINS) {
-                maxSkinWidth = Global::maxI((int) maxSkinWidth, (int) gfx_GetStringWidth(skin.name));
-            }
             #endif
 
+            int continueX = getCenteredTextX("Continue");
             int playX = getCenteredTextX("Play");
             int difficX = getCenteredTextX(difficText);
             #if !NO_SKINS
             int skinX = getCenteredTextX(skinText);
             #endif
             int quitX = getCenteredTextX("Quit");
-
-            const unsigned int cursorOffset = gfx_GetCharWidth('>') + 1;
-            int minX = 0;
-            unsigned int maxWidth = 0;
 
             gfx_SetTextFGColor(getSkin().fg);
             if(redrawFull) {
@@ -91,33 +84,34 @@ void Draw::render() {
             }
             else {
                 gfx_SetColor(getSkin().bg);
-
-                #if NO_SKINS
-                minX = (int) ((GFX_LCD_WIDTH - maxDifficWidth) / 2 - cursorOffset);
-                maxWidth = maxDifficWidth + cursorOffset;
-                #else
-                minX = Global::minI((int) (GFX_LCD_WIDTH - maxDifficWidth) / 2, (int) (GFX_LCD_WIDTH - maxSkinWidth) / 2) - (int) cursorOffset;
-                maxWidth = Global::maxI((int) maxDifficWidth, (int) maxSkinWidth) + cursorOffset;
-                #endif
-
-                gfx_FillRectangle(minX, 100, (int) maxWidth, 68);
+                gfx_FillRectangle(0, 100, GFX_LCD_WIDTH, 88);
             }
 
+            const unsigned int cursorOffset = gfx_GetCharWidth('>') + 1;
+            int cursorX;
             #if NO_SKINS
-            int cursorX = (Menu::cursorPos == 0 ? playX : (Menu::cursorPos == 1 ? difficX : quitX)) - (int) cursorOffset;
+            if(canContinue)
+                cursorX = (Menu::cursorPos == 0 ? continueX : (Menu::cursorPos == 1 ? playX : (Menu::cursorPos == 2 ? difficX : quitX))) - (int) cursorOffset;
+            else
+                cursorX = (Menu::cursorPos == 0 ? playX : (Menu::cursorPos == 1 ? difficX : quitX)) - (int) cursorOffset;
             #else
-            int cursorX = (Menu::cursorPos == 0 ? playX : (Menu::cursorPos == 1 ? difficX : (Menu::cursorPos == 2 ? skinX : quitX))) - (int) cursorOffset;
+            if(canContinue)
+                cursorX = (Menu::cursorPos == 0 ? continueX : (Menu::cursorPos == 1 ? playX : (Menu::cursorPos == 2 ? difficX : (Menu::cursorPos == 3 ? skinX : quitX)))) - (int) cursorOffset;
+            else
+                cursorX = (Menu::cursorPos == 0 ? playX : (Menu::cursorPos == 1 ? difficX : (Menu::cursorPos == 2 ? skinX : quitX))) - (int) cursorOffset;
             #endif
             gfx_SetTextXY(cursorX, Menu::cursorPos * 20 + 100);
             gfx_PrintChar('>');
 
-            gfx_PrintStringXY("Play", playX, 100);
-            gfx_PrintStringXY(difficText, difficX, 120);
+            if(canContinue)
+                gfx_PrintStringXY("Continue", continueX, 100);
+            gfx_PrintStringXY("Play", playX, 100 + canContinue * 20);
+            gfx_PrintStringXY(difficText, difficX, 120 + canContinue * 20);
             #if NO_SKINS
-            gfx_PrintStringXY("Quit", quitX, 140);
+            gfx_PrintStringXY("Quit", quitX, 124 + canContinue * 20);
             #else
-            gfx_PrintStringXY(skinText, skinX, 140);
-            gfx_PrintStringXY("Quit", quitX, 160);
+            gfx_PrintStringXY(skinText, skinX, 140 + canContinue * 20);
+            gfx_PrintStringXY("Quit", quitX, 160 + canContinue * 20);
             #endif
 
             #if !NO_SKINS
@@ -127,7 +121,7 @@ void Draw::render() {
             if(redrawFull)
                 gfx_SwapDraw();
             else
-                gfx_BlitRectangle(gfx_buffer, minX, 100, maxWidth, 68);
+                gfx_BlitRectangle(gfx_buffer, 0, 100, GFX_LCD_WIDTH, 88);
             break;
         }
         case Global::GAME: {

@@ -37,7 +37,7 @@ namespace Draw {
     void init();
     void end();
     void render();
-    struct Skin getSkin();
-    int getCenteredTextX(const char* text);
+    [[nodiscard]] struct Skin getSkin();
+    [[nodiscard]] int getCenteredTextX(const char* text);
     void drawTile(unsigned int windowX, unsigned int windowY, uint16_t loc);
 }

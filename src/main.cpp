@@ -8,26 +8,12 @@
 
 int main() {
     srand(time(nullptr));
+    Global::loadFromIO();
     Draw::init();
 
     bool delLast = true;
     while(!Global::shouldClose) {
         kb_Scan();
-
-        bool del = kb_IsDown(kb_KeyDel);
-        if(del && !delLast) {
-            switch(Global::currentScene) {
-                case Global::MENU: {
-                    Global::shouldClose = true;
-                    continue;
-                }
-                case Global::GAME: {
-                    Game::end();
-                    Global::currentScene = Global::MENU;
-                    Draw::redrawFull = true;
-                }
-            }
-        }
 
         switch(Global::currentScene) {
             case Global::MENU: {
@@ -37,6 +23,25 @@ int main() {
             case Global::GAME: {
                 Game::update();
                 break;
+            }
+        }
+
+        bool del = kb_IsDown(kb_KeyDel);
+        if(del && !delLast) {
+            switch(Global::currentScene) {
+                case Global::MENU: {
+                    Global::shouldClose = true;
+                    continue;
+                }
+                case Global::GAME: {
+                    Game::end(true);
+                    Global::currentScene = Global::MENU;
+                    Menu::cursorPos = 0;
+                    Global::loadFromIO();
+
+                    Draw::redrawFull = true;
+                    break;
+                }
             }
         }
 

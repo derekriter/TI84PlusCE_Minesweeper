@@ -1,5 +1,6 @@
 #include "include/global.hpp"
 #include "include/draw.hpp"
+#include "include/io.hpp"
 
 #include <cmath>
 
@@ -13,6 +14,7 @@ const char* Global::ROMAN_VERSION = "vIII BETA";
 
 Global::Scene Global::currentScene = MENU;
 bool Global::shouldClose = false;
+Global::GameData Global::lastGame = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, nullptr, nullptr, NULL};
 
 int Global::minI(int a, int b) {
     return a < b ? a : b;
@@ -35,8 +37,24 @@ unsigned int Global::digitCount(int n) {
     if(n == 0)
         return 1;
 
-    auto digits = (unsigned int) (floor(log10(abs(n))) + 2);
+    auto digits = (unsigned int) (floor(log10(abs(n))) + 1);
     if(n < 0)
         digits++;
     return digits;
+}
+void Global::loadFromIO() {
+    const IO::Save save = IO::load();
+    if(save.hasGame) {
+        Global::lastGame = {
+            save.gameW, save.gameH,
+            save.mineCount,
+            save.cursorX, save.cursorY,
+            save.scrollX, save.scrollY,
+            save.board, save.mask,
+            save.flagsLeft
+        };
+    }
+    #if !NO_SKINS
+    Draw::currentSkin = save.skin;
+    #endif
 }

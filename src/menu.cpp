@@ -2,6 +2,7 @@
 #include "include/global.hpp"
 #include "include/draw.hpp"
 #include "include/game.hpp"
+#include "include/io.hpp"
 
 #include <keypadc.h>
 
@@ -13,11 +14,12 @@ void Menu::update() {
     bool down = kb_IsDown(kb_KeyDown);
     bool select = kb_IsDown(kb_Key2nd) || kb_IsDown(kb_KeyEnter);
 
+    bool canContinue = Global::lastGame.w != NULL;
     uint8_t optionCount;
     #if NO_SKINS
-    optionCount = 3;
+    optionCount = 3 + canContinue;
     #else
-    optionCount = 4;
+    optionCount = 4 + canContinue;
     #endif
 
     if(up && !upLast) {
@@ -29,36 +31,30 @@ void Menu::update() {
         Draw::redrawPartial = true;
     }
     if(select && !selectLast) {
-        switch(cursorPos) {
-            case 0: {
-                //Play
-                Global::currentScene = Global::GAME;
-                break;
-            }
-            case 1: {
-                //Difficulty
-                Game::currentDifficulty = static_cast<Game::Difficulty>(Global::mod(Game::currentDifficulty + 1, 4));
-                Draw::redrawPartial = true;
-                break;
-            }
-            #if !NO_SKINS
-            case 2: {
-                //Skin
-                Draw::currentSkin = Global::mod(Draw::currentSkin + 1, Draw::SKIN_COUNT);
-                Draw::redrawFull = true;
-                break;
-            }
-            #endif
-            default:
-            #if NO_SKINS
-            case 2: {
-            #else
-            case 3: {
-            #endif
-                //Quit
-                Global::shouldClose = true;
-                break;
-            }
+        if(cursorPos == 0 && canContinue) {
+            //continue
+            Global::currentScene = Global::GAME;
+        }
+        else if(cursorPos == canContinue) {
+            //play
+            Global::lastGame = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, nullptr, nullptr, NULL};
+            Global::currentScene = Global::GAME;
+        }
+        else if(cursorPos == canContinue + 1) {
+            //difficulty
+            Game::currentDifficulty = static_cast<Game::Difficulty>(Global::mod(Game::currentDifficulty + 1, 4));
+            Draw::redrawPartial = true;
+        }
+        #if !NO_SKINS
+        else if(cursorPos == canContinue + 2) {
+        #endif
+            //Skin
+            Draw::currentSkin = Global::mod(Draw::currentSkin + 1, Draw::SKIN_COUNT);
+            IO::save();
+            Draw::redrawFull = true;
+        }
+        else {
+            Global::shouldClose = true;
         }
     }
 
